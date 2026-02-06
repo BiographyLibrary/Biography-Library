@@ -1,0 +1,575 @@
+'use client';
+
+import { useEffect, useState, useCallback, useRef } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import { useAuth } from '@/lib/auth-context';
+import { supabase } from '@/lib/supabase';
+import { EditorTopBar } from '@/components/editor/editor-top-bar';
+import { SectionSidebar } from '@/components/editor/section-sidebar';
+import { SectionEditor } from '@/components/editor/section-editor';
+import { TodoPanel } from '@/components/editor/todo-panel';
+import { AiSuggestionsPanel } from '@/components/editor/ai-suggestions-panel';
+import { ShareLinkPanel } from '@/components/editor/share-link-panel';
+import { StatusManager } from '@/components/editor/status-manager';
+import {
+  BIOGRAPHY_SECTIONS,
+  type BiographyContent,
+  getEmptyContent,
+  getSectionData,
+} from '@/lib/editor-constants';
+import {
+  INITIAL_AI_STATE,
+  FALLBACK_PROMPTS,
+  type AiPanelState,
+} from '@/lib/ai-constants';
+import {
+  checkGrammar,
+  getGuidedPrompts,
+  getSummary,
+} from '@/lib/ai-service';
+import type { Biography } from '@/lib/biographies';
+import { generateBiographyPDF } from '@/lib/pdf-export';
+import { Loader2, Menu, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+
+type SaveStatus = 'saved' | 'saving' | 'unsaved' | 'error';
+
+const AI_ENABLED_KEY = 'biography-ai-enabled';
+
+export default function BiographyEditorPage() {
+  const { user, session, loading: authLoading } = useAuth();
+  const router = useRouter();
+  const params = useParams();
+  const id = params.id as string;
+
+  const [biography, setBiography] = useState<Biography | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [title, setTitle] = useState('');
+  const [privacy, setPrivacy] = useState<'private' | 'family' | 'public'>(
+    'private'
+  );
+  const [status, setStatus] = useState<'draft' | 'completed'>('draft');
+  const [shareToken, setShareToken] = useState<string | null>(null);
+  const [content, setContent] = useState<BiographyContent>(getEmptyContent());
+  const [activeSection, setActiveSection] = useState<string>(
+    BIOGRAPHY_SECTIONS[0].key
+  );
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('saved');
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const [showTodoPanel, setShowTodoPanel] = useState(false);
+
+  const [aiEnabled, setAiEnabled] = useState(false);
+  const [aiState, setAiState] = useState<AiPanelState>(INITIAL_AI_STATE);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(AI_ENABLED_KEY);
+    if (stored === 'true') setAiEnabled(true);
+  }, []);
+
+  const dirtyRef = useRef(false);
+  const contentRef = useRef(content);
+  const titleRef = useRef(title);
+  const privacyRef = useRef(privacy);
+
+  useEffect(() => {
+    contentRef.current = content;
+  }, [content]);
+  useEffect(() => {
+    titleRef.current = title;
+  }, [title]);
+  useEffect(() => {
+    privacyRef.current = privacy;
+  }, [privacy]);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (!user || !id) return;
+    const load = async () => {
+      const { data } = await supabase
+        .from('biographies')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+      if (data) {
+        setBiography(data);
+        setTitle(data.title);
+        setPrivacy(data.privacy);
+        setStatus(data.status || 'draft');
+        setShareToken(data.share_token || null);
+        const loaded = data.content as BiographyContent | null;
+        if (loaded && typeof loaded === 'object') {
+          setContent({ ...getEmptyContent(), ...loaded });
+        }
+      }
+      setIsLoading(false);
+    };
+    load();
+  }, [user, id]);
+
+  const save = useCallback(async () => {
+    if (!id || !dirtyRef.current) return;
+    dirtyRef.current = false;
+    setSaveStatus('saving');
+    const { error } = await supabase
+      .from('biographies')
+      .update({
+        title: titleRef.current,
+        privacy: privacyRef.current,
+        content: contentRef.current,
+      })
+      .eq('id', id);
+    if (error) {
+      setSaveStatus('error');
+      dirtyRef.current = true;
+    } else {
+      setSaveStatus('saved');
+    }
+  }, [id]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (dirtyRef.current) {
+        save();
+      }
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [save]);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (dirtyRef.current) {
+        save();
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      if (dirtyRef.current) {
+        save();
+      }
+    };
+  }, [save]);
+
+  const markDirty = useCallback(() => {
+    dirtyRef.current = true;
+    setSaveStatus('unsaved');
+  }, []);
+
+  const handleTitleChange = useCallback(
+    (newTitle: string) => {
+      setTitle(newTitle);
+      markDirty();
+    },
+    [markDirty]
+  );
+
+  const handlePrivacyChange = useCallback(
+    (newPrivacy: 'private' | 'family' | 'public') => {
+      setPrivacy(newPrivacy);
+      markDirty();
+    },
+    [markDirty]
+  );
+
+  const handleTextChange = useCallback(
+    (text: string) => {
+      setContent((prev) => ({
+        ...prev,
+        [activeSection]: { ...getSectionData(prev, activeSection), text },
+      }));
+      markDirty();
+    },
+    [activeSection, markDirty]
+  );
+
+  const handleTodoChange = useCallback(
+    (todo: boolean) => {
+      setContent((prev) => ({
+        ...prev,
+        [activeSection]: { ...getSectionData(prev, activeSection), todo },
+      }));
+      markDirty();
+    },
+    [activeSection, markDirty]
+  );
+
+  const handleAudioTranscriptChange = useCallback(
+    (audioTranscript: string) => {
+      setContent((prev) => ({
+        ...prev,
+        [activeSection]: {
+          ...getSectionData(prev, activeSection),
+          audioTranscript,
+        },
+      }));
+      markDirty();
+    },
+    [activeSection, markDirty]
+  );
+
+  const handleSectionChange = useCallback((key: string) => {
+    setActiveSection(key);
+    setShowMobileSidebar(false);
+    setAiState(INITIAL_AI_STATE);
+  }, []);
+
+  const handleToggleAi = useCallback(() => {
+    setAiEnabled((prev) => {
+      const next = !prev;
+      localStorage.setItem(AI_ENABLED_KEY, String(next));
+      if (!next) setAiState(INITIAL_AI_STATE);
+      return next;
+    });
+  }, []);
+
+  const handleExportPDF = useCallback(() => {
+    if (!biography) return;
+    generateBiographyPDF({
+      title: titleRef.current,
+      author_name: biography.author_name,
+      content: contentRef.current,
+      created_at: biography.created_at,
+    });
+  }, [biography]);
+
+  const getToken = useCallback(async () => {
+    const { data: { session: freshSession } } = await supabase.auth.getSession();
+    return freshSession?.access_token || '';
+  }, []);
+
+  const handleGrammarCheck = useCallback(async () => {
+    const token = await getToken();
+    const sectionData = getSectionData(contentRef.current, activeSection);
+    const section = BIOGRAPHY_SECTIONS.find((s) => s.key === activeSection);
+    if (!sectionData.text.trim() || !section) return;
+
+    if (!token) {
+      setAiState({
+        type: 'grammar',
+        loading: false,
+        suggestions: [],
+        prompts: [],
+        summary: '',
+        error: 'You must be signed in to use AI features. Please refresh the page.',
+      });
+      return;
+    }
+
+    setAiState({
+      type: 'grammar',
+      loading: true,
+      suggestions: [],
+      prompts: [],
+      summary: '',
+      error: null,
+    });
+
+    try {
+      const suggestions = await checkGrammar(
+        token,
+        section.title,
+        sectionData.text
+      );
+      setAiState((prev) => ({
+        ...prev,
+        loading: false,
+        suggestions,
+      }));
+    } catch (err: any) {
+      setAiState((prev) => ({
+        ...prev,
+        loading: false,
+        error: err.message || 'Failed to check grammar',
+      }));
+    }
+  }, [activeSection, getToken]);
+
+  const handleGuidedPrompts = useCallback(async () => {
+    const token = await getToken();
+    const section = BIOGRAPHY_SECTIONS.find((s) => s.key === activeSection);
+    if (!section) return;
+
+    const fallback = FALLBACK_PROMPTS[activeSection] || [];
+
+    setAiState({
+      type: 'prompts',
+      loading: true,
+      suggestions: [],
+      prompts: [],
+      summary: '',
+      error: null,
+    });
+
+    if (!token) {
+      setAiState((prev) => ({
+        ...prev,
+        loading: false,
+        prompts: fallback,
+      }));
+      return;
+    }
+
+    try {
+      const prompts = await getGuidedPrompts(
+        token,
+        activeSection,
+        section.title
+      );
+      setAiState((prev) => ({
+        ...prev,
+        loading: false,
+        prompts: prompts.length > 0 ? prompts : fallback,
+      }));
+    } catch {
+      setAiState((prev) => ({
+        ...prev,
+        loading: false,
+        prompts: fallback,
+        error: null,
+      }));
+    }
+  }, [activeSection, getToken]);
+
+  const handleSummarize = useCallback(async () => {
+    const token = await getToken();
+    const sectionData = getSectionData(contentRef.current, activeSection);
+    const section = BIOGRAPHY_SECTIONS.find((s) => s.key === activeSection);
+    if (!sectionData.text.trim() || !section) return;
+
+    if (!token) {
+      setAiState({
+        type: 'summary',
+        loading: false,
+        suggestions: [],
+        prompts: [],
+        summary: '',
+        error: 'You must be signed in to use AI features. Please refresh the page.',
+      });
+      return;
+    }
+
+    setAiState({
+      type: 'summary',
+      loading: true,
+      suggestions: [],
+      prompts: [],
+      summary: '',
+      error: null,
+    });
+
+    try {
+      const summary = await getSummary(
+        token,
+        section.title,
+        sectionData.text
+      );
+      setAiState((prev) => ({
+        ...prev,
+        loading: false,
+        summary,
+      }));
+    } catch (err: any) {
+      setAiState((prev) => ({
+        ...prev,
+        loading: false,
+        error: err.message || 'Failed to generate summary',
+      }));
+    }
+  }, [activeSection, getToken]);
+
+  const handleAcceptSuggestion = useCallback(
+    (suggestionId: string) => {
+      setAiState((prev) => {
+        const updated = prev.suggestions.map((s) => {
+          if (s.id !== suggestionId) return s;
+          return { ...s, status: 'accepted' as const };
+        });
+        const accepted = prev.suggestions.find((s) => s.id === suggestionId);
+        if (accepted && accepted.original) {
+          setContent((prevContent) => {
+            const current = getSectionData(prevContent, activeSection);
+            const newText = current.text.replace(
+              accepted.original,
+              accepted.suggestion
+            );
+            if (newText !== current.text) {
+              markDirty();
+              return {
+                ...prevContent,
+                [activeSection]: { ...current, text: newText },
+              };
+            }
+            return prevContent;
+          });
+        }
+        return { ...prev, suggestions: updated };
+      });
+    },
+    [activeSection, markDirty]
+  );
+
+  const handleRejectSuggestion = useCallback((suggestionId: string) => {
+    setAiState((prev) => ({
+      ...prev,
+      suggestions: prev.suggestions.map((s) =>
+        s.id === suggestionId ? { ...s, status: 'rejected' as const } : s
+      ),
+    }));
+  }, []);
+
+  const handleInsertPrompt = useCallback(
+    (starter: string) => {
+      setContent((prev) => {
+        const current = getSectionData(prev, activeSection);
+        const sep =
+          current.text && !current.text.endsWith('\n') ? '\n\n' : '';
+        markDirty();
+        return {
+          ...prev,
+          [activeSection]: {
+            ...current,
+            text: current.text + sep + starter,
+          },
+        };
+      });
+    },
+    [activeSection, markDirty]
+  );
+
+  const handleCloseAiPanel = useCallback(() => {
+    setAiState(INITIAL_AI_STATE);
+  }, []);
+
+  const todoCount = Object.values(content).filter((d) => d.todo).length;
+
+  if (authLoading || !user || isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!biography) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-4">
+        <p className="text-muted-foreground">Biography not found.</p>
+        <Button variant="outline" onClick={() => router.push('/dashboard')}>
+          Return to Dashboard
+        </Button>
+      </div>
+    );
+  }
+
+  const activeSectionData = getSectionData(content, activeSection);
+
+  return (
+    <div className="h-screen flex flex-col bg-background overflow-hidden">
+      <EditorTopBar
+        title={title}
+        privacy={privacy}
+        saveStatus={saveStatus}
+        onTitleChange={handleTitleChange}
+        onPrivacyChange={handlePrivacyChange}
+        onExportPDF={handleExportPDF}
+      />
+
+      <div className="flex-1 flex min-h-0">
+        <div className="lg:hidden fixed bottom-4 left-4 z-40">
+          <Button
+            size="icon"
+            className="h-12 w-12 rounded-full shadow-lg"
+            onClick={() => setShowMobileSidebar(!showMobileSidebar)}
+          >
+            {showMobileSidebar ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
+          </Button>
+        </div>
+
+        {showMobileSidebar && (
+          <div
+            className="lg:hidden fixed inset-0 bg-black/50 z-30"
+            onClick={() => setShowMobileSidebar(false)}
+          />
+        )}
+
+        <aside
+          className={cn(
+            'w-[280px] border-r border-border/50 bg-card/50 shrink-0 flex flex-col',
+            'fixed lg:relative inset-y-0 left-0 z-30 top-[57px] lg:top-0',
+            'transition-transform duration-200',
+            showMobileSidebar
+              ? 'translate-x-0'
+              : '-translate-x-full lg:translate-x-0'
+          )}
+        >
+          <SectionSidebar
+            content={content}
+            activeSection={activeSection}
+            onSectionChange={handleSectionChange}
+            todoCount={todoCount}
+            onToggleTodoPanel={() => setShowTodoPanel(!showTodoPanel)}
+            showTodoPanel={showTodoPanel}
+          />
+        </aside>
+
+        <div className="flex-1 flex min-w-0">
+          <div className="flex-1 flex flex-col min-w-0">
+            <SectionEditor
+              sectionKey={activeSection}
+              data={activeSectionData}
+              onTextChange={handleTextChange}
+              onTodoChange={handleTodoChange}
+              onAudioTranscriptChange={handleAudioTranscriptChange}
+              aiEnabled={aiEnabled}
+              onToggleAi={handleToggleAi}
+              onGrammarCheck={handleGrammarCheck}
+              onGuidedPrompts={handleGuidedPrompts}
+              onSummarize={handleSummarize}
+              aiLoading={aiState.loading}
+            />
+
+            <ShareLinkPanel
+              biographyId={id}
+              privacy={privacy}
+              currentShareToken={shareToken}
+              onTokenGenerated={setShareToken}
+            />
+
+            <StatusManager
+              biographyId={id}
+              currentStatus={status}
+              onStatusChanged={setStatus}
+            />
+
+            {showTodoPanel && todoCount > 0 && (
+              <TodoPanel
+                content={content}
+                onSectionChange={handleSectionChange}
+              />
+            )}
+          </div>
+
+          {aiState.type && (
+            <AiSuggestionsPanel
+              state={aiState}
+              onClose={handleCloseAiPanel}
+              onAcceptSuggestion={handleAcceptSuggestion}
+              onRejectSuggestion={handleRejectSuggestion}
+              onInsertPrompt={handleInsertPrompt}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
