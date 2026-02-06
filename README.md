@@ -202,7 +202,17 @@ This is a demo project for evaluation purposes. For production use with Infomani
 
 ## License
 
-Proprietary - All rights reserved
+**AGPL v3** - Biography Library is free and open source software to ensure that the preservation of human memory remains a public good, accessible to all, controlled by none.
+
+This project is developed by **Biography Library Association**, a Swiss non-profit organization based in Lugano, Ticino, Switzerland.
+
+- Full license text: See [LICENSE](./LICENSE) file
+- Official website: biographylibrary.org
+- Read our [Manifesto](docs/manifesto.md) biographylibrary.org/manifesto
+
+### Why AGPL v3?
+
+The Affero GPL ensures that if anyone runs a modified version of this software as a service, they must share their modifications. This protects the commons and prevents proprietary forks.
 
 ## Support
 
