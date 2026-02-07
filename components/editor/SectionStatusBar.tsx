@@ -14,7 +14,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/i18n-context';
-import { supabase } from '@/lib/supabase';
+import { updateSectionStatus } from '@/lib/section-status-service';
 import { cn } from '@/lib/utils';
 
 type SectionStatus = 'in_progress' | 'draft_1' | 'draft_2' | 'draft_3' | 'approved' | 'locked';
@@ -119,7 +119,6 @@ export function SectionStatusBar({
     try {
       const updates: any = {
         status: newStatus,
-        updated_at: new Date().toISOString()
       };
 
       if (newStatus === 'approved') {
@@ -128,13 +127,11 @@ export function SectionStatusBar({
         updates.draft_version = parseInt(newStatus.split('_')[1]);
       }
 
-      const { error: updateError } = await supabase
-        .from('biography_sections')
-        .update(updates)
-        .eq('biography_id', biographyId)
-        .eq('section_key', sectionKey);
+      const success = await updateSectionStatus(biographyId, sectionKey, updates);
 
-      if (updateError) throw updateError;
+      if (!success) {
+        throw new Error('Failed to update section status');
+      }
 
       onStatusChange();
     } catch (err) {

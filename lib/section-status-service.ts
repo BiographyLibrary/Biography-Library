@@ -43,33 +43,24 @@ export async function updateSectionStatus(
   updates: Partial<SectionStatusData>
 ): Promise<boolean> {
   try {
-    const existing = await getSectionStatus(biographyId, sectionKey);
-
-    if (existing) {
-      const { error } = await supabase
-        .from('biography_sections')
-        .update({
-          ...updates,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('biography_id', biographyId)
-        .eq('section_key', sectionKey);
-
-      if (error) throw error;
-    } else {
-      const { error } = await supabase
-        .from('biography_sections')
-        .insert({
+    const { error } = await supabase
+      .from('biography_sections')
+      .upsert(
+        {
           biography_id: biographyId,
           section_key: sectionKey,
           status: updates.status || 'in_progress',
           draft_version: updates.draft_version || 1,
           approved_at: updates.approved_at || null,
           revision_history: updates.revision_history || [],
-        });
+          ...updates,
+        },
+        {
+          onConflict: 'biography_id,section_key',
+        }
+      );
 
-      if (error) throw error;
-    }
+    if (error) throw error;
 
     return true;
   } catch (error) {
