@@ -17,10 +17,9 @@ import {
   deleteBiography,
   type Biography,
 } from '@/lib/biographies';
-import { BookOpen, Plus, Loader2, AlertCircle, Sparkles } from 'lucide-react';
+import { BookOpen, Plus, Loader2, AlertCircle } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/i18n-context';
 import { toast } from 'sonner';
-import { loadDemoBiography } from '@/lib/demo-loader';
 
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
@@ -32,8 +31,7 @@ export default function DashboardPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Biography | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isLoadingDemo, setIsLoadingDemo] = useState(false);
-  const { t, language } = useTranslation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -86,20 +84,6 @@ export default function DashboardPage() {
     setDeleteTarget(null);
   };
 
-  const handleLoadDemo = async () => {
-    if (!user) return;
-    setIsLoadingDemo(true);
-    const result = await loadDemoBiography(user.id, language);
-    if (result.success && result.biographyId) {
-      toast.success(t.toast.demoLoaded);
-      await loadBiographies();
-      router.push(`/biography/${result.biographyId}/edit`);
-    } else {
-      toast.error(result.error || t.toast.error);
-    }
-    setIsLoadingDemo(false);
-  };
-
   if (authLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -116,30 +100,8 @@ export default function DashboardPage() {
       <WelcomeLanguageModal />
 
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-start justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">
-              {t.dashboard.welcome}, {displayName}
-            </h1>
-            <p className="text-muted-foreground mt-1">
-              {t.dashboard.yourWorkspace}
-            </p>
-          </div>
-          <div className="flex gap-2 shrink-0">
-            <Button
-              variant="outline"
-              className="gap-2"
-              onClick={handleLoadDemo}
-              disabled={isLoadingDemo}
-            >
-              {isLoadingDemo ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Sparkles className="h-4 w-4" />
-              )}
-              <span className="hidden sm:inline">{t.dashboard.loadDemo}</span>
-              <span className="sm:hidden">{t.dashboard.loadDemo}</span>
-            </Button>
+        {biographies.length === 0 && (
+          <div className="flex justify-end mb-8">
             <Button
               className="gap-2"
               onClick={() => setShowCreateModal(true)}
@@ -149,7 +111,7 @@ export default function DashboardPage() {
               <span className="sm:hidden">{t.dashboard.createBiography}</span>
             </Button>
           </div>
-        </div>
+        )}
 
         <div className="mb-8">
           <AICoachCard
@@ -199,28 +161,13 @@ export default function DashboardPage() {
             <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
               {t.dashboard.noBiographiesSubtitle}
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button
-                className="gap-2"
-                onClick={() => setShowCreateModal(true)}
-              >
-                <Plus className="h-4 w-4" />
-                {t.dashboard.createBiography}
-              </Button>
-              <Button
-                variant="outline"
-                className="gap-2"
-                onClick={handleLoadDemo}
-                disabled={isLoadingDemo}
-              >
-                {isLoadingDemo ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Sparkles className="h-4 w-4" />
-                )}
-                {t.dashboard.loadDemo}
-              </Button>
-            </div>
+            <Button
+              className="gap-2"
+              onClick={() => setShowCreateModal(true)}
+            >
+              <Plus className="h-4 w-4" />
+              {t.dashboard.createBiography}
+            </Button>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -240,6 +187,7 @@ export default function DashboardPage() {
         open={showCreateModal}
         onOpenChange={setShowCreateModal}
         onSubmit={handleCreate}
+        existingBiographiesCount={biographies.length}
       />
 
       <DeleteBiographyDialog

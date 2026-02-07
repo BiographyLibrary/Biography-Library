@@ -20,12 +20,14 @@ interface CreateBiographyModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (title: string, privacy: 'private' | 'family' | 'public') => Promise<void>;
+  existingBiographiesCount?: number;
 }
 
 export function CreateBiographyModal({
   open,
   onOpenChange,
   onSubmit,
+  existingBiographiesCount = 0,
 }: CreateBiographyModalProps) {
   const [title, setTitle] = useState('');
   const [privacy, setPrivacy] = useState<'private' | 'family' | 'public'>('private');
@@ -55,6 +57,10 @@ export function CreateBiographyModal({
   ];
 
   const handleSubmit = async () => {
+    if (existingBiographiesCount > 0) {
+      setError('You already have a biography. Each account is limited to one biography to maintain focus and quality.');
+      return;
+    }
     if (!title.trim()) {
       setError(t.biography.enterTitle);
       return;
