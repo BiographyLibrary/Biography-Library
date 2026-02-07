@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { RichTextEditor } from './rich-text-editor';
 import { VoiceRecorder } from './voice-recorder';
+import { ImportTextDialog } from './import-text-dialog';
 import { useTranslation } from '@/lib/i18n/i18n-context';
 import {
   Sparkles,
@@ -13,6 +14,7 @@ import {
   MessageSquareText,
   FileText,
   Power,
+  Upload,
 } from 'lucide-react';
 import { BIOGRAPHY_SECTIONS, type SectionData } from '@/lib/editor-constants';
 import { cn } from '@/lib/utils';
@@ -51,6 +53,7 @@ export function SectionEditor({
   onEditorFontSizeChange,
 }: SectionEditorProps) {
   const [showVoice, setShowVoice] = useState(false);
+  const [showImportDialog, setShowImportDialog] = useState(false);
   const section = BIOGRAPHY_SECTIONS.find((s) => s.key === sectionKey);
   const { t } = useTranslation();
 
@@ -79,6 +82,15 @@ export function SectionEditor({
     }
   };
 
+  const handleImportText = (content: string, replace: boolean) => {
+    if (replace) {
+      onTextChange(content);
+    } else {
+      const separator = data.text && !data.text.endsWith('</p>') ? '<p></p>' : '';
+      onTextChange(data.text + separator + content);
+    }
+  };
+
   return (
     <div className="flex flex-col flex-1 min-h-0">
       <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-border/50 shrink-0">
@@ -93,8 +105,19 @@ export function SectionEditor({
               showVoice && 'bg-red-500 hover:bg-red-600 text-white'
             )}
             onClick={() => setShowVoice(!showVoice)}
+            title="Registra audio"
           >
             <Mic className="h-4 w-4" />
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0 shrink-0"
+            onClick={() => setShowImportDialog(true)}
+            title="Importa testo"
+          >
+            <Upload className="h-4 w-4" />
           </Button>
         </div>
         <div className="flex items-center gap-1 sm:gap-1.5 ml-3 shrink-0 flex-wrap justify-end">
@@ -200,6 +223,13 @@ export function SectionEditor({
           </span>
         </label>
       </div>
+
+      <ImportTextDialog
+        open={showImportDialog}
+        onOpenChange={setShowImportDialog}
+        sectionName={sectionTitle}
+        onImport={handleImportText}
+      />
     </div>
   );
 }
