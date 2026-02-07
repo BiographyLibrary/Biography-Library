@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { RichTextEditor } from './rich-text-editor';
 import { VoiceRecorder } from './voice-recorder';
 import { ImportTextDialog } from './import-text-dialog';
 import { SectionNotes } from './SectionNotes';
+import { SectionStatusBar } from './SectionStatusBar';
 import { useTranslation } from '@/lib/i18n/i18n-context';
 import {
   Sparkles,
@@ -20,6 +21,7 @@ import {
 } from 'lucide-react';
 import { BIOGRAPHY_SECTIONS, type SectionData } from '@/lib/editor-constants';
 import { cn } from '@/lib/utils';
+import { getSectionStatus, type SectionStatusData } from '@/lib/section-status-service';
 
 interface SectionEditorProps {
   sectionKey: string;
@@ -59,10 +61,23 @@ export function SectionEditor({
   const [showVoice, setShowVoice] = useState(false);
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
+  const [sectionStatus, setSectionStatus] = useState<SectionStatusData | null>(null);
   const section = BIOGRAPHY_SECTIONS.find((s) => s.key === sectionKey);
   const { t } = useTranslation();
 
   const sectionTitle = t.sectionTitles[sectionKey as keyof typeof t.sectionTitles] || section?.title || '';
+
+  useEffect(() => {
+    if (biographyId && sectionKey) {
+      loadSectionStatus();
+    }
+  }, [biographyId, sectionKey]);
+
+  const loadSectionStatus = async () => {
+    if (!biographyId) return;
+    const status = await getSectionStatus(biographyId, sectionKey);
+    setSectionStatus(status);
+  };
 
   const handleVoiceTranscript = (transcript: string) => {
     const sep =
@@ -204,6 +219,19 @@ export function SectionEditor({
       {showNotes && biographyId && (
         <div className="px-4 sm:px-6 py-3 border-b border-border/30 shrink-0">
           <SectionNotes biographyId={biographyId} sectionKey={sectionKey} />
+        </div>
+      )}
+
+      {biographyId && sectionStatus && (
+        <div className="px-4 sm:px-6 py-3 border-b border-border/30 bg-muted/10 shrink-0">
+          <SectionStatusBar
+            biographyId={biographyId}
+            sectionKey={sectionKey}
+            currentStatus={sectionStatus.status}
+            draftVersion={sectionStatus.draft_version}
+            approvedAt={sectionStatus.approved_at}
+            onStatusChange={loadSectionStatus}
+          />
         </div>
       )}
 
