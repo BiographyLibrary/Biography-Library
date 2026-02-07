@@ -11,6 +11,7 @@ import { TodoPanel } from '@/components/editor/todo-panel';
 import { AiSuggestionsPanel } from '@/components/editor/ai-suggestions-panel';
 import { ShareLinkPanel } from '@/components/editor/share-link-panel';
 import { StatusManager } from '@/components/editor/status-manager';
+import { ConversationMode } from '@/components/editor/conversation-mode';
 import {
   BIOGRAPHY_SECTIONS,
   type BiographyContent,
@@ -60,6 +61,7 @@ export default function BiographyEditorPage() {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('saved');
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [showTodoPanel, setShowTodoPanel] = useState(false);
+  const [editorMode, setEditorMode] = useState<'editor' | 'conversation'>('editor');
 
   const [aiEnabled, setAiEnabled] = useState(false);
   const [aiState, setAiState] = useState<AiPanelState>(INITIAL_AI_STATE);
@@ -452,6 +454,30 @@ export default function BiographyEditorPage() {
     setAiState(INITIAL_AI_STATE);
   }, []);
 
+  const handleGenerateDraftFromConversation = useCallback(
+    async (answers: { question: string; answer: string }[]) => {
+      const draftText = answers
+        .map(({ question, answer }) => {
+          return `${answer}`;
+        })
+        .join('\n\n');
+
+      setContent((prev) => {
+        const current = getSectionData(prev, activeSection);
+        const separator = current.text && !current.text.endsWith('\n') ? '\n\n' : '';
+        return {
+          ...prev,
+          [activeSection]: {
+            ...current,
+            text: current.text + separator + draftText,
+          },
+        };
+      });
+      markDirty();
+    },
+    [activeSection, markDirty]
+  );
+
   const todoCount = Object.values(content).filter((d) => d.todo).length;
 
   if (authLoading || !user || isLoading) {
@@ -530,42 +556,73 @@ export default function BiographyEditorPage() {
 
         <div className="flex-1 flex min-w-0">
           <div className="flex-1 flex flex-col min-w-0">
-            <SectionEditor
-              sectionKey={activeSection}
-              data={activeSectionData}
-              onTextChange={handleTextChange}
-              onTodoChange={handleTodoChange}
-              onAudioTranscriptChange={handleAudioTranscriptChange}
-              aiEnabled={aiEnabled}
-              onToggleAi={handleToggleAi}
-              onGrammarCheck={handleGrammarCheck}
-              onGuidedPrompts={handleGuidedPrompts}
-              onSummarize={handleSummarize}
-              aiLoading={aiState.loading}
-            />
-
-            <ShareLinkPanel
-              biographyId={id}
-              privacy={privacy}
-              currentShareToken={shareToken}
-              onTokenGenerated={setShareToken}
-            />
-
-            <StatusManager
-              biographyId={id}
-              currentStatus={status}
-              onStatusChanged={setStatus}
-            />
-
-            {showTodoPanel && todoCount > 0 && (
-              <TodoPanel
-                content={content}
-                onSectionChange={handleSectionChange}
+            <div className="border-b border-border/50 px-4 py-2 bg-card/30 flex items-center gap-2">
+              <Button
+                variant={editorMode === 'editor' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setEditorMode('editor')}
+                className="h-8 text-xs"
+              >
+                {t.editor.editorMode}
+              </Button>
+              <Button
+                variant={editorMode === 'conversation' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setEditorMode('conversation')}
+                className="h-8 text-xs"
+              >
+                {t.editor.conversationMode}
+              </Button>
+            </div>
+            {editorMode === 'conversation' ? (
+              <ConversationMode
+                sectionKey={activeSection}
+                onBackToEditor={() => setEditorMode('editor')}
+                onGenerateDraft={handleGenerateDraftFromConversation}
+                currentText={activeSectionData.text}
               />
+            ) : (
+              <SectionEditor
+                sectionKey={activeSection}
+                data={activeSectionData}
+                onTextChange={handleTextChange}
+                onTodoChange={handleTodoChange}
+                onAudioTranscriptChange={handleAudioTranscriptChange}
+                aiEnabled={aiEnabled}
+                onToggleAi={handleToggleAi}
+                onGrammarCheck={handleGrammarCheck}
+                onGuidedPrompts={handleGuidedPrompts}
+                onSummarize={handleSummarize}
+                aiLoading={aiState.loading}
+              />
+            )}
+
+            {editorMode === 'editor' && (
+              <>
+                <ShareLinkPanel
+                  biographyId={id}
+                  privacy={privacy}
+                  currentShareToken={shareToken}
+                  onTokenGenerated={setShareToken}
+                />
+
+                <StatusManager
+                  biographyId={id}
+                  currentStatus={status}
+                  onStatusChanged={setStatus}
+                />
+
+                {showTodoPanel && todoCount > 0 && (
+                  <TodoPanel
+                    content={content}
+                    onSectionChange={handleSectionChange}
+                  />
+                )}
+              </>
             )}
           </div>
 
-          {aiState.type && (
+          {editorMode === 'editor' && aiState.type && (
             <AiSuggestionsPanel
               state={aiState}
               onClose={handleCloseAiPanel}

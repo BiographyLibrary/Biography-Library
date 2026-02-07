@@ -168,6 +168,20 @@ export interface Translations {
     signInForAi: string;
     failedGrammar: string;
     failedSummary: string;
+    editorMode: string;
+    conversationMode: string;
+  };
+  conversation: {
+    questionOf: string;
+    skipQuestion: string;
+    finishSection: string;
+    backToEditor: string;
+    typeYourAnswer: string;
+    send: string;
+    generatingDraft: string;
+    draftGenerated: string;
+    switchToEditorToRefine: string;
+    answerMinimum: string;
   };
   status: {
     biographyCompleted: string;
@@ -403,6 +417,20 @@ export const translations: Record<Language, Translations> = {
       signInForAi: 'You must be signed in to use AI features. Please refresh the page.',
       failedGrammar: 'Failed to check grammar',
       failedSummary: 'Failed to generate summary',
+      editorMode: 'Editor Mode',
+      conversationMode: 'Conversation Mode',
+    },
+    conversation: {
+      questionOf: 'Question {current} of {total} for {section}',
+      skipQuestion: 'Skip this question',
+      finishSection: 'Finish this section',
+      backToEditor: 'Back to editor',
+      typeYourAnswer: 'Type your answer here...',
+      send: 'Send',
+      generatingDraft: 'Generating draft from your answers...',
+      draftGenerated: 'Draft generated successfully!',
+      switchToEditorToRefine: 'Switch to Editor Mode to refine your text.',
+      answerMinimum: 'Please answer at least 3 questions before finishing.',
     },
     status: {
       biographyCompleted: 'Biography Completed',
@@ -636,6 +664,20 @@ export const translations: Record<Language, Translations> = {
       signInForAi: 'Devi aver effettuato l\'accesso per usare le funzionalit\u00e0 AI. Ricarica la pagina.',
       failedGrammar: 'Impossibile controllare la grammatica',
       failedSummary: 'Impossibile generare il riassunto',
+      editorMode: 'Modalità Editor',
+      conversationMode: 'Modalità Conversazione',
+    },
+    conversation: {
+      questionOf: 'Domanda {current} di {total} per {section}',
+      skipQuestion: 'Salta questa domanda',
+      finishSection: 'Ho finito con questa sezione',
+      backToEditor: 'Torna all\'editor',
+      typeYourAnswer: 'Scrivi la tua risposta qui...',
+      send: 'Invia',
+      generatingDraft: 'Generazione bozza dalle tue risposte...',
+      draftGenerated: 'Bozza generata con successo!',
+      switchToEditorToRefine: 'Passa alla Modalità Editor per perfezionare il testo.',
+      answerMinimum: 'Per favore rispondi ad almeno 3 domande prima di finire.',
     },
     status: {
       biographyCompleted: 'Biografia Completata',
@@ -869,6 +911,20 @@ export const translations: Record<Language, Translations> = {
       signInForAi: 'Vous devez \u00eatre connect\u00e9 pour utiliser les fonctionnalit\u00e9s IA. Veuillez rafra\u00eechir la page.',
       failedGrammar: 'Impossible de v\u00e9rifier la grammaire',
       failedSummary: 'Impossible de g\u00e9n\u00e9rer le r\u00e9sum\u00e9',
+      editorMode: 'Mode Éditeur',
+      conversationMode: 'Mode Conversation',
+    },
+    conversation: {
+      questionOf: 'Question {current} sur {total} pour {section}',
+      skipQuestion: 'Passer cette question',
+      finishSection: 'Terminer cette section',
+      backToEditor: 'Retour à l\'éditeur',
+      typeYourAnswer: 'Écrivez votre réponse ici...',
+      send: 'Envoyer',
+      generatingDraft: 'Génération du brouillon à partir de vos réponses...',
+      draftGenerated: 'Brouillon généré avec succès !',
+      switchToEditorToRefine: 'Passez en Mode Éditeur pour affiner votre texte.',
+      answerMinimum: 'Veuillez répondre à au moins 3 questions avant de terminer.',
     },
     status: {
       biographyCompleted: 'Biographie Termin\u00e9e',
@@ -1102,6 +1158,20 @@ export const translations: Record<Language, Translations> = {
       signInForAi: 'Sie m\u00fcssen angemeldet sein, um KI-Funktionen zu nutzen. Bitte laden Sie die Seite neu.',
       failedGrammar: 'Grammatikpr\u00fcfung fehlgeschlagen',
       failedSummary: 'Zusammenfassung konnte nicht erstellt werden',
+      editorMode: 'Editor-Modus',
+      conversationMode: 'Konversationsmodus',
+    },
+    conversation: {
+      questionOf: 'Frage {current} von {total} für {section}',
+      skipQuestion: 'Diese Frage überspringen',
+      finishSection: 'Diesen Abschnitt beenden',
+      backToEditor: 'Zurück zum Editor',
+      typeYourAnswer: 'Geben Sie Ihre Antwort hier ein...',
+      send: 'Senden',
+      generatingDraft: 'Entwurf wird aus Ihren Antworten generiert...',
+      draftGenerated: 'Entwurf erfolgreich generiert!',
+      switchToEditorToRefine: 'Wechseln Sie in den Editor-Modus, um Ihren Text zu verfeinern.',
+      answerMinimum: 'Bitte beantworten Sie mindestens 3 Fragen, bevor Sie fertig sind.',
     },
     status: {
       biographyCompleted: 'Biografie Abgeschlossen',
