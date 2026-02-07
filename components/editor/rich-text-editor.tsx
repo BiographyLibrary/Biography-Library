@@ -29,6 +29,7 @@ export function RichTextEditor({
   onEditorFontSizeChange,
 }: RichTextEditorProps) {
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit.configure({
         heading: {
