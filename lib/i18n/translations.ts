@@ -275,6 +275,14 @@ export interface Translations {
     of: string;
     sections: string;
   };
+  accessibility: {
+    uiFontSize: string;
+    editorFontSize: string;
+    small: string;
+    normal: string;
+    large: string;
+    extraLarge: string;
+  };
 }
 
 export const translations: Record<Language, Translations> = {
@@ -553,6 +561,14 @@ export const translations: Record<Language, Translations> = {
       of: 'of',
       sections: 'sections',
     },
+    accessibility: {
+      uiFontSize: 'UI Font Size',
+      editorFontSize: 'Editor Font Size',
+      small: 'Small',
+      normal: 'Normal',
+      large: 'Large',
+      extraLarge: 'Extra Large',
+    },
   },
   it: {
     common: {
@@ -828,6 +844,14 @@ export const translations: Record<Language, Translations> = {
       dailyPrompt: 'Spunto del giorno',
       of: 'di',
       sections: 'sezioni',
+    },
+    accessibility: {
+      uiFontSize: 'Dimensione Testo UI',
+      editorFontSize: 'Dimensione Testo Editor',
+      small: 'Piccolo',
+      normal: 'Normale',
+      large: 'Grande',
+      extraLarge: 'Molto Grande',
     },
   },
   fr: {
@@ -1105,6 +1129,14 @@ export const translations: Record<Language, Translations> = {
       of: 'de',
       sections: 'sections',
     },
+    accessibility: {
+      uiFontSize: 'Taille de Police UI',
+      editorFontSize: 'Taille de Police Éditeur',
+      small: 'Petit',
+      normal: 'Normal',
+      large: 'Grand',
+      extraLarge: 'Très Grand',
+    },
   },
   de: {
     common: {
@@ -1380,6 +1412,14 @@ export const translations: Record<Language, Translations> = {
       dailyPrompt: 'Tägliche Anregung',
       of: 'von',
       sections: 'Abschnitte',
+    },
+    accessibility: {
+      uiFontSize: 'UI-Schriftgröße',
+      editorFontSize: 'Editor-Schriftgröße',
+      small: 'Klein',
+      normal: 'Normal',
+      large: 'Groß',
+      extraLarge: 'Sehr Groß',
     },
   },
 };

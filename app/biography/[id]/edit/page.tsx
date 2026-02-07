@@ -64,6 +64,7 @@ export default function BiographyEditorPage() {
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [showTodoPanel, setShowTodoPanel] = useState(false);
   const [editorMode, setEditorMode] = useState<'editor' | 'conversation'>('editor');
+  const [editorFontSize, setEditorFontSize] = useState<number>(16);
 
   const [aiEnabled, setAiEnabled] = useState(false);
   const [aiState, setAiState] = useState<AiPanelState>(INITIAL_AI_STATE);
@@ -113,6 +114,7 @@ export default function BiographyEditorPage() {
         setPrivacy(data.privacy);
         setStatus(data.status || 'draft');
         setShareToken(data.share_token || null);
+        setEditorFontSize(data.editor_font_size || 16);
         const loaded = data.content as BiographyContent | null;
         if (loaded && typeof loaded === 'object') {
           setContent({ ...getEmptyContent(), ...loaded });
@@ -645,6 +647,9 @@ export default function BiographyEditorPage() {
                 onGuidedPrompts={handleGuidedPrompts}
                 onSummarize={handleSummarize}
                 aiLoading={aiState.loading}
+                biographyId={id}
+                editorFontSize={editorFontSize}
+                onEditorFontSizeChange={setEditorFontSize}
               />
             )}
 

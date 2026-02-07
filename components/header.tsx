@@ -5,12 +5,13 @@ import { useAuth } from '@/lib/auth-context';
 import { useTranslation } from '@/lib/i18n/i18n-context';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { LanguageSelector } from '@/components/language-selector';
+import { FontSizeControl } from '@/components/accessibility/font-size-control';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
 import { useRouter } from 'next/navigation';
 
 export function Header() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, fontSize, setFontSize } = useAuth();
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -33,6 +34,15 @@ export function Header() {
               <span className="text-sm text-muted-foreground hidden sm:block">
                 {user.user_metadata?.name || user.email}
               </span>
+            </div>
+          )}
+          {user && (
+            <div className="hidden md:block mr-1">
+              <FontSizeControl
+                currentSize={fontSize}
+                onSizeChange={setFontSize}
+                userId={user.id}
+              />
             </div>
           )}
           <LanguageSelector />

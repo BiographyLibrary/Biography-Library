@@ -29,6 +29,9 @@ interface SectionEditorProps {
   onGuidedPrompts: () => void;
   onSummarize: () => void;
   aiLoading: boolean;
+  biographyId?: string;
+  editorFontSize?: number;
+  onEditorFontSizeChange?: (size: number) => void;
 }
 
 export function SectionEditor({
@@ -43,6 +46,9 @@ export function SectionEditor({
   onGuidedPrompts,
   onSummarize,
   aiLoading,
+  biographyId,
+  editorFontSize = 16,
+  onEditorFontSizeChange,
 }: SectionEditorProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [showVoice, setShowVoice] = useState(false);
@@ -163,6 +169,9 @@ export function SectionEditor({
         <FormattingToolbar
           textareaRef={textareaRef}
           onTextChange={onTextChange}
+          biographyId={biographyId}
+          editorFontSize={editorFontSize}
+          onEditorFontSizeChange={onEditorFontSizeChange}
         />
         <span className="text-xs text-muted-foreground">
           {charCount.toLocaleString()} {t.editor.chars}
@@ -175,7 +184,8 @@ export function SectionEditor({
           value={data.text}
           onChange={(e) => onTextChange(e.target.value)}
           placeholder={`${t.editor.startWritingAbout} ${sectionTitle.toLowerCase()}...`}
-          className="w-full h-full resize-none bg-transparent px-4 sm:px-6 py-4 text-[15px] leading-relaxed placeholder:text-muted-foreground/50 focus:outline-none"
+          className="w-full h-full resize-none bg-transparent px-4 sm:px-6 py-4 leading-relaxed placeholder:text-muted-foreground/50 focus:outline-none"
+          style={{ fontSize: `${editorFontSize}px` }}
         />
       </div>
 

@@ -2,10 +2,14 @@
 
 import { Bold, Italic, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { EditorFontSizeControl } from './editor-font-size-control';
 
 interface FormattingToolbarProps {
   textareaRef: React.RefObject<HTMLTextAreaElement>;
   onTextChange: (text: string) => void;
+  biographyId?: string;
+  editorFontSize?: number;
+  onEditorFontSizeChange?: (size: number) => void;
 }
 
 function wrapSelection(
@@ -61,6 +65,9 @@ function toggleListLines(
 export function FormattingToolbar({
   textareaRef,
   onTextChange,
+  biographyId,
+  editorFontSize = 16,
+  onEditorFontSizeChange,
 }: FormattingToolbarProps) {
   return (
     <div className="flex items-center gap-0.5">
@@ -106,6 +113,16 @@ export function FormattingToolbar({
         <List className="h-4 w-4" />
         <span className="sr-only">Bullet list</span>
       </Button>
+      {biographyId && onEditorFontSizeChange && (
+        <>
+          <div className="h-5 w-px bg-border mx-1" />
+          <EditorFontSizeControl
+            biographyId={biographyId}
+            currentSize={editorFontSize}
+            onSizeChange={onEditorFontSizeChange}
+          />
+        </>
+      )}
     </div>
   );
 }
