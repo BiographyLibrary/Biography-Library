@@ -1,3 +1,11 @@
+/**
+ * DOCUMENTATION ONLY - Example Usage of AI Service
+ *
+ * This file demonstrates how to use the AI service for various tasks.
+ * The console.log statements are intentional for documentation purposes.
+ * This file is not imported or used in production code.
+ */
+
 import { aiService, type Improvement } from './ai-provider';
 
 export async function exampleGrammarCheck(

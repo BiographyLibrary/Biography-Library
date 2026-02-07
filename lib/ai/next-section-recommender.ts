@@ -165,8 +165,6 @@ export async function recommendNextSection(
       language,
     });
 
-    console.log('Section recommendation result:', result);
-
     if (!result || typeof result !== 'object' || !result.recommendedSection) {
       console.warn('Invalid recommendation format, using default');
       return getDefaultRecommendation(completedSections, availableSections, language);

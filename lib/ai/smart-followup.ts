@@ -121,8 +121,6 @@ export async function analyzeAndRespond(
       language,
     });
 
-    console.log('Smart follow-up result:', result);
-
     if (!result || typeof result !== 'object') {
       console.error('Invalid result format:', result);
       throw new Error('Invalid response format from AI service');

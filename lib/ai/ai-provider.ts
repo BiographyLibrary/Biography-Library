@@ -59,9 +59,6 @@ class InfomaniakProvider implements AIProvider {
       throw new Error('No authentication token available. Please sign in again.');
     }
 
-    console.log('AI Request (Infomaniak) - Token length:', token.length, 'First 20 chars:', token.substring(0, 20));
-    console.log('AI Request (Infomaniak) - Body:', body);
-
     const res = await fetch(this.AI_FUNCTION_URL, {
       method: 'POST',
       headers: {
