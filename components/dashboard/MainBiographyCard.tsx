@@ -162,6 +162,12 @@ export function MainBiographyCard({ biography, userName, userId }: MainBiography
     return Math.min(Math.round((completedSections / BIOGRAPHY_SECTIONS.length) * 100), 100);
   };
 
+  const getProgressColor = (percentage: number) => {
+    if (percentage >= 67) return '#C8DFBE';
+    if (percentage >= 34) return '#D3F1FF';
+    return '#FBDEC1';
+  };
+
   const getTotalWords = () => {
     if (!biography || !biography.content || typeof biography.content !== 'object') return 0;
     const content = biography.content as BiographyContent;
@@ -318,14 +324,17 @@ export function MainBiographyCard({ biography, userName, userId }: MainBiography
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">{t.dashboard.progress}:</span>
-                <span className="text-sm font-semibold">
+                <span className="text-sm font-semibold text-foreground">
                   {progress}%
                 </span>
               </div>
               <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-primary transition-all duration-300 ease-in-out"
-                  style={{ width: `${progress}%` }}
+                  className="h-full transition-all duration-300 ease-in-out"
+                  style={{
+                    width: `${progress}%`,
+                    backgroundColor: getProgressColor(progress)
+                  }}
                 />
               </div>
             </div>
