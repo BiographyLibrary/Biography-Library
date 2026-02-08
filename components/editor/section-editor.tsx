@@ -107,47 +107,47 @@ export function SectionEditor({
 
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
-      <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-border/50 shrink-0">
-        <div className="flex items-center gap-2 min-w-0">
-          <h2 className="text-lg font-semibold truncate">{sectionTitle}</h2>
+      <div className="flex items-center justify-between px-3 sm:px-6 py-3 border-b border-border/50 shrink-0">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <h2 className="text-base sm:text-lg font-semibold truncate">{sectionTitle}</h2>
           <Button
             type="button"
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 shrink-0 rounded-full bg-[#A84B2F] hover:bg-[#6B2F1F] hover:text-[#FDFBF7] text-[#FDFBF7]"
+            className="h-7 w-7 p-0 shrink-0 rounded-full bg-[#A84B2F] hover:bg-[#6B2F1F] hover:text-[#FDFBF7] text-[#FDFBF7]"
             onClick={() => setShowVoice(!showVoice)}
             title="Registra audio"
           >
-            <Mic className="h-4 w-4" />
+            <Mic className="h-3.5 w-3.5" />
           </Button>
           <Button
             type="button"
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 shrink-0"
+            className="h-7 w-7 p-0 shrink-0"
             onClick={() => setShowImportDialog(true)}
             title="Importa testo"
           >
-            <Upload className="h-4 w-4" />
+            <Upload className="h-3.5 w-3.5" />
           </Button>
           <Button
             type="button"
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 shrink-0"
+            className="h-7 w-7 p-0 shrink-0"
             onClick={() => setShowNotesDialog(true)}
             title="Note e promemoria"
           >
-            <StickyNote className="h-4 w-4" />
+            <StickyNote className="h-3.5 w-3.5" />
           </Button>
         </div>
-        <div className="flex items-center gap-1 sm:gap-1.5 ml-3 shrink-0 flex-wrap justify-end">
+        <div className="flex items-center gap-0.5 sm:gap-1 ml-2 shrink-0 flex-wrap justify-end">
           {aiEnabled && (
             <>
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-1.5 text-xs h-8"
+                className="gap-1 text-xs h-7 px-2"
                 disabled={aiLoading || !data.text.trim()}
                 onClick={onGrammarCheck}
               >
@@ -157,7 +157,7 @@ export function SectionEditor({
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-1.5 text-xs h-8"
+                className="gap-1 text-xs h-7 px-2"
                 disabled={aiLoading}
                 onClick={onGuidedPrompts}
               >
@@ -167,7 +167,7 @@ export function SectionEditor({
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-1.5 text-xs h-8"
+                className="gap-1 text-xs h-7 px-2"
                 disabled={aiLoading || !data.text.trim()}
                 onClick={onSummarize}
               >
@@ -178,7 +178,7 @@ export function SectionEditor({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="gap-1.5 text-xs h-8"
+                  className="gap-1 text-xs h-7 px-2"
                   disabled={aiLoading || !data.text.trim()}
                   onClick={onReviewWithAi}
                 >
@@ -192,7 +192,7 @@ export function SectionEditor({
             variant={aiEnabled ? 'default' : 'outline'}
             size="sm"
             className={cn(
-              'gap-1.5 text-xs h-8',
+              'gap-1 text-xs h-7 px-2',
               aiEnabled && 'bg-primary hover:bg-primary/90'
             )}
             onClick={onToggleAi}
@@ -211,7 +211,7 @@ export function SectionEditor({
               variant={isCompleted ? 'default' : 'outline'}
               size="sm"
               className={cn(
-                'gap-1.5 text-xs h-8',
+                'gap-1 text-xs h-7 px-2',
                 isCompleted && 'bg-primary hover:bg-primary/90'
               )}
               onClick={onMarkComplete}
