@@ -482,7 +482,7 @@ export function ConversationMode({
 
   return (
     <div className="flex flex-col h-full bg-background">
-      <div className="border-b border-border/50 px-4 py-3 bg-card/50">
+      <div className="border-b border-border/50 px-4 py-3 bg-card/50 shrink-0">
         <div className="flex items-center justify-between mb-2">
           <Button
             variant="ghost"
@@ -512,8 +512,8 @@ export function ConversationMode({
         </div>
       </div>
 
-      <ScrollArea className="flex-1 px-4 py-6">
-        <div className="max-w-3xl mx-auto space-y-6">
+      <ScrollArea className="flex-1 px-4 py-4 pb-0">
+        <div className="max-w-3xl mx-auto space-y-4 pb-4">
           {messages.map((message) => (
             <div
               key={message.id}
@@ -569,9 +569,9 @@ export function ConversationMode({
         </div>
       </ScrollArea>
 
-      <div className="border-t border-border/50 bg-card/50 p-4">
+      <div className="border-t border-border/50 bg-card/50 p-4 shrink-0 sticky bottom-0">
         <div className="max-w-3xl mx-auto space-y-3">
-          <div className="flex items-end gap-2">
+          <div className="flex items-center gap-2">
             <div className="flex-1">
               <Textarea
                 ref={textareaRef}
@@ -579,17 +579,17 @@ export function ConversationMode({
                 onChange={(e) => setCurrentAnswer(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={t.conversation.typeYourAnswer}
-                className="min-h-[80px] resize-none"
+                className="min-h-[120px] resize-none"
                 disabled={isGenerating || isAnalyzing || currentQuestionIndex >= prompts.length}
               />
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 self-center">
               <Button
                 size="icon"
-                variant="outline"
+                variant="ghost"
                 onClick={() => setShowVoice(!showVoice)}
                 disabled={isGenerating || isAnalyzing}
-                className="h-10 w-10"
+                className="h-10 w-10 rounded-full bg-[#A84B2F] hover:bg-[#8B3D26] text-[#FDFBF7]"
               >
                 <Mic className="h-4 w-4" />
               </Button>

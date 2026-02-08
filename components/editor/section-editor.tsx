@@ -121,12 +121,9 @@ export function SectionEditor({
           <h2 className="text-lg font-semibold truncate">{sectionTitle}</h2>
           <Button
             type="button"
-            variant={showVoice ? 'default' : 'ghost'}
+            variant="ghost"
             size="sm"
-            className={cn(
-              'h-8 w-8 p-0 shrink-0',
-              showVoice && 'bg-red-500 hover:bg-red-600 text-white'
-            )}
+            className="h-8 w-8 p-0 shrink-0 rounded-full bg-[#A84B2F] hover:bg-[#8B3D26] text-[#FDFBF7]"
             onClick={() => setShowVoice(!showVoice)}
             title="Registra audio"
           >
