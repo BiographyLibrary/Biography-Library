@@ -35,14 +35,14 @@ export function SectionSidebar({
   const { t } = useTranslation();
 
   return (
-    <nav className="flex flex-col h-full">
-      <div className="px-3 py-3 border-b border-border/50">
+    <nav className="flex flex-col h-full overflow-hidden">
+      <div className="px-3 py-3 border-b border-border/50 shrink-0">
         <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
           {t.biography.sections}
         </h3>
       </div>
 
-      <div className="flex-1 overflow-y-auto py-1">
+      <div className="flex-1 min-h-0 overflow-y-auto py-1">
         {BIOGRAPHY_SECTIONS.map((section) => {
           const data = getSectionData(content, section.key);
           const isActive = activeSection === section.key;
@@ -79,7 +79,7 @@ export function SectionSidebar({
         })}
       </div>
 
-      <div className="border-t border-border/50 p-2 space-y-1">
+      <div className="border-t border-border/50 p-2 space-y-1 shrink-0">
         {notesCount > 0 && (
           <button
             onClick={onToggleNotesPanel}
