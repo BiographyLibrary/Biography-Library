@@ -36,6 +36,7 @@ interface AdvancedExportDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   biography: BiographyData;
+  isPublished?: boolean;
 }
 
 type ExportFormat = 'pdf' | 'txt' | 'rtf' | 'docx';
@@ -45,9 +46,10 @@ export function AdvancedExportDialog({
   open,
   onOpenChange,
   biography,
+  isPublished = false,
 }: AdvancedExportDialogProps) {
   const { t } = useTranslation();
-  const [format, setFormat] = useState<ExportFormat>('pdf');
+  const [format, setFormat] = useState<ExportFormat>(isPublished ? 'pdf' : 'txt');
   const [contentSelection, setContentSelection] = useState<ContentSelection>('all');
   const [selectedSections, setSelectedSections] = useState<string[]>([]);
   const [includeMetadata, setIncludeMetadata] = useState(false);
@@ -210,15 +212,22 @@ export function AdvancedExportDialog({
           <div className="space-y-6 py-4">
             <div className="space-y-3">
               <Label className="text-base font-semibold">Formato di esportazione</Label>
+              {!isPublished && (
+                <p className="text-xs text-muted-foreground">
+                  Esportazione PDF disponibile solo dopo la pubblicazione definitiva
+                </p>
+              )}
               <RadioGroup value={format} onValueChange={(v) => setFormat(v as ExportFormat)}>
-                {(['pdf', 'txt', 'rtf', 'docx'] as ExportFormat[]).map((fmt) => (
-                  <div key={fmt} className="flex items-center space-x-2">
-                    <RadioGroupItem value={fmt} id={`format-${fmt}`} />
-                    <Label htmlFor={`format-${fmt}`} className="font-normal cursor-pointer">
-                      {formatLabels[fmt]}
-                    </Label>
-                  </div>
-                ))}
+                {(['pdf', 'txt', 'rtf', 'docx'] as ExportFormat[])
+                  .filter(fmt => isPublished || fmt !== 'pdf')
+                  .map((fmt) => (
+                    <div key={fmt} className="flex items-center space-x-2">
+                      <RadioGroupItem value={fmt} id={`format-${fmt}`} />
+                      <Label htmlFor={`format-${fmt}`} className="font-normal cursor-pointer">
+                        {formatLabels[fmt]}
+                      </Label>
+                    </div>
+                  ))}
               </RadioGroup>
             </div>
 

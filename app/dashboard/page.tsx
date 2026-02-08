@@ -8,6 +8,7 @@ import { CreateBiographyModal } from '@/components/dashboard/create-biography-mo
 import { DeleteBiographyDialog } from '@/components/dashboard/delete-biography-dialog';
 import { WelcomeLanguageModal } from '@/components/welcome-language-modal';
 import { MainBiographyCard } from '@/components/dashboard/MainBiographyCard';
+import { PublishedBiographiesCard } from '@/components/dashboard/published-biographies-card';
 import {
   fetchBiographies,
   createBiography,
@@ -27,7 +28,7 @@ export default function DashboardPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Biography | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -96,7 +97,7 @@ export default function DashboardPage() {
       <WelcomeLanguageModal />
 
       <main className="w-full max-w-2xl px-4 sm:px-6 py-8">
-        {biographies.length === 0 && (
+        {(biographies.length === 0 || biographies.every(b => b.status === 'published')) && (
           <div className="flex justify-end mb-6 sm:mb-8">
             <Button
               className="gap-2 min-h-[44px] px-6"
@@ -105,6 +106,26 @@ export default function DashboardPage() {
               <Plus className="h-5 w-5" />
               <span>{t.dashboard.createBiography}</span>
             </Button>
+          </div>
+        )}
+
+        {biographies.length > 0 && biographies.some(b => b.status !== 'published') && (
+          <div className="flex justify-end mb-6 sm:mb-8">
+            <div className="text-right">
+              <Button
+                className="gap-2 min-h-[44px] px-6"
+                disabled
+              >
+                <Plus className="h-5 w-5" />
+                <span>{t.dashboard.createBiography}</span>
+              </Button>
+              <p className="text-xs text-muted-foreground mt-2 max-w-xs">
+                {language === 'it' ? 'Completa e pubblica la tua biografia attuale prima di crearne una nuova' :
+                 language === 'fr' ? 'Terminez et publiez votre biographie actuelle avant d\'en créer une nouvelle' :
+                 language === 'de' ? 'Vervollständigen und veröffentlichen Sie Ihre aktuelle Biografie, bevor Sie eine neue erstellen' :
+                 'Complete and publish your current biography before creating a new one'}
+              </p>
+            </div>
           </div>
         )}
 
@@ -125,11 +146,14 @@ export default function DashboardPage() {
             </Button>
           </div>
         ) : (
-          <MainBiographyCard
-            biography={biographies[0] || null}
-            userName={displayName}
-            userId={user.id}
-          />
+          <div className="space-y-6">
+            <MainBiographyCard
+              biography={biographies[0] || null}
+              userName={displayName}
+              userId={user.id}
+            />
+            <PublishedBiographiesCard userId={user.id} />
+          </div>
         )}
       </main>
 

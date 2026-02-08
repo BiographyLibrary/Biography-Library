@@ -21,9 +21,12 @@ export function BiographyCard({ biography, onEdit, onDelete }: BiographyCardProp
     public: { icon: Globe, label: t.dashboard.public, className: 'text-emerald-500 bg-emerald-500/10' },
   };
 
-  const statusConfig = {
+  const statusConfig: Record<string, { label: string; className: string }> = {
     draft: { label: t.dashboard.draft, className: 'text-amber-600 bg-amber-500/10' },
     completed: { label: t.dashboard.completed, className: 'text-emerald-600 bg-emerald-500/10' },
+    sections_complete: { label: 'Sections Complete', className: 'text-blue-600 bg-blue-500/10' },
+    final_version: { label: 'Final Version', className: 'text-purple-600 bg-purple-500/10' },
+    published: { label: 'Published', className: 'text-green-600 bg-green-500/10' },
   };
 
   const privacy = privacyConfig[biography.privacy] || privacyConfig.private;

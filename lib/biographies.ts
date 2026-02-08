@@ -7,11 +7,15 @@ export interface Biography {
   author_name: string;
   content: Record<string, unknown>;
   privacy: 'private' | 'family' | 'public';
-  status: 'draft' | 'completed';
+  status: 'draft' | 'completed' | 'sections_complete' | 'final_version' | 'published';
   share_token: string | null;
   completed_at: string | null;
   created_at: string;
   updated_at: string;
+  final_version?: string;
+  narrative_order?: string[];
+  published_at?: string | null;
+  is_locked?: boolean;
 }
 
 export async function fetchBiographies(userId: string) {

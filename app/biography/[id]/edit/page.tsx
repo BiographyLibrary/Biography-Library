@@ -15,6 +15,8 @@ import { ConversationMode } from '@/components/editor/conversation-mode';
 import { NextSectionPrompt } from '@/components/editor/next-section-prompt';
 import { AISectionReview } from '@/components/editor/AISectionReview';
 import { FinalReviewDialog } from '@/components/editor/FinalReviewDialog';
+import { FinalVersionEditor } from '@/components/editor/FinalVersionEditor';
+import { PublishConfirmationDialog } from '@/components/editor/PublishConfirmationDialog';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   BIOGRAPHY_SECTIONS,
@@ -88,6 +90,11 @@ export default function BiographyEditorPage() {
   const [showReviewDialog, setShowReviewDialog] = useState(false);
   const [completedSections, setCompletedSections] = useState<string[]>([]);
   const [showFinalReview, setShowFinalReview] = useState(false);
+  const [finalVersion, setFinalVersion] = useState<string>('');
+  const [narrativeOrder, setNarrativeOrder] = useState<string[]>([]);
+  const [biographyStatus, setBiographyStatus] = useState<'draft' | 'sections_complete' | 'final_version' | 'published'>('draft');
+  const [isLocked, setIsLocked] = useState(false);
+  const [showPublishDialog, setShowPublishDialog] = useState(false);
 
   const editorContainerRef = useRef<HTMLDivElement>(null);
 
@@ -130,8 +137,12 @@ export default function BiographyEditorPage() {
         setTitle(data.title);
         setPrivacy(data.privacy);
         setStatus(data.status || 'draft');
+        setBiographyStatus(data.status || 'draft');
+        setIsLocked(data.is_locked || false);
         setShareToken(data.share_token || null);
         setEditorFontSize(data.editor_font_size || 16);
+        setFinalVersion(data.final_version || '');
+        setNarrativeOrder((data.narrative_order as string[]) || []);
         const loaded = data.content as BiographyContent | null;
         if (loaded && typeof loaded === 'object') {
           setContent({ ...getEmptyContent(), ...loaded });
@@ -657,9 +668,73 @@ export default function BiographyEditorPage() {
     content: getSectionData(content, section.key).text,
   })).filter(s => s.content.trim().length > 50);
 
-  const handleApplyStructure = useCallback((sectionOrder: string[], structureType: string, rationale: string) => {
-    console.log('Applied structure:', { sectionOrder, structureType, rationale });
-  }, []);
+  const handleApplyStructure = useCallback(async (sectionOrder: string[], structureType: string, rationale: string) => {
+    const combinedText = sectionOrder.map(key => {
+      const sectionData = getSectionData(contentRef.current, key);
+      const sectionInfo = BIOGRAPHY_SECTIONS.find(s => s.key === key);
+      const sectionTitle = t.sectionTitles[key as keyof typeof t.sectionTitles] || sectionInfo?.title || '';
+
+      if (!sectionData.text.trim()) return '';
+
+      return `<h2>${sectionTitle}</h2>\n\n${sectionData.text}`;
+    }).filter(text => text.length > 0).join('\n\n');
+
+    setFinalVersion(combinedText);
+    setNarrativeOrder(sectionOrder);
+
+    try {
+      const { error } = await supabase
+        .from('biographies')
+        .update({
+          final_version: combinedText,
+          narrative_order: sectionOrder,
+          status: 'final_version',
+        })
+        .eq('id', id);
+
+      if (!error) {
+        setBiographyStatus('final_version');
+      }
+    } catch (err) {
+      console.error('Error saving final version:', err);
+    }
+  }, [id, t]);
+
+  const handleFinalVersionChange = useCallback(async (newContent: string) => {
+    setFinalVersion(newContent);
+
+    try {
+      await supabase
+        .from('biographies')
+        .update({
+          final_version: newContent,
+        })
+        .eq('id', id);
+    } catch (err) {
+      console.error('Error saving final version:', err);
+    }
+  }, [id]);
+
+  const handlePublish = useCallback(async () => {
+    try {
+      const { error } = await supabase
+        .from('biographies')
+        .update({
+          status: 'published',
+          is_locked: true,
+          published_at: new Date().toISOString(),
+        })
+        .eq('id', id);
+
+      if (!error) {
+        setBiographyStatus('published');
+        setIsLocked(true);
+        setShowPublishDialog(false);
+      }
+    } catch (err) {
+      console.error('Error publishing biography:', err);
+    }
+  }, [id]);
 
   if (authLoading || !user || isLoading) {
     return (
@@ -741,27 +816,38 @@ export default function BiographyEditorPage() {
 
         <div className="flex-1 flex min-w-0">
           <div className="flex-1 flex flex-col min-w-0">
-            <div className="border-b border-border/50 px-4 py-2 bg-card/30 flex items-center gap-2 shrink-0">
-              <Button
-                variant={editorMode === 'editor' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setEditorMode('editor')}
-                className="h-8 text-xs"
-              >
-                {t.editor.editorMode}
-              </Button>
-              <Button
-                variant={editorMode === 'conversation' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setEditorMode('conversation')}
-                className="h-8 text-xs"
-              >
-                {t.editor.conversationMode}
-              </Button>
-            </div>
+            {biographyStatus !== 'final_version' && biographyStatus !== 'published' && (
+              <div className="border-b border-border/50 px-4 py-2 bg-card/30 flex items-center gap-2 shrink-0">
+                <Button
+                  variant={editorMode === 'editor' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setEditorMode('editor')}
+                  className="h-8 text-xs"
+                >
+                  {t.editor.editorMode}
+                </Button>
+                <Button
+                  variant={editorMode === 'conversation' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setEditorMode('conversation')}
+                  className="h-8 text-xs"
+                >
+                  {t.editor.conversationMode}
+                </Button>
+              </div>
+            )}
 
             <div ref={editorContainerRef} className="flex-1 min-h-0 flex flex-col overflow-y-auto">
-              {editorMode === 'conversation' ? (
+              {biographyStatus === 'final_version' || biographyStatus === 'published' ? (
+                <FinalVersionEditor
+                  content={finalVersion}
+                  onContentChange={handleFinalVersionChange}
+                  biographyId={id}
+                  isLocked={isLocked}
+                  onPublish={() => setShowPublishDialog(true)}
+                  editorFontSize={editorFontSize}
+                />
+              ) : editorMode === 'conversation' ? (
                 <ConversationMode
                   sectionKey={activeSection}
                   onBackToEditor={() => setEditorMode('editor')}
@@ -882,6 +968,7 @@ export default function BiographyEditorPage() {
             content: contentRef.current,
             created_at: biography.created_at,
           }}
+          isPublished={biographyStatus === 'published'}
         />
       )}
 
@@ -936,6 +1023,12 @@ export default function BiographyEditorPage() {
         biographyId={id}
         sections={sectionsForReview}
         onApplyStructure={handleApplyStructure}
+      />
+
+      <PublishConfirmationDialog
+        open={showPublishDialog}
+        onOpenChange={setShowPublishDialog}
+        onConfirm={handlePublish}
       />
     </div>
   );
