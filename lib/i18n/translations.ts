@@ -94,6 +94,7 @@ export interface Translations {
     deleting: string;
     sections: string;
     todos: string;
+    notes: string;
     aiSuggestions: string;
     shareLink: string;
     export: string;
@@ -414,6 +415,7 @@ export const translations: Record<Language, Translations> = {
       deleting: 'Deleting...',
       sections: 'Sections',
       todos: 'To-Do',
+      notes: 'Notes',
       aiSuggestions: 'AI Suggestions',
       shareLink: 'Share Link',
       export: 'Export',
@@ -732,6 +734,7 @@ export const translations: Record<Language, Translations> = {
       deleting: 'Eliminazione...',
       sections: 'Sezioni',
       todos: 'Da Fare',
+      notes: 'Note',
       aiSuggestions: 'Suggerimenti AI',
       shareLink: 'Condividi Link',
       export: 'Esporta',
@@ -1050,6 +1053,7 @@ export const translations: Record<Language, Translations> = {
       deleting: 'Suppression...',
       sections: 'Sections',
       todos: '\u00c0 Faire',
+      notes: 'Notes',
       aiSuggestions: 'Suggestions IA',
       shareLink: 'Lien de Partage',
       export: 'Exporter',
@@ -1368,6 +1372,7 @@ export const translations: Record<Language, Translations> = {
       deleting: 'L\u00f6schen...',
       sections: 'Abschnitte',
       todos: 'Aufgaben',
+      notes: 'Notizen',
       aiSuggestions: 'KI-Vorschl\u00e4ge',
       shareLink: 'Link Teilen',
       export: 'Exportieren',

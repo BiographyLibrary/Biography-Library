@@ -6,7 +6,6 @@ import { RichTextEditor } from './rich-text-editor';
 import { VoiceRecorder } from './voice-recorder';
 import { ImportTextDialog } from './import-text-dialog';
 import { SectionNotes } from './SectionNotes';
-import { SectionStatusBar } from './SectionStatusBar';
 import { useTranslation } from '@/lib/i18n/i18n-context';
 import {
   Sparkles,
@@ -19,10 +18,10 @@ import {
   Upload,
   StickyNote,
   Wand2,
+  CheckCircle2,
 } from 'lucide-react';
 import { BIOGRAPHY_SECTIONS, type SectionData } from '@/lib/editor-constants';
 import { cn } from '@/lib/utils';
-import { getSectionStatus, type SectionStatusData } from '@/lib/section-status-service';
 
 interface SectionEditorProps {
   sectionKey: string;
@@ -41,6 +40,8 @@ interface SectionEditorProps {
   editorFontSize?: number;
   onEditorFontSizeChange?: (size: number) => void;
   onImportMultipleSections?: (sections: Array<{ title: string; content: string }>) => void;
+  onMarkComplete?: () => void;
+  isCompleted?: boolean;
 }
 
 export function SectionEditor({
@@ -60,27 +61,16 @@ export function SectionEditor({
   editorFontSize = 16,
   onEditorFontSizeChange,
   onImportMultipleSections,
+  onMarkComplete,
+  isCompleted = false,
 }: SectionEditorProps) {
   const [showVoice, setShowVoice] = useState(false);
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
-  const [sectionStatus, setSectionStatus] = useState<SectionStatusData | null>(null);
   const section = BIOGRAPHY_SECTIONS.find((s) => s.key === sectionKey);
   const { t } = useTranslation();
 
   const sectionTitle = t.sectionTitles[sectionKey as keyof typeof t.sectionTitles] || section?.title || '';
-
-  useEffect(() => {
-    if (biographyId && sectionKey) {
-      loadSectionStatus();
-    }
-  }, [biographyId, sectionKey]);
-
-  const loadSectionStatus = async () => {
-    if (!biographyId) return;
-    const status = await getSectionStatus(biographyId, sectionKey);
-    setSectionStatus(status);
-  };
 
   const handleVoiceTranscript = (transcript: string) => {
     const sep =
@@ -215,6 +205,22 @@ export function SectionEditor({
               {aiEnabled ? t.editor.aiOn : t.editor.aiOff}
             </span>
           </Button>
+          {onMarkComplete && (
+            <Button
+              variant={isCompleted ? 'outline' : 'default'}
+              size="sm"
+              className={cn(
+                'gap-1.5 text-xs h-8',
+                isCompleted && 'border-green-500 text-green-600 dark:text-green-400'
+              )}
+              onClick={onMarkComplete}
+            >
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">
+                {isCompleted ? t.status.markAsDraft : t.status.markComplete}
+              </span>
+            </Button>
+          )}
         </div>
       </div>
 
@@ -234,20 +240,6 @@ export function SectionEditor({
         </div>
       )}
 
-      {biographyId && sectionStatus && (
-        <div className="px-4 sm:px-6 py-3 border-b border-border/30 bg-muted/10 shrink-0">
-          <SectionStatusBar
-            biographyId={biographyId}
-            sectionKey={sectionKey}
-            currentStatus={sectionStatus.status}
-            draftVersion={sectionStatus.draft_version}
-            approvedAt={sectionStatus.approved_at}
-            onStatusChange={loadSectionStatus}
-            onReviewWithAi={onReviewWithAi}
-          />
-        </div>
-      )}
-
       <RichTextEditor
         content={data.text}
         onChange={onTextChange}
@@ -256,35 +248,6 @@ export function SectionEditor({
         editorFontSize={editorFontSize}
         onEditorFontSizeChange={onEditorFontSizeChange}
       />
-
-      <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-t border-border/50 shrink-0">
-        <label className="flex items-center gap-2 cursor-pointer select-none group">
-          <button
-            type="button"
-            role="checkbox"
-            aria-checked={data.todo}
-            onClick={() => onTodoChange(!data.todo)}
-            className={cn(
-              'flex items-center justify-center h-5 w-5 rounded border-2 transition-colors',
-              data.todo
-                ? 'bg-amber-500 border-amber-500 text-white'
-                : 'border-muted-foreground/30 hover:border-amber-500/50 group-hover:border-amber-500/50'
-            )}
-          >
-            {data.todo && <Flag className="h-3 w-3" />}
-          </button>
-          <span
-            className={cn(
-              'text-sm transition-colors',
-              data.todo
-                ? 'text-amber-600 dark:text-amber-400 font-medium'
-                : 'text-muted-foreground'
-            )}
-          >
-            {t.editor.markAsTodo}
-          </span>
-        </label>
-      </div>
 
       <ImportTextDialog
         open={showImportDialog}

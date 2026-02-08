@@ -65,6 +65,8 @@ export default function BiographyEditorPage() {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('saved');
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [showTodoPanel, setShowTodoPanel] = useState(false);
+  const [showNotesPanel, setShowNotesPanel] = useState(false);
+  const [notesCount, setNotesCount] = useState(0);
   const [editorMode, setEditorMode] = useState<'editor' | 'conversation'>('editor');
   const [editorFontSize, setEditorFontSize] = useState<number>(16);
 
@@ -125,6 +127,14 @@ export default function BiographyEditorPage() {
         }
       }
       setIsLoading(false);
+
+      const { data: notesData } = await supabase
+        .from('section_notes')
+        .select('id')
+        .eq('biography_id', id);
+      if (notesData) {
+        setNotesCount(notesData.length);
+      }
     };
     load();
   }, [user, id]);
@@ -653,8 +663,11 @@ export default function BiographyEditorPage() {
             activeSection={activeSection}
             onSectionChange={handleSectionChange}
             todoCount={todoCount}
+            notesCount={notesCount}
             onToggleTodoPanel={() => setShowTodoPanel(!showTodoPanel)}
+            onToggleNotesPanel={() => setShowNotesPanel(!showNotesPanel)}
             showTodoPanel={showTodoPanel}
+            showNotesPanel={showNotesPanel}
           />
         </aside>
 

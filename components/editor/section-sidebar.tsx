@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, Circle, Flag, ChevronRight, ListTodo } from 'lucide-react';
+import { Check, Circle, Flag, ChevronRight, ListTodo, StickyNote } from 'lucide-react';
 import {
   BIOGRAPHY_SECTIONS,
   type BiographyContent,
@@ -14,8 +14,11 @@ interface SectionSidebarProps {
   activeSection: string;
   onSectionChange: (key: string) => void;
   todoCount: number;
+  notesCount: number;
   onToggleTodoPanel: () => void;
+  onToggleNotesPanel: () => void;
   showTodoPanel: boolean;
+  showNotesPanel: boolean;
 }
 
 export function SectionSidebar({
@@ -23,8 +26,11 @@ export function SectionSidebar({
   activeSection,
   onSectionChange,
   todoCount,
+  notesCount,
   onToggleTodoPanel,
+  onToggleNotesPanel,
   showTodoPanel,
+  showNotesPanel,
 }: SectionSidebarProps) {
   const { t } = useTranslation();
 
@@ -73,8 +79,25 @@ export function SectionSidebar({
         })}
       </div>
 
-      {todoCount > 0 && (
-        <div className="border-t border-border/50 p-2">
+      <div className="border-t border-border/50 p-2 space-y-1">
+        {notesCount > 0 && (
+          <button
+            onClick={onToggleNotesPanel}
+            className={cn(
+              'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors',
+              showNotesPanel
+                ? 'bg-primary/10 text-primary font-medium'
+                : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+            )}
+          >
+            <StickyNote className="h-4 w-4" />
+            <span>{t.biography.notes}</span>
+            <span className="ml-auto text-xs font-medium bg-primary/20 text-foreground rounded-full px-2 py-0.5">
+              {notesCount}
+            </span>
+          </button>
+        )}
+        {todoCount > 0 && (
           <button
             onClick={onToggleTodoPanel}
             className={cn(
@@ -85,13 +108,13 @@ export function SectionSidebar({
             )}
           >
             <ListTodo className="h-4 w-4" />
-            <span>{t.editor.todoItems}</span>
+            <span>{t.biography.todos}</span>
             <span className="ml-auto text-xs font-medium bg-status-warning/40 text-text-primary dark:text-dark-text-primary rounded-full px-2 py-0.5">
               {todoCount}
             </span>
           </button>
-        </div>
-      )}
+        )}
+      </div>
     </nav>
   );
 }
