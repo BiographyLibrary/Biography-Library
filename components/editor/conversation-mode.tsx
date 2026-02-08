@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
-import { User, Send, Mic, Loader2, ArrowLeft } from 'lucide-react';
+import { User, Send, Mic, Loader2, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/i18n-context';
 import { getFallbackPrompts } from '@/lib/ai-constants';
 import { BIOGRAPHY_SECTIONS } from '@/lib/editor-constants';
@@ -723,21 +723,17 @@ export function ConversationMode({
               </Button>
               {answers.length >= 3 && !isFollowUp && (
                 <Button
+                  size="icon"
                   onClick={handleFinishSection}
                   disabled={isGenerating || isAnalyzing}
-                  className="sm:w-10 h-10 sm:aspect-square gap-2 bg-green-600 hover:bg-green-700 text-white"
+                  className="h-10 w-10 text-[#2F4F2F] hover:opacity-90"
+                  style={{ backgroundColor: '#C8DFBE' }}
                   title={language === 'it' ? 'Rivedi Risposte' :
                          language === 'fr' ? 'Réviser les Réponses' :
                          language === 'de' ? 'Antworten Überprüfen' :
                          'Review Answers'}
                 >
-                  <span className="sm:hidden">
-                    {language === 'it' ? 'Rivedi Risposte' :
-                     language === 'fr' ? 'Réviser les Réponses' :
-                     language === 'de' ? 'Antworten Überprüfen' :
-                     'Review Answers'}
-                  </span>
-                  <span className="hidden sm:inline text-lg">✓</span>
+                  <CheckCircle2 className="h-4 w-4" />
                 </Button>
               )}
             </div>
