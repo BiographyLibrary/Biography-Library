@@ -6,9 +6,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import {
-  Sun,
-  Sunset,
-  Moon,
   Lock,
   Users,
   Globe,
@@ -23,6 +20,7 @@ import {
   PartyPopper,
   BookOpen,
 } from 'lucide-react';
+import { Logo } from '@/components/logo';
 import { useTranslation } from '@/lib/i18n/i18n-context';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -111,9 +109,9 @@ export function MainBiographyCard({ biography, userName, userId }: MainBiography
 
   const getTimeBasedGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return { text: t.coach.goodMorning, icon: Sun };
-    if (hour < 18) return { text: t.coach.goodAfternoon, icon: Sunset };
-    return { text: t.coach.goodEvening, icon: Moon };
+    if (hour < 12) return t.coach.goodMorning;
+    if (hour < 18) return t.coach.goodAfternoon;
+    return t.coach.goodEvening;
   };
 
   const getPrivacyIcon = (privacy: string) => {
@@ -282,7 +280,6 @@ export function MainBiographyCard({ biography, userName, userId }: MainBiography
   };
 
   const greeting = getTimeBasedGreeting();
-  const GreetingIcon = greeting.icon;
   const progress = calculateProgress();
   const milestones = getMilestones();
   const suggestion = getSmartSuggestion();
@@ -310,9 +307,9 @@ export function MainBiographyCard({ biography, userName, userId }: MainBiography
   return (
     <div className="p-6">
       <div className="flex items-center gap-3 mb-6">
-        <GreetingIcon className="h-6 w-6 text-text-primary dark:text-dark-text-primary" />
+        <Logo height={32} />
         <h1 className="text-3xl font-bold">
-          {greeting.text}, {userName}!
+          {greeting}, {userName}!
         </h1>
       </div>
 
@@ -390,7 +387,7 @@ export function MainBiographyCard({ biography, userName, userId }: MainBiography
                 <h2 className="text-lg font-semibold text-text-primary dark:text-dark-text-primary">
                   {t.coach.pendingReminders}
                 </h2>
-                <Badge variant="secondary" className="ml-auto">
+                <Badge className="ml-auto bg-[#C8DFBE] text-[#121212] hover:bg-[#C8DFBE]">
                   {todos.length}
                 </Badge>
                 {overdueTodos.length > 0 && (
@@ -410,7 +407,8 @@ export function MainBiographyCard({ biography, userName, userId }: MainBiography
                     <Card
                       key={todo.id}
                       className={cn(
-                        'p-3 cursor-pointer hover:bg-muted/50 transition-colors',
+                        'p-3 cursor-pointer hover:bg-muted/50 transition-colors border-0',
+                        'bg-[#FDFBF7] dark:bg-card',
                         isOverdue && 'border-error bg-error/10'
                       )}
                       onClick={() => handleTodoClick(todo.section)}
@@ -467,7 +465,7 @@ export function MainBiographyCard({ biography, userName, userId }: MainBiography
         <Separator />
 
         <div>
-          <div className="rounded-lg p-4 border bg-card">
+          <div className="rounded-lg p-4 border-0 bg-[#FDFBF7] dark:bg-card">
             <p className="text-sm mb-4">
               {suggestion.message}
             </p>
