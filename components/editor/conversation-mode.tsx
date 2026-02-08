@@ -70,6 +70,7 @@ export function ConversationMode({
   const [showResumeDialog, setShowResumeDialog] = useState(false);
   const [checkpointData, setCheckpointData] = useState<any>(null);
   const [hasCheckedCheckpoint, setHasCheckedCheckpoint] = useState(false);
+  const [showReview, setShowReview] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -412,12 +413,20 @@ export function ConversationMode({
     setHasHadFollowUp(false);
   };
 
-  const handleFinishSection = async () => {
+  const handleFinishSection = () => {
     if (answers.length < 3) {
       alert(t.conversation.answerMinimum);
       return;
     }
 
+    setShowReview(true);
+  };
+
+  const handleContinueAnswering = () => {
+    setShowReview(false);
+  };
+
+  const handleApproveAndGenerate = async () => {
     const isDraft1Complete = answers.length >= 8;
 
     setIsGenerating(true);
@@ -428,31 +437,7 @@ export function ConversationMode({
         await deleteCheckpointByBioSection(session.user.id, biographyId, sectionKey);
       }
 
-      const completionMessages = {
-        en: isDraft1Complete
-          ? '🎉 Excellent work! You\'ve answered ' + answers.length + ' questions - Draft 1 Complete! ' + t.conversation.switchToEditorToRefine
-          : t.conversation.draftGenerated + ' You answered ' + answers.length + ' questions. For a more comprehensive draft, consider answering 8 or more questions next time. ' + t.conversation.switchToEditorToRefine,
-        it: isDraft1Complete
-          ? '🎉 Ottimo lavoro! Hai risposto a ' + answers.length + ' domande - Bozza 1 Completa! ' + t.conversation.switchToEditorToRefine
-          : t.conversation.draftGenerated + ' Hai risposto a ' + answers.length + ' domande. Per una bozza più completa, considera di rispondere a 8 o più domande la prossima volta. ' + t.conversation.switchToEditorToRefine,
-        fr: isDraft1Complete
-          ? '🎉 Excellent travail ! Vous avez répondu à ' + answers.length + ' questions - Brouillon 1 Complet ! ' + t.conversation.switchToEditorToRefine
-          : t.conversation.draftGenerated + ' Vous avez répondu à ' + answers.length + ' questions. Pour un brouillon plus complet, envisagez de répondre à 8 questions ou plus la prochaine fois. ' + t.conversation.switchToEditorToRefine,
-        de: isDraft1Complete
-          ? '🎉 Ausgezeichnete Arbeit! Sie haben ' + answers.length + ' Fragen beantwortet - Entwurf 1 Vollständig! ' + t.conversation.switchToEditorToRefine
-          : t.conversation.draftGenerated + ' Sie haben ' + answers.length + ' Fragen beantwortet. Für einen umfassenderen Entwurf sollten Sie beim nächsten Mal 8 oder mehr Fragen beantworten. ' + t.conversation.switchToEditorToRefine,
-      };
-
-      const completionMessage = completionMessages[language as keyof typeof completionMessages];
-
-      const aiMessage: Message = {
-        id: Date.now().toString(),
-        type: 'ai',
-        content: completionMessage,
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, aiMessage]);
+      setShowReview(false);
     } catch (error) {
       console.error('Failed to generate draft:', error);
     } finally {
@@ -480,6 +465,119 @@ export function ConversationMode({
         .replace('{current}', String(currentQuestionIndex + 1))
         .replace('{total}', String(prompts.length))
         .replace('{section}', sectionTitle);
+
+  if (showReview) {
+    return (
+      <div className="flex flex-col h-full bg-background overflow-hidden">
+        <div className="border-b border-border/50 px-4 py-3 bg-card/50 shrink-0">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">
+              {language === 'it' ? 'Rivedi le tue risposte' :
+               language === 'fr' ? 'Révisez vos réponses' :
+               language === 'de' ? 'Überprüfen Sie Ihre Antworten' :
+               'Review Your Answers'}
+            </h3>
+            <span className={cn(
+              "text-sm font-medium px-3 py-1 rounded-full",
+              answers.length >= 8
+                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+            )}>
+              {answers.length} {language === 'it' ? 'risposte' : language === 'fr' ? 'réponses' : language === 'de' ? 'Antworten' : 'answers'}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex-1 min-h-0 overflow-y-auto px-4 py-6">
+          <div className="max-w-3xl mx-auto space-y-6">
+            {answers.map((qa, index) => (
+              <Card key={index} className="p-4 bg-card border-border/50">
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-xs font-medium text-primary mb-1">
+                      {language === 'it' ? 'Domanda' : language === 'fr' ? 'Question' : language === 'de' ? 'Frage' : 'Question'} {index + 1}
+                    </p>
+                    <p className="text-sm text-muted-foreground">{qa.question}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-primary mb-1">
+                      {language === 'it' ? 'Risposta' : language === 'fr' ? 'Réponse' : language === 'de' ? 'Antwort' : 'Answer'}
+                    </p>
+                    <p className="text-sm whitespace-pre-wrap">{qa.answer}</p>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        <div className="border-t border-border/50 bg-card/50 p-4 shrink-0">
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
+              <p className="text-sm text-foreground">
+                {answers.length >= 8 ? (
+                  <>
+                    {language === 'it' ? '✓ Ottimo! Hai risposto a ' :
+                     language === 'fr' ? '✓ Excellent ! Vous avez répondu à ' :
+                     language === 'de' ? '✓ Ausgezeichnet! Sie haben ' :
+                     '✓ Great! You\'ve answered '}
+                    <strong>{answers.length} {language === 'it' ? 'domande' : language === 'fr' ? 'questions' : language === 'de' ? 'Fragen' : 'questions'}</strong>.
+                    {language === 'it' ? ' Clicca su "Approva e Genera Bozza" per creare il tuo testo.' :
+                     language === 'fr' ? ' Cliquez sur "Approuver et Générer" pour créer votre texte.' :
+                     language === 'de' ? ' Klicken Sie auf "Genehmigen und Erstellen" um Ihren Text zu erstellen.' :
+                     ' Click "Approve & Generate Draft" to create your text.'}
+                  </>
+                ) : (
+                  <>
+                    {language === 'it' ? 'Hai risposto a ' :
+                     language === 'fr' ? 'Vous avez répondu à ' :
+                     language === 'de' ? 'Sie haben ' :
+                     'You\'ve answered '}
+                    <strong>{answers.length} {language === 'it' ? 'domande' : language === 'fr' ? 'questions' : language === 'de' ? 'Fragen' : 'questions'}</strong>.
+                    {language === 'it' ? ' Puoi rispondere ad altre domande per una bozza più completa, oppure procedere ora.' :
+                     language === 'fr' ? ' Vous pouvez répondre à plus de questions pour un brouillon plus complet, ou continuer maintenant.' :
+                     language === 'de' ? ' Sie können weitere Fragen beantworten für einen umfassenderen Entwurf, oder jetzt fortfahren.' :
+                     ' You can answer more questions for a more complete draft, or proceed now.'}
+                  </>
+                )}
+              </p>
+            </div>
+            <div className="flex items-center gap-3 justify-end">
+              <Button
+                variant="outline"
+                onClick={handleContinueAnswering}
+                disabled={isGenerating}
+              >
+                {language === 'it' ? 'Continua a Rispondere' :
+                 language === 'fr' ? 'Continuer à Répondre' :
+                 language === 'de' ? 'Weiter Antworten' :
+                 'Continue Answering'}
+              </Button>
+              <Button
+                variant="default"
+                onClick={handleApproveAndGenerate}
+                disabled={isGenerating}
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    {t.conversation.generatingDraft}
+                  </>
+                ) : (
+                  <>
+                    {language === 'it' ? 'Approva e Genera Bozza' :
+                     language === 'fr' ? 'Approuver et Générer' :
+                     language === 'de' ? 'Genehmigen und Erstellen' :
+                     'Approve & Generate Draft'}
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full bg-background overflow-hidden">
@@ -642,14 +740,10 @@ export function ConversationMode({
                 onClick={handleFinishSection}
                 disabled={isGenerating || isAnalyzing}
               >
-                {isGenerating ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    {t.conversation.generatingDraft}
-                  </>
-                ) : (
-                  t.conversation.finishSection
-                )}
+                {language === 'it' ? 'Rivedi Risposte' :
+                 language === 'fr' ? 'Réviser les Réponses' :
+                 language === 'de' ? 'Antworten Überprüfen' :
+                 'Review Answers'}
               </Button>
             </div>
           )}
