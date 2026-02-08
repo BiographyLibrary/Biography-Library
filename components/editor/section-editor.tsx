@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RichTextEditor } from './rich-text-editor';
 import { VoiceRecorder } from './voice-recorder';
 import { ImportTextDialog } from './import-text-dialog';
@@ -66,7 +67,7 @@ export function SectionEditor({
 }: SectionEditorProps) {
   const [showVoice, setShowVoice] = useState(false);
   const [showImportDialog, setShowImportDialog] = useState(false);
-  const [showNotes, setShowNotes] = useState(false);
+  const [showNotesDialog, setShowNotesDialog] = useState(false);
   const section = BIOGRAPHY_SECTIONS.find((s) => s.key === sectionKey);
   const { t } = useTranslation();
 
@@ -131,10 +132,10 @@ export function SectionEditor({
           </Button>
           <Button
             type="button"
-            variant={showNotes ? 'default' : 'ghost'}
+            variant="ghost"
             size="sm"
             className="h-8 w-8 p-0 shrink-0"
-            onClick={() => setShowNotes(!showNotes)}
+            onClick={() => setShowNotesDialog(true)}
             title="Note e promemoria"
           >
             <StickyNote className="h-4 w-4" />
@@ -234,12 +235,6 @@ export function SectionEditor({
         </div>
       )}
 
-      {showNotes && biographyId && (
-        <div className="px-4 sm:px-6 py-3 border-b border-border/30 shrink-0">
-          <SectionNotes biographyId={biographyId} sectionKey={sectionKey} />
-        </div>
-      )}
-
       <RichTextEditor
         content={data.text}
         onChange={onTextChange}
@@ -256,6 +251,19 @@ export function SectionEditor({
         onImport={handleImportText}
         onImportMultipleSections={onImportMultipleSections}
       />
+
+      {biographyId && (
+        <Dialog open={showNotesDialog} onOpenChange={setShowNotesDialog}>
+          <DialogContent className="max-w-3xl max-h-[80vh] overflow-hidden flex flex-col">
+            <DialogHeader>
+              <DialogTitle>Note e Promemoria - {sectionTitle}</DialogTitle>
+            </DialogHeader>
+            <div className="flex-1 overflow-auto">
+              <SectionNotes biographyId={biographyId} sectionKey={sectionKey} />
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
