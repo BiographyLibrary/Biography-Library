@@ -82,7 +82,7 @@ export default function DashboardPage() {
 
   if (authLoading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#EDEBE7] dark:bg-[#1F2121]">
+      <div className="min-h-screen flex items-center justify-center bg-[#ECE9E4] dark:bg-[#1F2121]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -92,7 +92,7 @@ export default function DashboardPage() {
     user.user_metadata?.name || user.email?.split('@')[0] || 'there';
 
   return (
-    <div className="min-h-screen bg-[#EDEBE7] dark:bg-[#1F2121] flex items-center justify-center">
+    <div className="min-h-screen bg-[#ECE9E4] dark:bg-[#1F2121] flex items-center justify-center">
       <WelcomeLanguageModal />
 
       <main className="w-full max-w-2xl px-4 sm:px-6 py-8">
@@ -113,7 +113,7 @@ export default function DashboardPage() {
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
           </div>
         ) : fetchError ? (
-          <div className="rounded-2xl border-0 bg-[#EDEBE7] dark:bg-[#121212] p-6 sm:p-8 text-center">
+          <div className="rounded-2xl border-0 bg-white dark:bg-transparent p-6 sm:p-8 text-center">
             <AlertCircle className="h-8 w-8 text-destructive mx-auto mb-3" />
             <p className="text-sm text-destructive">{fetchError}</p>
             <Button

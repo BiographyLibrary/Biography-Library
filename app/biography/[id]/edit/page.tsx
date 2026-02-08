@@ -586,7 +586,7 @@ export default function BiographyEditorPage() {
 
   if (authLoading || !user || isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-[#ECE9E4] dark:bg-[#1F2121]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -594,7 +594,7 @@ export default function BiographyEditorPage() {
 
   if (!biography) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-4">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#ECE9E4] dark:bg-[#1F2121] gap-4">
         <p className="text-muted-foreground">{t.biography.notFound}</p>
         <Button variant="outline" onClick={() => router.push('/dashboard')}>
           {t.biography.returnToDashboard}
@@ -606,7 +606,7 @@ export default function BiographyEditorPage() {
   const activeSectionData = getSectionData(content, activeSection);
 
   return (
-    <div className="h-screen flex flex-col bg-background overflow-hidden">
+    <div className="h-screen flex flex-col bg-[#ECE9E4] dark:bg-[#1F2121] overflow-hidden">
       <EditorTopBar
         title={title}
         privacy={privacy}
