@@ -9,14 +9,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { TermsOfServiceModal } from '@/components/legal/terms-of-service-modal';
 import { Info, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 
 export default function AutobiographyDeclarationPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const { t } = useTranslation();
-  const [showTermsModal, setShowTermsModal] = useState(false);
 
   const [checkboxes, setCheckboxes] = useState({
     identity: false,
@@ -67,41 +65,32 @@ export default function AutobiographyDeclarationPage() {
     return (
       <span>
         {parts[0]}
-        <button
-          type="button"
+        <a
+          href="/terms-of-service"
+          target="_blank"
+          rel="noopener noreferrer"
           className="text-primary hover:underline font-medium"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setShowTermsModal(true);
-          }}
+          onClick={(e) => e.stopPropagation()}
         >
           {t.declaration.checkbox3TermsLink}
-        </button>
+        </a>
         {afterTerms[0]}
-        <button
-          type="button"
+        <a
+          href="/privacy-policy"
+          target="_blank"
+          rel="noopener noreferrer"
           className="text-primary hover:underline font-medium"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          }}
+          onClick={(e) => e.stopPropagation()}
         >
           {t.declaration.checkbox3PrivacyLink}
-        </button>
+        </a>
         {afterTerms[1]}
       </span>
     );
   };
 
   return (
-    <>
-      <TermsOfServiceModal
-        open={showTermsModal}
-        onOpenChange={setShowTermsModal}
-      />
-
-      <div className="px-4 py-8 md:py-12">
+    <div className="px-4 py-8 md:py-12">
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="space-y-1">
             <div className="text-sm text-muted-foreground font-medium">
@@ -167,13 +156,16 @@ export default function AutobiographyDeclarationPage() {
                       onCheckedChange={() => handleCheckboxChange('termsAccept')}
                       className="mt-1"
                     />
-                    <div className="flex-1">
+                    <div className="flex-1 space-y-1">
                       <Label
                         htmlFor="terms"
                         className="text-base font-normal leading-relaxed cursor-pointer"
                       >
                         {renderCheckbox3Label()}
                       </Label>
+                      <p className="text-sm font-medium text-amber-600 dark:text-amber-500">
+                        Required - You must accept the terms to continue
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -247,7 +239,6 @@ export default function AutobiographyDeclarationPage() {
             </Button>
           </div>
         </div>
-      </div>
-    </>
+    </div>
   );
 }
