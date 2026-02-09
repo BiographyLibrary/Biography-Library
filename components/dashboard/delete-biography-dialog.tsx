@@ -82,7 +82,10 @@ export function DeleteBiographyDialog({
                 {t.deleteDialog.buttonCancel}
               </AlertDialogCancel>
               <AlertDialogAction
-                onClick={handleContinue}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleContinue();
+                }}
                 className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
               >
                 {t.deleteDialog.buttonContinue}
