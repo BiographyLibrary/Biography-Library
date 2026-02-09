@@ -9,7 +9,6 @@ import { CreateBiographyModal } from '@/components/dashboard/create-biography-mo
 import { DeleteBiographyDialog } from '@/components/dashboard/delete-biography-dialog';
 import { WelcomeLanguageModal } from '@/components/welcome-language-modal';
 import { MainBiographyCard } from '@/components/dashboard/MainBiographyCard';
-import { PublishedBiographiesCard } from '@/components/dashboard/published-biographies-card';
 import { DeleteAccountDialog } from '@/components/settings/delete-account-dialog';
 import {
   fetchBiographies,
@@ -142,42 +141,56 @@ export default function DashboardPage() {
             </Button>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-0">
             <MainBiographyCard
               biography={biographies[0] || null}
               userName={displayName}
               userId={user.id}
               onDeleteClick={() => setDeleteTarget(biographies[0])}
             />
-            <PublishedBiographiesCard userId={user.id} />
 
-            <div className="flex flex-col items-center gap-2 pt-2">
-              {(biographies.length === 0 || biographies.some(b => b.status === 'published')) && (
-                <Button
-                  className="gap-2 min-h-[44px] px-6 bg-[#121212] hover:bg-[#121212]/90 text-[#FDFBF7]"
-                  onClick={() => setShowCreateModal(true)}
-                >
-                  <Plus className="h-5 w-5" />
-                  <span>{t.dashboard.createBiography}</span>
-                </Button>
-              )}
-
-              {biographies.length > 0 && biographies.some(b => b.status !== 'published') && (
-                <p className="text-xs text-muted-foreground text-center max-w-md">
+            {biographies.length > 0 && biographies.some(b => b.status === 'published') && (
+              <div className="px-4 sm:px-6 lg:px-8 pb-8">
+                <p className="text-sm text-center text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                   {t.dashboard.updateAvailabilityMessage}
                 </p>
-              )}
-            </div>
+              </div>
+            )}
 
-            <div className="mt-12 pt-8 border-t border-border/50">
+            <div className="mt-0 pt-8 border-t border-border/50 flex flex-col items-center gap-6">
               <div className="text-center">
-                <h3 className="text-sm font-medium text-muted-foreground mb-4">Danger Zone</h3>
                 <DeleteAccountDialog
                   biographyCount={biographies.length}
                   isDeleting={isDeletingAccount}
                   onConfirm={handleDeleteAccount}
                 />
               </div>
+
+              {biographies.some(b => b.status === 'published' && b.created_at) && (() => {
+                const publishedBios = biographies.filter(b => b.status === 'published' && b.created_at);
+                if (publishedBios.length === 0) return null;
+
+                const oldestPublished = publishedBios.sort((a, b) =>
+                  new Date(a.created_at!).getTime() - new Date(b.created_at!).getTime()
+                )[0];
+
+                const monthsSincePublished = Math.floor(
+                  (Date.now() - new Date(oldestPublished.created_at!).getTime()) / (1000 * 60 * 60 * 24 * 30)
+                );
+
+                if (monthsSincePublished >= 12) {
+                  return (
+                    <Button
+                      className="gap-2 min-h-[44px] px-6 bg-[#121212] hover:bg-[#121212]/90 text-[#FDFBF7]"
+                      onClick={() => setShowCreateModal(true)}
+                    >
+                      <Plus className="h-5 w-5" />
+                      <span>{t.dashboard.createBiography}</span>
+                    </Button>
+                  );
+                }
+                return null;
+              })()}
             </div>
           </div>
         )}

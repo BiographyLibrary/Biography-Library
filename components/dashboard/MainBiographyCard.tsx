@@ -6,6 +6,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import {
   Lock,
   Users,
   Globe,
@@ -19,6 +25,7 @@ import {
   Star,
   PartyPopper,
   BookOpen,
+  Trash2,
 } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { useTranslation } from '@/lib/i18n/i18n-context';
@@ -363,11 +370,31 @@ export function MainBiographyCard({ biography, userName, userId, onDeleteClick }
             </div>
 
             {biography.updated_at && (
-              <div className="flex items-center gap-2 text-xs text-text-secondary dark:text-dark-text-secondary">
-                <Clock className="h-3.5 w-3.5" />
-                <span>
-                  {t.dashboard.lastUpdated}: {format(new Date(biography.updated_at), 'd MMM yyyy, HH:mm', { locale: dateLocales[language] })}
-                </span>
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 text-xs text-text-secondary dark:text-dark-text-secondary">
+                  <Clock className="h-3.5 w-3.5" />
+                  <span>
+                    {t.dashboard.lastUpdated}: {format(new Date(biography.updated_at), 'd MMM yyyy, HH:mm', { locale: dateLocales[language] })}
+                  </span>
+                </div>
+                {onDeleteClick && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={onDeleteClick}
+                          className="text-muted-foreground hover:text-destructive transition-colors"
+                          aria-label={t.deleteDialog.deleteBiographyLink}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{t.deleteDialog.deleteBiographyLink}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
               </div>
             )}
 
@@ -492,17 +519,6 @@ export function MainBiographyCard({ biography, userName, userId, onDeleteClick }
             </div>
           </div>
         </div>
-
-        {onDeleteClick && (
-          <div className="flex justify-center pt-4">
-            <button
-              onClick={onDeleteClick}
-              className="text-sm text-muted-foreground hover:text-destructive underline underline-offset-4 transition-colors"
-            >
-              {t.deleteDialog.deleteBiographyLink}
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
