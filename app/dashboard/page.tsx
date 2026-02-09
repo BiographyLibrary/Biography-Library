@@ -148,22 +148,25 @@ export default function DashboardPage() {
               userName={displayName}
               userId={user.id}
               onDeleteClick={() => setDeleteTarget(biographies[0])}
+              onCreateClick={() => setShowCreateModal(true)}
             />
 
-            <div className="px-4 sm:px-6 lg:px-8 py-8">
-              <Separator />
-            </div>
+            {biographies.length > 0 && (
+              <>
+                <div className="px-4 sm:px-6 lg:px-8 py-8">
+                  <Separator />
+                </div>
 
-            <div className="flex flex-col items-center gap-6">
-              <div className="text-center">
-                <DeleteAccountDialog
-                  biographyCount={biographies.length}
-                  isDeleting={isDeletingAccount}
-                  onConfirm={handleDeleteAccount}
-                />
-              </div>
+                <div className="flex flex-col items-center gap-6">
+                  <div className="text-center">
+                    <DeleteAccountDialog
+                      biographyCount={biographies.length}
+                      isDeleting={isDeletingAccount}
+                      onConfirm={handleDeleteAccount}
+                    />
+                  </div>
 
-              {biographies.some(b => b.status === 'published' && b.created_at) && (() => {
+                  {biographies.some(b => b.status === 'published' && b.created_at) && (() => {
                 const publishedBios = biographies.filter(b => b.status === 'published' && b.created_at);
                 if (publishedBios.length === 0) return null;
 
@@ -193,7 +196,9 @@ export default function DashboardPage() {
                 }
                 return null;
               })()}
-            </div>
+                </div>
+              </>
+            )}
           </div>
         )}
       </main>

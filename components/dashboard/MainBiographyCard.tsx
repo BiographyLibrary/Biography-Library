@@ -43,6 +43,7 @@ interface MainBiographyCardProps {
   userName: string;
   userId: string;
   onDeleteClick?: () => void;
+  onCreateClick?: () => void;
 }
 
 interface PendingTodo {
@@ -62,7 +63,7 @@ interface ConversationCheckpoint {
   updated_at: string;
 }
 
-export function MainBiographyCard({ biography, userName, userId, onDeleteClick }: MainBiographyCardProps) {
+export function MainBiographyCard({ biography, userName, userId, onDeleteClick, onCreateClick }: MainBiographyCardProps) {
   const { t, language } = useTranslation();
   const router = useRouter();
   const [todos, setTodos] = useState<PendingTodo[]>([]);
@@ -300,9 +301,18 @@ export function MainBiographyCard({ biography, userName, userId, onDeleteClick }
           <Logo height={100} />
         </div>
         <h3 className="text-2xl sm:text-3xl font-medium mb-2">{t.dashboard.noBiographies}</h3>
-        <p className="text-sm text-muted-foreground max-w-md mx-auto">
+        <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
           {t.dashboard.noBiographiesSubtitle}
         </p>
+        {onCreateClick && (
+          <Button
+            onClick={onCreateClick}
+            className="gap-2 min-h-[44px] px-6 bg-[#121212] hover:bg-[#121212]/90 text-[#FDFBF7]"
+          >
+            <BookOpen className="h-5 w-5" />
+            <span>{t.dashboard.createBiography}</span>
+          </Button>
+        )}
       </div>
     );
   }
