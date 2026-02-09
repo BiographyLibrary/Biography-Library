@@ -99,9 +99,23 @@ export default function BiographyEditorPage() {
   const editorContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem(AI_ENABLED_KEY);
-    if (stored === 'true') setAiEnabled(true);
-  }, []);
+    const loadAiPreference = async () => {
+      if (!user) return;
+
+      const { data } = await supabase
+        .from('profiles')
+        .select('ai_features_enabled')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (data) {
+        setAiEnabled(data.ai_features_enabled);
+        localStorage.setItem(AI_ENABLED_KEY, String(data.ai_features_enabled));
+      }
+    };
+
+    loadAiPreference();
+  }, [user]);
 
   const dirtyRef = useRef(false);
   const contentRef = useRef(content);
@@ -274,14 +288,27 @@ export default function BiographyEditorPage() {
     }, 100);
   }, []);
 
-  const handleToggleAi = useCallback(() => {
+  const handleToggleAi = useCallback(async () => {
+    if (!user) return;
+
     setAiEnabled((prev) => {
       const next = !prev;
       localStorage.setItem(AI_ENABLED_KEY, String(next));
       if (!next) setAiState(INITIAL_AI_STATE);
+
+      supabase
+        .from('profiles')
+        .update({ ai_features_enabled: next })
+        .eq('id', user.id)
+        .then(({ error }) => {
+          if (error) {
+            console.error('Failed to save AI preference:', error);
+          }
+        });
+
       return next;
     });
-  }, []);
+  }, [user]);
 
   const handleExportPDF = useCallback(() => {
     if (!biography) return;
