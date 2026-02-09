@@ -52,7 +52,6 @@ export interface Translations {
   dashboard: {
     title: string;
     createBiography: string;
-    loadDemo: string;
     noBiographies: string;
     noBiographiesSubtitle: string;
     totalBiographies: string;
@@ -277,7 +276,6 @@ export interface Translations {
     biographyDeleted: string;
     pdfExported: string;
     linkCopied: string;
-    demoLoaded: string;
     error: string;
   };
   coach: {
@@ -506,9 +504,8 @@ export const translations: Record<Language, Translations> = {
     dashboard: {
       title: 'My Biographies',
       createBiography: 'Create New Biography',
-      loadDemo: 'Load Demo Biography',
       noBiographies: 'Start preserving your story',
-      noBiographiesSubtitle: 'Create your first biography or load a demo to explore features',
+      noBiographiesSubtitle: 'Create your first biography to get started',
       totalBiographies: 'Total Biographies',
       wordsWritten: 'Words Written',
       completedSections: 'Completed Sections',
@@ -717,7 +714,7 @@ export const translations: Record<Language, Translations> = {
       biographyPrivate: 'This biography is private',
     },
     footer: {
-      hostedInSwitzerland: 'Biography Library Demo - Hosted in Switzerland',
+      hostedInSwitzerland: 'Biography Library - Hosted in Switzerland',
     },
     welcome: {
       title: 'Welcome to Biography Library',
@@ -731,7 +728,6 @@ export const translations: Record<Language, Translations> = {
       biographyDeleted: 'Biography deleted successfully',
       pdfExported: 'PDF exported successfully',
       linkCopied: 'Link copied to clipboard',
-      demoLoaded: 'Demo biography loaded successfully',
       error: 'An error occurred',
     },
     coach: {
@@ -958,9 +954,8 @@ export const translations: Record<Language, Translations> = {
     dashboard: {
       title: 'Le Mie Biografie',
       createBiography: 'Crea Nuova Biografia',
-      loadDemo: 'Carica Biografia Demo',
       noBiographies: 'Inizia a preservare la tua storia',
-      noBiographiesSubtitle: 'Crea la tua prima biografia o carica una demo per esplorare le funzionalit\u00e0',
+      noBiographiesSubtitle: 'Crea la tua prima biografia per iniziare',
       totalBiographies: 'Biografie Totali',
       wordsWritten: 'Parole Scritte',
       completedSections: 'Sezioni Completate',
@@ -1169,7 +1164,7 @@ export const translations: Record<Language, Translations> = {
       biographyPrivate: 'Questa biografia \u00e8 privata',
     },
     footer: {
-      hostedInSwitzerland: 'Biography Library Demo - Ospitato in Svizzera',
+      hostedInSwitzerland: 'Biography Library - Ospitato in Svizzera',
     },
     welcome: {
       title: 'Benvenuto in Biography Library',
@@ -1183,7 +1178,6 @@ export const translations: Record<Language, Translations> = {
       biographyDeleted: 'Biografia eliminata con successo',
       pdfExported: 'PDF esportato con successo',
       linkCopied: 'Link copiato negli appunti',
-      demoLoaded: 'Biografia demo caricata con successo',
       error: 'Si \u00e8 verificato un errore',
     },
     coach: {
@@ -1410,9 +1404,8 @@ export const translations: Record<Language, Translations> = {
     dashboard: {
       title: 'Mes Biographies',
       createBiography: 'Cr\u00e9er une Nouvelle Biographie',
-      loadDemo: 'Charger une Biographie D\u00e9mo',
       noBiographies: 'Commencez \u00e0 pr\u00e9server votre histoire',
-      noBiographiesSubtitle: 'Cr\u00e9ez votre premi\u00e8re biographie ou chargez une d\u00e9mo pour explorer les fonctionnalit\u00e9s',
+      noBiographiesSubtitle: 'Cr\u00e9ez votre premi\u00e8re biographie pour commencer',
       totalBiographies: 'Biographies Totales',
       wordsWritten: 'Mots \u00c9crits',
       completedSections: 'Sections Compl\u00e9t\u00e9es',
@@ -1621,7 +1614,7 @@ export const translations: Record<Language, Translations> = {
       biographyPrivate: 'Cette biographie est priv\u00e9e',
     },
     footer: {
-      hostedInSwitzerland: 'Biography Library Demo - H\u00e9berg\u00e9 en Suisse',
+      hostedInSwitzerland: 'Biography Library - H\u00e9berg\u00e9 en Suisse',
     },
     welcome: {
       title: 'Bienvenue dans Biography Library',
@@ -1635,7 +1628,6 @@ export const translations: Record<Language, Translations> = {
       biographyDeleted: 'Biographie supprim\u00e9e avec succ\u00e8s',
       pdfExported: 'PDF export\u00e9 avec succ\u00e8s',
       linkCopied: 'Lien copi\u00e9 dans le presse-papiers',
-      demoLoaded: 'Biographie d\u00e9mo charg\u00e9e avec succ\u00e8s',
       error: 'Une erreur s\'est produite',
     },
     coach: {
@@ -1862,9 +1854,8 @@ export const translations: Record<Language, Translations> = {
     dashboard: {
       title: 'Meine Biografien',
       createBiography: 'Neue Biografie Erstellen',
-      loadDemo: 'Demo-Biografie Laden',
       noBiographies: 'Beginnen Sie, Ihre Geschichte zu bewahren',
-      noBiographiesSubtitle: 'Erstellen Sie Ihre erste Biografie oder laden Sie eine Demo, um die Funktionen zu erkunden',
+      noBiographiesSubtitle: 'Erstellen Sie Ihre erste Biografie, um zu beginnen',
       totalBiographies: 'Gesamte Biografien',
       wordsWritten: 'Geschriebene W\u00f6rter',
       completedSections: 'Abgeschlossene Abschnitte',
@@ -2073,7 +2064,7 @@ export const translations: Record<Language, Translations> = {
       biographyPrivate: 'Diese Biografie ist privat',
     },
     footer: {
-      hostedInSwitzerland: 'Biography Library Demo - Gehostet in der Schweiz',
+      hostedInSwitzerland: 'Biography Library - Gehostet in der Schweiz',
     },
     welcome: {
       title: 'Willkommen bei Biography Library',
@@ -2087,7 +2078,6 @@ export const translations: Record<Language, Translations> = {
       biographyDeleted: 'Biografie erfolgreich gel\u00f6scht',
       pdfExported: 'PDF erfolgreich exportiert',
       linkCopied: 'Link in die Zwischenablage kopiert',
-      demoLoaded: 'Demo-Biografie erfolgreich geladen',
       error: 'Ein Fehler ist aufgetreten',
     },
     coach: {

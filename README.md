@@ -27,11 +27,6 @@ A modern, multilingual biography creation platform that helps preserve life stor
 ### Sharing & Export
 - **Share Links**: Generate public links to share biographies with family
 - **PDF Export**: Export biographies to professional PDF format
-- **Swiss Hosting**: Data hosted in Switzerland with Infomaniak infrastructure (production)
-
-### Demo Capabilities
-- **Demo Biography Loader**: Load pre-filled example biographies in any language
-- **Explore Features**: Perfect for demonstrations and testing
 
 ## Tech Stack
 
@@ -41,7 +36,7 @@ A modern, multilingual biography creation platform that helps preserve life stor
 - **Styling**: Tailwind CSS + shadcn/ui components
 - **AI**: Edge Functions with AI integration
 - **Internationalization**: Custom i18n solution
-- **Deployment**: Netlify (demo) / Infomaniak (production)
+- **Deployment**: Netlify
 
 ## Environment Variables
 
@@ -115,8 +110,7 @@ biography-library/
 │   │   └── i18n-context.tsx # i18n React context
 │   ├── ai-service.ts      # AI integration
 │   ├── supabase.ts        # Supabase client
-│   ├── biographies.ts     # Biography CRUD operations
-│   └── demo-loader.ts     # Demo biography generator
+│   └── biographies.ts     # Biography CRUD operations
 ├── supabase/
 │   ├── functions/         # Edge Functions
 │   │   └── ai-assistant/  # AI assistant endpoint
@@ -149,12 +143,6 @@ All tables use RLS policies to ensure users can only access their own data.
 - Language can be changed anytime via the header dropdown
 - Each biography can be written in a language independent of the UI language
 
-### Demo Biography
-- Click "Load Demo Biography" on the dashboard
-- Automatically generates a sample biography in the selected language
-- Pre-filled with realistic content to showcase all features
-- Perfect for presentations and demonstrations
-
 ### Privacy Levels
 - **Private**: Only you can see this biography
 - **Family**: Shareable via secure link
@@ -165,21 +153,6 @@ All tables use RLS policies to ensure users can only access their own data.
 - Content expansion helps elaborate on brief entries
 - Guided prompts ask thoughtful questions to inspire writing
 - All AI responses are generated in the biography's language
-
-## Production Deployment
-
-### Infomaniak Hosting (Production)
-The production version is designed to be hosted on Infomaniak's Swiss infrastructure, ensuring:
-- Data sovereignty (Swiss data protection)
-- GDPR compliance
-- High availability
-- European data residency
-
-### Environment Variables (Production)
-Ensure all environment variables are set in your production environment:
-- Supabase connection strings
-- API keys for AI features
-- Any additional service credentials
 
 ## Development
 
@@ -198,7 +171,7 @@ npm run build      # Test production build
 
 ## Contributing
 
-This is a demo project for evaluation purposes. For production use with Infomaniak partnership, please contact the development team.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
@@ -216,8 +189,4 @@ The Affero GPL ensures that if anyone runs a modified version of this software a
 
 ## Support
 
-For demo access or questions about the Infomaniak partnership, please contact the project maintainers.
-
----
-
-**Demo Version** - This is a demonstration version. The production version will use Infomaniak's Swiss infrastructure for enhanced data protection and compliance.
+For questions or support, please open an issue on GitHub or contact the project maintainers.
