@@ -335,6 +335,30 @@ export interface Translations {
     warningLine3: string;
     warningLine4: string;
   };
+  declaration: {
+    stepIndicator: string;
+    title: string;
+    subtitle: string;
+    checkbox1: string;
+    checkbox1Helper: string;
+    checkbox2: string;
+    checkbox3: string;
+    checkbox3TermsLink: string;
+    checkbox3PrivacyLink: string;
+    checkbox4: string;
+    checkbox4Helper: string;
+    infoTitle: string;
+    canWriteTitle: string;
+    canWriteLine1: string;
+    canWriteLine2: string;
+    canWriteLine3: string;
+    cannotWriteTitle: string;
+    cannotWriteLine1: string;
+    cannotWriteLine2: string;
+    cannotWriteLine3: string;
+    cannotWriteLine4: string;
+    acceptButton: string;
+  };
 }
 
 export const translations: Record<Language, Translations> = {
@@ -673,6 +697,30 @@ export const translations: Record<Language, Translations> = {
       warningLine3: 'Anyone you cannot prove is deceased',
       warningLine4: 'Violations will result in account termination.',
     },
+    declaration: {
+      stepIndicator: 'Step 1 of 3: Declaration and Consent',
+      title: 'Create Your Autobiography',
+      subtitle: 'Before you begin, please confirm the following:',
+      checkbox1: 'I confirm that I am writing my own autobiography and that the information I provide about my identity (name, surname, date of birth) is truthful.',
+      checkbox1Helper: 'You are legally responsible for the accuracy of this information.',
+      checkbox2: 'I confirm that I am at least 18 years old.',
+      checkbox3: 'I have read and accept the {terms} and {privacy}.',
+      checkbox3TermsLink: 'Terms of Service',
+      checkbox3PrivacyLink: 'Privacy Policy',
+      checkbox4: 'I understand that I am solely responsible for the content I publish and must respect the rights of living persons I may mention.',
+      checkbox4Helper: 'You cannot include sensitive data about living persons without their consent.',
+      infoTitle: 'Important Information',
+      canWriteTitle: 'What you can write about:',
+      canWriteLine1: 'Your life experiences and memories',
+      canWriteLine2: 'General mentions of family members (names and relationships only)',
+      canWriteLine3: 'Historical events you witnessed',
+      cannotWriteTitle: 'What you CANNOT write without consent:',
+      cannotWriteLine1: 'Sensitive health data about living persons',
+      cannotWriteLine2: 'Sexual orientation of others',
+      cannotWriteLine3: 'Legal/criminal proceedings involving others',
+      cannotWriteLine4: 'Private financial information of others',
+      acceptButton: 'Accept and Continue',
+    },
   },
   it: {
     common: {
@@ -1008,6 +1056,30 @@ export const translations: Record<Language, Translations> = {
       warningLine2: 'Minori (sotto i 18 anni)',
       warningLine3: 'Chiunque di cui non puoi provare il decesso',
       warningLine4: 'Le violazioni comporteranno la chiusura dell\'account.',
+    },
+    declaration: {
+      stepIndicator: 'Passo 1 di 3: Dichiarazione e Consenso',
+      title: 'Crea la Tua Autobiografia',
+      subtitle: 'Prima di iniziare, conferma quanto segue:',
+      checkbox1: 'Confermo di scrivere la mia autobiografia e che le informazioni che fornisco sulla mia identità (nome, cognome, data di nascita) sono veritiere.',
+      checkbox1Helper: 'Sei legalmente responsabile dell\'accuratezza di queste informazioni.',
+      checkbox2: 'Confermo di avere almeno 18 anni.',
+      checkbox3: 'Ho letto e accetto i {terms} e la {privacy}.',
+      checkbox3TermsLink: 'Termini di Servizio',
+      checkbox3PrivacyLink: 'Informativa sulla Privacy',
+      checkbox4: 'Comprendo di essere l\'unico responsabile dei contenuti che pubblico e di dover rispettare i diritti delle persone viventi che potrei menzionare.',
+      checkbox4Helper: 'Non puoi includere dati sensibili su persone viventi senza il loro consenso.',
+      infoTitle: 'Informazioni Importanti',
+      canWriteTitle: 'Cosa puoi scrivere:',
+      canWriteLine1: 'Le tue esperienze di vita e ricordi',
+      canWriteLine2: 'Menzioni generali di familiari (solo nomi e relazioni)',
+      canWriteLine3: 'Eventi storici a cui hai assistito',
+      cannotWriteTitle: 'Cosa NON puoi scrivere senza consenso:',
+      cannotWriteLine1: 'Dati sanitari sensibili su persone viventi',
+      cannotWriteLine2: 'Orientamento sessuale di altri',
+      cannotWriteLine3: 'Procedimenti legali/penali che coinvolgono altri',
+      cannotWriteLine4: 'Informazioni finanziarie private di altri',
+      acceptButton: 'Accetta e Continua',
     },
   },
   fr: {
@@ -1345,6 +1417,30 @@ export const translations: Record<Language, Translations> = {
       warningLine3: 'Toute personne dont vous ne pouvez pas prouver le décès',
       warningLine4: 'Les violations entraîneront la fermeture du compte.',
     },
+    declaration: {
+      stepIndicator: 'Étape 1 sur 3 : Déclaration et Consentement',
+      title: 'Créer Votre Autobiographie',
+      subtitle: 'Avant de commencer, veuillez confirmer ce qui suit :',
+      checkbox1: 'Je confirme que j\'écris ma propre autobiographie et que les informations que je fournis sur mon identité (nom, prénom, date de naissance) sont véridiques.',
+      checkbox1Helper: 'Vous êtes légalement responsable de l\'exactitude de ces informations.',
+      checkbox2: 'Je confirme que j\'ai au moins 18 ans.',
+      checkbox3: 'J\'ai lu et j\'accepte les {terms} et la {privacy}.',
+      checkbox3TermsLink: 'Conditions d\'Utilisation',
+      checkbox3PrivacyLink: 'Politique de Confidentialité',
+      checkbox4: 'Je comprends que je suis seul responsable du contenu que je publie et que je dois respecter les droits des personnes vivantes que je pourrais mentionner.',
+      checkbox4Helper: 'Vous ne pouvez pas inclure de données sensibles sur des personnes vivantes sans leur consentement.',
+      infoTitle: 'Informations Importantes',
+      canWriteTitle: 'Ce que vous pouvez écrire :',
+      canWriteLine1: 'Vos expériences de vie et souvenirs',
+      canWriteLine2: 'Mentions générales de membres de la famille (noms et relations uniquement)',
+      canWriteLine3: 'Événements historiques auxquels vous avez assisté',
+      cannotWriteTitle: 'Ce que vous NE POUVEZ PAS écrire sans consentement :',
+      cannotWriteLine1: 'Données de santé sensibles sur des personnes vivantes',
+      cannotWriteLine2: 'Orientation sexuelle d\'autrui',
+      cannotWriteLine3: 'Procédures judiciaires/pénales impliquant d\'autres personnes',
+      cannotWriteLine4: 'Informations financières privées d\'autrui',
+      acceptButton: 'Accepter et Continuer',
+    },
   },
   de: {
     common: {
@@ -1680,6 +1776,30 @@ export const translations: Record<Language, Translations> = {
       warningLine2: 'Minderjährigen (unter 18 Jahren)',
       warningLine3: 'Personen, deren Tod Sie nicht nachweisen können',
       warningLine4: 'Verstöße führen zur Kontosperrung.',
+    },
+    declaration: {
+      stepIndicator: 'Schritt 1 von 3: Erklärung und Einwilligung',
+      title: 'Erstellen Sie Ihre Autobiografie',
+      subtitle: 'Bevor Sie beginnen, bestätigen Sie bitte Folgendes:',
+      checkbox1: 'Ich bestätige, dass ich meine eigene Autobiografie schreibe und dass die Informationen, die ich über meine Identität (Name, Nachname, Geburtsdatum) bereitstelle, wahrheitsgemäß sind.',
+      checkbox1Helper: 'Sie sind rechtlich für die Richtigkeit dieser Informationen verantwortlich.',
+      checkbox2: 'Ich bestätige, dass ich mindestens 18 Jahre alt bin.',
+      checkbox3: 'Ich habe die {terms} und die {privacy} gelesen und akzeptiere sie.',
+      checkbox3TermsLink: 'Nutzungsbedingungen',
+      checkbox3PrivacyLink: 'Datenschutzerklärung',
+      checkbox4: 'Ich verstehe, dass ich allein für die Inhalte verantwortlich bin, die ich veröffentliche, und die Rechte lebender Personen, die ich erwähne, respektieren muss.',
+      checkbox4Helper: 'Sie dürfen ohne Zustimmung keine sensiblen Daten über lebende Personen angeben.',
+      infoTitle: 'Wichtige Informationen',
+      canWriteTitle: 'Was Sie schreiben können:',
+      canWriteLine1: 'Ihre Lebenserfahrungen und Erinnerungen',
+      canWriteLine2: 'Allgemeine Erwähnungen von Familienmitgliedern (nur Namen und Beziehungen)',
+      canWriteLine3: 'Historische Ereignisse, die Sie miterlebt haben',
+      cannotWriteTitle: 'Was Sie NICHT ohne Zustimmung schreiben können:',
+      cannotWriteLine1: 'Sensible Gesundheitsdaten über lebende Personen',
+      cannotWriteLine2: 'Sexuelle Orientierung anderer',
+      cannotWriteLine3: 'Gerichts-/Strafverfahren mit Beteiligung anderer',
+      cannotWriteLine4: 'Private Finanzinformationen anderer',
+      acceptButton: 'Akzeptieren und Fortfahren',
     },
   },
 };

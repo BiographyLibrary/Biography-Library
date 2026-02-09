@@ -36,7 +36,7 @@ export default function CreateBiographyPage() {
   }
 
   const handleAutobiography = () => {
-    router.push('/dashboard');
+    router.push('/autobiography/declaration');
   };
 
   const handleDeceased = () => {
