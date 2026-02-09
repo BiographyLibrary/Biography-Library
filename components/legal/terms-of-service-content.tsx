@@ -145,7 +145,7 @@ export function TermsOfServiceContent() {
             <li key={idx}>{item}</li>
           ))}
         </ul>
-        <p className="mt-3">{t.section7Provider}</p>
+        {t.section7Provider && <p className="mt-3">{t.section7Provider}</p>}
 
         <h3 className="font-semibold mt-4 mb-2">{t.section7Important}</h3>
         <ul className="list-disc list-inside space-y-1 ml-4">
@@ -259,21 +259,7 @@ export function TermsOfServiceContent() {
         <p className="font-medium">{t.section15Org}</p>
         <p>{t.section15Location}</p>
         <p className="mt-3 mb-2">{t.section15Email}</p>
-        <ul className="list-none space-y-1 ml-4">
-          {t.section15EmailList.map((item, idx) => (
-            <li key={idx} className="font-mono text-sm">{item}</li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="mb-8 bg-primary/5 border-2 border-primary/20 p-6 rounded-lg">
-        <h2 className="text-xl font-semibold mb-3">{t.acceptanceTitle}</h2>
-        <p className="mb-2">{t.acceptanceIntro}</p>
-        <ul className="list-disc list-inside space-y-1 ml-4">
-          {t.acceptanceList.map((item, idx) => (
-            <li key={idx}>{item}</li>
-          ))}
-        </ul>
+        <p className="font-mono text-sm ml-4">{t.section15EmailAddress}</p>
       </section>
     </div>
   );

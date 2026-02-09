@@ -51,7 +51,7 @@ export function TermsOfServiceModal({
                 {close}
               </Button>
               <Button onClick={onAccept}>
-                {t.acceptButton}
+                Accept
               </Button>
             </div>
           ) : (

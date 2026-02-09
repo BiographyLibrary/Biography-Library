@@ -84,11 +84,7 @@ export interface TermsTranslations {
   section15Org: string;
   section15Location: string;
   section15Email: string;
-  section15EmailList: string[];
-  acceptanceTitle: string;
-  acceptanceIntro: string;
-  acceptanceList: string[];
-  acceptButton: string;
+  section15EmailAddress: string;
 }
 
 export const termsTranslations: Record<Language, TermsTranslations> = {
@@ -157,7 +153,7 @@ export const termsTranslations: Record<Language, TermsTranslations> = {
       'To ensure security and prevent abuse',
       'To improve the service'
     ],
-    section5Hosting: 'Your data is hosted in Switzerland (Infomaniak SA, Geneva) and never leaves Swiss jurisdiction.',
+    section5Hosting: 'Your data is hosted in Switzerland and never leaves Swiss jurisdiction.',
     section5NoSale: 'We NEVER sell your data to third parties.',
     section5Rights: 'You have the right to:',
     section5RightsList: [
@@ -193,7 +189,7 @@ export const termsTranslations: Record<Language, TermsTranslations> = {
       'Translation',
       'Memory prompts'
     ],
-    section7Provider: 'AI features are powered by Mistral AI through Infomaniak Euria (Swiss hosting).',
+    section7Provider: '',
     section7Important: 'Important:',
     section7ImportantList: [
       'Your biographies are NOT used to train AI models',
@@ -297,22 +293,7 @@ export const termsTranslations: Record<Language, TermsTranslations> = {
     section15Org: 'Biography Library Association',
     section15Location: 'Lugano, Ticino, Switzerland',
     section15Email: 'Email:',
-    section15EmailList: [
-      'General support: support@biographylibrary.org',
-      'Privacy matters: privacy@biographylibrary.org',
-      'Report violations: report@biographylibrary.org',
-      'Legal matters: legal@biographylibrary.org'
-    ],
-
-    acceptanceTitle: 'ACCEPTANCE',
-    acceptanceIntro: 'By clicking "I Accept" or by using Biography Library, you confirm that:',
-    acceptanceList: [
-      'You have read and understood these Terms',
-      'You agree to be bound by them',
-      'You are at least 18 years old',
-      'You will comply with all applicable laws'
-    ],
-    acceptButton: 'I Accept'
+    section15EmailAddress: 'support@biographylibrary.com'
   },
 
   it: {
@@ -380,7 +361,7 @@ export const termsTranslations: Record<Language, TermsTranslations> = {
       'Per garantire la sicurezza e prevenire abusi',
       'Per migliorare il servizio'
     ],
-    section5Hosting: 'I tuoi dati sono ospitati in Svizzera (Infomaniak SA, Ginevra) e non lasciano mai la giurisdizione svizzera.',
+    section5Hosting: 'I tuoi dati sono ospitati in Svizzera e non lasciano mai la giurisdizione svizzera.',
     section5NoSale: 'NON vendiamo MAI i tuoi dati a terze parti.',
     section5Rights: 'Hai il diritto di:',
     section5RightsList: [
@@ -416,7 +397,7 @@ export const termsTranslations: Record<Language, TermsTranslations> = {
       'Traduzione',
       'Solleciti di memoria'
     ],
-    section7Provider: 'Le funzionalità IA sono alimentate da Mistral AI tramite Infomaniak Euria (hosting svizzero).',
+    section7Provider: '',
     section7Important: 'Importante:',
     section7ImportantList: [
       'Le tue biografie NON vengono utilizzate per addestrare modelli IA',
@@ -520,22 +501,7 @@ export const termsTranslations: Record<Language, TermsTranslations> = {
     section15Org: 'Biography Library Association',
     section15Location: 'Lugano, Ticino, Svizzera',
     section15Email: 'Email:',
-    section15EmailList: [
-      'Supporto generale: support@biographylibrary.org',
-      'Questioni di privacy: privacy@biographylibrary.org',
-      'Segnalazione violazioni: report@biographylibrary.org',
-      'Questioni legali: legal@biographylibrary.org'
-    ],
-
-    acceptanceTitle: 'ACCETTAZIONE',
-    acceptanceIntro: 'Cliccando "Accetto" o utilizzando Biography Library, confermi che:',
-    acceptanceList: [
-      'Hai letto e compreso questi Termini',
-      'Accetti di essere vincolato da essi',
-      'Hai almeno 18 anni',
-      'Rispetterai tutte le leggi applicabili'
-    ],
-    acceptButton: 'Accetto'
+    section15EmailAddress: 'support@biographylibrary.com'
   },
 
   fr: {
@@ -603,7 +569,7 @@ export const termsTranslations: Record<Language, TermsTranslations> = {
       'Pour assurer la sécurité et prévenir les abus',
       'Pour améliorer le service'
     ],
-    section5Hosting: 'Vos données sont hébergées en Suisse (Infomaniak SA, Genève) et ne quittent jamais la juridiction suisse.',
+    section5Hosting: 'Vos données sont hébergées en Suisse et ne quittent jamais la juridiction suisse.',
     section5NoSale: 'Nous ne vendons JAMAIS vos données à des tiers.',
     section5Rights: 'Vous avez le droit de:',
     section5RightsList: [
@@ -639,7 +605,7 @@ export const termsTranslations: Record<Language, TermsTranslations> = {
       'Traduction',
       'Sollicitations de mémoire'
     ],
-    section7Provider: 'Les fonctionnalités IA sont alimentées par Mistral AI via Infomaniak Euria (hébergement suisse).',
+    section7Provider: '',
     section7Important: 'Important:',
     section7ImportantList: [
       'Vos biographies ne sont PAS utilisées pour entraîner des modèles IA',
@@ -743,22 +709,7 @@ export const termsTranslations: Record<Language, TermsTranslations> = {
     section15Org: 'Biography Library Association',
     section15Location: 'Lugano, Tessin, Suisse',
     section15Email: 'Email:',
-    section15EmailList: [
-      'Support général: support@biographylibrary.org',
-      'Questions de confidentialité: privacy@biographylibrary.org',
-      'Signalement de violations: report@biographylibrary.org',
-      'Questions juridiques: legal@biographylibrary.org'
-    ],
-
-    acceptanceTitle: 'ACCEPTATION',
-    acceptanceIntro: 'En cliquant sur "J\'accepte" ou en utilisant Biography Library, vous confirmez que:',
-    acceptanceList: [
-      'Vous avez lu et compris ces Conditions',
-      'Vous acceptez d\'être lié par elles',
-      'Vous avez au moins 18 ans',
-      'Vous respecterez toutes les lois applicables'
-    ],
-    acceptButton: 'J\'accepte'
+    section15EmailAddress: 'support@biographylibrary.com'
   },
 
   de: {
@@ -826,7 +777,7 @@ export const termsTranslations: Record<Language, TermsTranslations> = {
       'Um Sicherheit zu gewährleisten und Missbrauch zu verhindern',
       'Um den Service zu verbessern'
     ],
-    section5Hosting: 'Ihre Daten werden in der Schweiz gehostet (Infomaniak SA, Genf) und verlassen niemals die Schweizer Gerichtsbarkeit.',
+    section5Hosting: 'Ihre Daten werden in der Schweiz gehostet und verlassen niemals die Schweizer Gerichtsbarkeit.',
     section5NoSale: 'Wir verkaufen Ihre Daten NIEMALS an Dritte.',
     section5Rights: 'Sie haben das Recht:',
     section5RightsList: [
@@ -862,7 +813,7 @@ export const termsTranslations: Record<Language, TermsTranslations> = {
       'Übersetzung',
       'Erinnerungsaufforderungen'
     ],
-    section7Provider: 'KI-Funktionen werden von Mistral AI über Infomaniak Euria (Schweizer Hosting) bereitgestellt.',
+    section7Provider: '',
     section7Important: 'Wichtig:',
     section7ImportantList: [
       'Ihre Biografien werden NICHT zum Trainieren von KI-Modellen verwendet',
@@ -966,21 +917,6 @@ export const termsTranslations: Record<Language, TermsTranslations> = {
     section15Org: 'Biography Library Association',
     section15Location: 'Lugano, Tessin, Schweiz',
     section15Email: 'E-Mail:',
-    section15EmailList: [
-      'Allgemeiner Support: support@biographylibrary.org',
-      'Datenschutzfragen: privacy@biographylibrary.org',
-      'Verstöße melden: report@biographylibrary.org',
-      'Rechtliche Angelegenheiten: legal@biographylibrary.org'
-    ],
-
-    acceptanceTitle: 'AKZEPTANZ',
-    acceptanceIntro: 'Durch Klicken auf "Ich akzeptiere" oder durch die Nutzung von Biography Library bestätigen Sie, dass:',
-    acceptanceList: [
-      'Sie diese Bedingungen gelesen und verstanden haben',
-      'Sie sich daran gebunden fühlen',
-      'Sie mindestens 18 Jahre alt sind',
-      'Sie alle anwendbaren Gesetze einhalten werden'
-    ],
-    acceptButton: 'Ich akzeptiere'
+    section15EmailAddress: 'support@biographylibrary.com'
   }
 };
