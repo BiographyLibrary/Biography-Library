@@ -117,7 +117,7 @@ export function SectionEditor({
               size="sm"
               className="h-7 w-7 p-0 shrink-0 rounded-full bg-[#A84B2F] hover:bg-[#6B2F1F] hover:text-[#FDFBF7] text-[#FDFBF7]"
               onClick={() => setShowVoice(!showVoice)}
-              title="Registra audio"
+              title={t.notesAndTodos.recordAudio}
             >
               <Mic className="h-3.5 w-3.5" />
             </Button>
@@ -127,7 +127,7 @@ export function SectionEditor({
               size="sm"
               className="h-7 w-7 p-0 shrink-0"
               onClick={() => setShowImportDialog(true)}
-              title="Importa testo"
+              title={t.notesAndTodos.importText}
             >
               <Upload className="h-3.5 w-3.5" />
             </Button>
@@ -137,7 +137,7 @@ export function SectionEditor({
               size="sm"
               className="h-7 w-7 p-0 shrink-0"
               onClick={() => setShowNotesDialog(true)}
-              title="Note e promemoria"
+              title={t.notesAndTodos.title}
             >
               <StickyNote className="h-3.5 w-3.5" />
             </Button>
@@ -184,7 +184,7 @@ export function SectionEditor({
                   onClick={onReviewWithAi}
                 >
                   <Wand2 className="h-3.5 w-3.5" />
-                  <span className="hidden xl:inline">Review</span>
+                  <span className="hidden xl:inline">{t.aiReview.reviewButton}</span>
                 </Button>
               )}
             </>

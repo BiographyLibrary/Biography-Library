@@ -423,6 +423,9 @@ export interface Translations {
     loading: string;
   };
   notesAndTodos: {
+    title: string;
+    recordAudio: string;
+    importText: string;
     notesTab: string;
     todosTab: string;
     addNotePlaceholder: string;
@@ -448,6 +451,66 @@ export interface Translations {
     loadingNotes: string;
     noNotesYet: string;
     noPendingItems: string;
+  };
+  aiReview: {
+    title: string;
+    reviewButton: string;
+    suggestionsTab: string;
+    rewriteTab: string;
+    statisticsTab: string;
+    analyzingContent: string;
+    looksGreat: string;
+    noImprovementsNeeded: string;
+    original: string;
+    suggestion: string;
+    selected: string;
+    select: string;
+    ignore: string;
+    narrativeLabel: string;
+    narrativeDesc: string;
+    formalLabel: string;
+    formalDesc: string;
+    intimateLabel: string;
+    intimateDesc: string;
+    generating: string;
+    regenerate: string;
+    generate: string;
+    originalVersion: string;
+    rewrittenVersion: string;
+    applying: string;
+    replaceWithVersion: string;
+    keepOriginal: string;
+    contentMetrics: string;
+    contentMetricsDesc: string;
+    wordCount: string;
+    characterCount: string;
+    sentences: string;
+    paragraphs: string;
+    readability: string;
+    readabilityDesc: string;
+    readabilityScore: string;
+    avgWordsPerSentence: string;
+    excellent: string;
+    good: string;
+    fair: string;
+    challenging: string;
+    shortSentences: string;
+    moderateSentences: string;
+    longSentences: string;
+    improvementSummary: string;
+    basedOnAi: string;
+    improvementsFound: string;
+    highPriority: string;
+    mediumPriority: string;
+    lowPriority: string;
+    close: string;
+    applySelected: string;
+    failedToLoad: string;
+    failedToGenerate: string;
+    noImprovementsSelected: string;
+    appliedImprovements: string;
+    failedToApply: string;
+    appliedRewrite: string;
   };
   deleteDialog: {
     deleteBiographyLink: string;
@@ -898,6 +961,9 @@ export const translations: Record<Language, Translations> = {
       loading: 'Loading...',
     },
     notesAndTodos: {
+      title: 'Notes & Reminders',
+      recordAudio: 'Record audio',
+      importText: 'Import text',
       notesTab: 'Notes',
       todosTab: 'To Do',
       addNotePlaceholder: 'Add a note for this section... (max 500 characters)',
@@ -923,6 +989,66 @@ export const translations: Record<Language, Translations> = {
       loadingNotes: 'Loading notes...',
       noNotesYet: 'No notes yet',
       noPendingItems: 'No pending items',
+    },
+    aiReview: {
+      title: 'AI Section Review',
+      reviewButton: 'Review',
+      suggestionsTab: 'Suggestions',
+      rewriteTab: 'Full Rewrite',
+      statisticsTab: 'Statistics',
+      analyzingContent: 'Analyzing content...',
+      looksGreat: 'Looks Great!',
+      noImprovementsNeeded: 'No improvements needed. Your content is well-written.',
+      original: 'Original:',
+      suggestion: 'Suggestion:',
+      selected: 'Selected',
+      select: 'Select',
+      ignore: 'Ignore',
+      narrativeLabel: 'Narrative',
+      narrativeDesc: 'Storytelling style with vivid descriptions',
+      formalLabel: 'Formal',
+      formalDesc: 'Polished and professional tone',
+      intimateLabel: 'Intimate',
+      intimateDesc: 'Warm and personal, like a letter',
+      generating: 'Generating...',
+      regenerate: 'Regenerate',
+      generate: 'Generate',
+      originalVersion: 'Original Version',
+      rewrittenVersion: 'Rewritten Version',
+      applying: 'Applying...',
+      replaceWithVersion: 'Replace with this version',
+      keepOriginal: 'Keep original',
+      contentMetrics: 'Content Metrics',
+      contentMetricsDesc: 'Basic statistics about your writing',
+      wordCount: 'Word Count',
+      characterCount: 'Character Count',
+      sentences: 'Sentences',
+      paragraphs: 'Paragraphs',
+      readability: 'Readability',
+      readabilityDesc: 'How easy is your content to read?',
+      readabilityScore: 'Readability Score',
+      avgWordsPerSentence: 'Average Words per Sentence',
+      excellent: 'Excellent - Very easy to read',
+      good: 'Good - Easy to read',
+      fair: 'Fair - Moderately easy',
+      challenging: 'Challenging - Consider simplifying',
+      shortSentences: 'Short sentences - Easy to follow',
+      moderateSentences: 'Moderate length - Well balanced',
+      longSentences: 'Long sentences - Consider breaking them up',
+      improvementSummary: 'Improvement Summary',
+      basedOnAi: 'Based on AI analysis',
+      improvementsFound: 'Improvements Found',
+      highPriority: 'High Priority',
+      mediumPriority: 'Medium Priority',
+      lowPriority: 'Low Priority',
+      close: 'Close',
+      applySelected: 'Apply Selected',
+      failedToLoad: 'Failed to load AI suggestions',
+      failedToGenerate: 'Failed to generate',
+      noImprovementsSelected: 'No improvements selected',
+      appliedImprovements: 'Applied {count} improvements',
+      failedToApply: 'Failed to apply improvements',
+      appliedRewrite: 'Applied {tone} rewrite',
     },
     deleteDialog: {
       deleteBiographyLink: 'Delete biography',
@@ -1371,6 +1497,9 @@ export const translations: Record<Language, Translations> = {
       loading: 'Caricamento...',
     },
     notesAndTodos: {
+      title: 'Note e Promemoria',
+      recordAudio: 'Registra audio',
+      importText: 'Importa testo',
       notesTab: 'Note',
       todosTab: 'Da Fare',
       addNotePlaceholder: 'Aggiungi una nota per questa sezione... (max 500 caratteri)',
@@ -1396,6 +1525,66 @@ export const translations: Record<Language, Translations> = {
       loadingNotes: 'Caricamento note...',
       noNotesYet: 'Nessuna nota ancora',
       noPendingItems: 'Nessun elemento in sospeso',
+    },
+    aiReview: {
+      title: 'Revisione IA della Sezione',
+      reviewButton: 'Revisiona',
+      suggestionsTab: 'Suggerimenti',
+      rewriteTab: 'Riscrittura Completa',
+      statisticsTab: 'Statistiche',
+      analyzingContent: 'Analisi del contenuto...',
+      looksGreat: 'Ottimo!',
+      noImprovementsNeeded: 'Nessun miglioramento necessario. Il tuo contenuto è ben scritto.',
+      original: 'Originale:',
+      suggestion: 'Suggerimento:',
+      selected: 'Selezionato',
+      select: 'Seleziona',
+      ignore: 'Ignora',
+      narrativeLabel: 'Narrativo',
+      narrativeDesc: 'Stile narrativo con descrizioni vivide',
+      formalLabel: 'Formale',
+      formalDesc: 'Tono professionale e curato',
+      intimateLabel: 'Intimo',
+      intimateDesc: 'Caldo e personale, come una lettera',
+      generating: 'Generazione...',
+      regenerate: 'Rigenera',
+      generate: 'Genera',
+      originalVersion: 'Versione Originale',
+      rewrittenVersion: 'Versione Riscritta',
+      applying: 'Applicazione...',
+      replaceWithVersion: 'Sostituisci con questa versione',
+      keepOriginal: 'Mantieni originale',
+      contentMetrics: 'Metriche del Contenuto',
+      contentMetricsDesc: 'Statistiche di base sulla tua scrittura',
+      wordCount: 'Conteggio Parole',
+      characterCount: 'Conteggio Caratteri',
+      sentences: 'Frasi',
+      paragraphs: 'Paragrafi',
+      readability: 'Leggibilità',
+      readabilityDesc: 'Quanto è facile leggere il tuo contenuto?',
+      readabilityScore: 'Punteggio di Leggibilità',
+      avgWordsPerSentence: 'Media Parole per Frase',
+      excellent: 'Eccellente - Molto facile da leggere',
+      good: 'Buono - Facile da leggere',
+      fair: 'Discreto - Moderatamente facile',
+      challenging: 'Impegnativo - Considera di semplificare',
+      shortSentences: 'Frasi brevi - Facili da seguire',
+      moderateSentences: 'Lunghezza moderata - Ben bilanciato',
+      longSentences: 'Frasi lunghe - Considera di spezzarle',
+      improvementSummary: 'Riepilogo Miglioramenti',
+      basedOnAi: 'Basato sull\'analisi IA',
+      improvementsFound: 'Miglioramenti Trovati',
+      highPriority: 'Alta Priorità',
+      mediumPriority: 'Media Priorità',
+      lowPriority: 'Bassa Priorità',
+      close: 'Chiudi',
+      applySelected: 'Applica Selezionati',
+      failedToLoad: 'Impossibile caricare i suggerimenti IA',
+      failedToGenerate: 'Impossibile generare',
+      noImprovementsSelected: 'Nessun miglioramento selezionato',
+      appliedImprovements: 'Applicati {count} miglioramenti',
+      failedToApply: 'Impossibile applicare i miglioramenti',
+      appliedRewrite: 'Applicata riscrittura {tone}',
     },
     deleteDialog: {
       deleteBiographyLink: 'Elimina biografia',
@@ -1844,6 +2033,9 @@ export const translations: Record<Language, Translations> = {
       loading: 'Chargement...',
     },
     notesAndTodos: {
+      title: 'Notes et Rappels',
+      recordAudio: 'Enregistrer audio',
+      importText: 'Importer texte',
       notesTab: 'Notes',
       todosTab: 'À Faire',
       addNotePlaceholder: 'Ajouter une note pour cette section... (max 500 caractères)',
@@ -1869,6 +2061,66 @@ export const translations: Record<Language, Translations> = {
       loadingNotes: 'Chargement des notes...',
       noNotesYet: 'Aucune note encore',
       noPendingItems: 'Aucun élément en attente',
+    },
+    aiReview: {
+      title: 'Révision IA de la Section',
+      reviewButton: 'Réviser',
+      suggestionsTab: 'Suggestions',
+      rewriteTab: 'Réécriture Complète',
+      statisticsTab: 'Statistiques',
+      analyzingContent: 'Analyse du contenu...',
+      looksGreat: 'Excellent !',
+      noImprovementsNeeded: 'Aucune amélioration nécessaire. Votre contenu est bien écrit.',
+      original: 'Original :',
+      suggestion: 'Suggestion :',
+      selected: 'Sélectionné',
+      select: 'Sélectionner',
+      ignore: 'Ignorer',
+      narrativeLabel: 'Narratif',
+      narrativeDesc: 'Style narratif avec des descriptions vivantes',
+      formalLabel: 'Formel',
+      formalDesc: 'Ton professionnel et soigné',
+      intimateLabel: 'Intime',
+      intimateDesc: 'Chaleureux et personnel, comme une lettre',
+      generating: 'Génération...',
+      regenerate: 'Régénérer',
+      generate: 'Générer',
+      originalVersion: 'Version Originale',
+      rewrittenVersion: 'Version Réécrite',
+      applying: 'Application...',
+      replaceWithVersion: 'Remplacer par cette version',
+      keepOriginal: 'Garder l\'original',
+      contentMetrics: 'Métriques du Contenu',
+      contentMetricsDesc: 'Statistiques de base sur votre écriture',
+      wordCount: 'Nombre de Mots',
+      characterCount: 'Nombre de Caractères',
+      sentences: 'Phrases',
+      paragraphs: 'Paragraphes',
+      readability: 'Lisibilité',
+      readabilityDesc: 'Votre contenu est-il facile à lire ?',
+      readabilityScore: 'Score de Lisibilité',
+      avgWordsPerSentence: 'Moyenne de Mots par Phrase',
+      excellent: 'Excellent - Très facile à lire',
+      good: 'Bon - Facile à lire',
+      fair: 'Correct - Modérément facile',
+      challenging: 'Difficile - Envisagez de simplifier',
+      shortSentences: 'Phrases courtes - Faciles à suivre',
+      moderateSentences: 'Longueur modérée - Bien équilibré',
+      longSentences: 'Phrases longues - Envisagez de les diviser',
+      improvementSummary: 'Résumé des Améliorations',
+      basedOnAi: 'Basé sur l\'analyse IA',
+      improvementsFound: 'Améliorations Trouvées',
+      highPriority: 'Haute Priorité',
+      mediumPriority: 'Priorité Moyenne',
+      lowPriority: 'Basse Priorité',
+      close: 'Fermer',
+      applySelected: 'Appliquer la Sélection',
+      failedToLoad: 'Échec du chargement des suggestions IA',
+      failedToGenerate: 'Échec de la génération',
+      noImprovementsSelected: 'Aucune amélioration sélectionnée',
+      appliedImprovements: '{count} améliorations appliquées',
+      failedToApply: 'Échec de l\'application des améliorations',
+      appliedRewrite: 'Réécriture {tone} appliquée',
     },
     deleteDialog: {
       deleteBiographyLink: 'Supprimer la biographie',
@@ -2317,6 +2569,9 @@ export const translations: Record<Language, Translations> = {
       loading: 'Laden...',
     },
     notesAndTodos: {
+      title: 'Notizen & Erinnerungen',
+      recordAudio: 'Audio aufnehmen',
+      importText: 'Text importieren',
       notesTab: 'Notizen',
       todosTab: 'Zu Erledigen',
       addNotePlaceholder: 'Fügen Sie eine Notiz für diesen Abschnitt hinzu... (max 500 Zeichen)',
@@ -2342,6 +2597,66 @@ export const translations: Record<Language, Translations> = {
       loadingNotes: 'Notizen laden...',
       noNotesYet: 'Noch keine Notizen',
       noPendingItems: 'Keine ausstehenden Elemente',
+    },
+    aiReview: {
+      title: 'KI-Abschnittsüberprüfung',
+      reviewButton: 'Überprüfen',
+      suggestionsTab: 'Vorschläge',
+      rewriteTab: 'Vollständige Umschreibung',
+      statisticsTab: 'Statistiken',
+      analyzingContent: 'Inhalt wird analysiert...',
+      looksGreat: 'Sieht gut aus!',
+      noImprovementsNeeded: 'Keine Verbesserungen nötig. Ihr Inhalt ist gut geschrieben.',
+      original: 'Original:',
+      suggestion: 'Vorschlag:',
+      selected: 'Ausgewählt',
+      select: 'Auswählen',
+      ignore: 'Ignorieren',
+      narrativeLabel: 'Erzählend',
+      narrativeDesc: 'Erzählstil mit lebhaften Beschreibungen',
+      formalLabel: 'Formell',
+      formalDesc: 'Professioneller und gepflegter Ton',
+      intimateLabel: 'Intim',
+      intimateDesc: 'Warm und persönlich, wie ein Brief',
+      generating: 'Generierung...',
+      regenerate: 'Neu generieren',
+      generate: 'Generieren',
+      originalVersion: 'Originalversion',
+      rewrittenVersion: 'Umgeschriebene Version',
+      applying: 'Anwenden...',
+      replaceWithVersion: 'Mit dieser Version ersetzen',
+      keepOriginal: 'Original behalten',
+      contentMetrics: 'Inhaltsmetriken',
+      contentMetricsDesc: 'Grundlegende Statistiken über Ihr Schreiben',
+      wordCount: 'Wortanzahl',
+      characterCount: 'Zeichenanzahl',
+      sentences: 'Sätze',
+      paragraphs: 'Absätze',
+      readability: 'Lesbarkeit',
+      readabilityDesc: 'Wie leicht ist Ihr Inhalt zu lesen?',
+      readabilityScore: 'Lesbarkeitswert',
+      avgWordsPerSentence: 'Durchschnitt Wörter pro Satz',
+      excellent: 'Ausgezeichnet - Sehr leicht zu lesen',
+      good: 'Gut - Leicht zu lesen',
+      fair: 'Befriedigend - Mäßig leicht',
+      challenging: 'Anspruchsvoll - Vereinfachung empfohlen',
+      shortSentences: 'Kurze Sätze - Leicht zu folgen',
+      moderateSentences: 'Moderate Länge - Gut ausbalanciert',
+      longSentences: 'Lange Sätze - Aufteilen empfohlen',
+      improvementSummary: 'Verbesserungsübersicht',
+      basedOnAi: 'Basierend auf KI-Analyse',
+      improvementsFound: 'Verbesserungen gefunden',
+      highPriority: 'Hohe Priorität',
+      mediumPriority: 'Mittlere Priorität',
+      lowPriority: 'Niedrige Priorität',
+      close: 'Schließen',
+      applySelected: 'Auswahl anwenden',
+      failedToLoad: 'KI-Vorschläge konnten nicht geladen werden',
+      failedToGenerate: 'Generierung fehlgeschlagen',
+      noImprovementsSelected: 'Keine Verbesserungen ausgewählt',
+      appliedImprovements: '{count} Verbesserungen angewendet',
+      failedToApply: 'Verbesserungen konnten nicht angewendet werden',
+      appliedRewrite: '{tone} Umschreibung angewendet',
     },
     deleteDialog: {
       deleteBiographyLink: 'Biografie löschen',

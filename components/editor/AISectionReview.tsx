@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,12 +8,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, CheckCircle2, XCircle, BookOpen, Wand2, BarChart3, AlertCircle } from 'lucide-react';
+import { Loader2, CheckCircle2, XCircle, BookOpen, Wand2, BarChart3 } from 'lucide-react';
 import { aiService, type Improvement } from '@/lib/ai/ai-provider';
 import { useAuth } from '@/lib/auth-context';
 import { addRevisionToHistory } from '@/lib/revision-history-service';
 import { toast } from 'sonner';
 import { ensureValidSession } from '@/lib/session-helper';
+import { useTranslation } from '@/lib/i18n/i18n-context';
 
 interface AISectionReviewProps {
   open: boolean;
@@ -62,17 +63,29 @@ export function AISectionReview({
   onApplyChanges,
 }: AISectionReviewProps) {
   const { session } = useAuth();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('suggestions');
   const [loading, setLoading] = useState(false);
   const [improvements, setImprovements] = useState<(Improvement & { id: string; ignored: boolean })[]>([]);
   const [selectedImprovements, setSelectedImprovements] = useState<Set<string>>(new Set());
-  const [rewriteVersions, setRewriteVersions] = useState<RewriteVersion[]>([
-    { tone: 'narrative', label: 'Narrative', description: 'Storytelling style with vivid descriptions', content: '', loading: false },
-    { tone: 'formal', label: 'Formal', description: 'Polished and professional tone', content: '', loading: false },
-    { tone: 'intimate', label: 'Intimate', description: 'Warm and personal, like a letter', content: '', loading: false },
-  ]);
   const [statistics, setStatistics] = useState<Statistics | null>(null);
   const [applying, setApplying] = useState(false);
+
+  const initialRewriteVersions = useMemo(() => [
+    { tone: 'narrative' as const, label: t.aiReview.narrativeLabel, description: t.aiReview.narrativeDesc, content: '', loading: false },
+    { tone: 'formal' as const, label: t.aiReview.formalLabel, description: t.aiReview.formalDesc, content: '', loading: false },
+    { tone: 'intimate' as const, label: t.aiReview.intimateLabel, description: t.aiReview.intimateDesc, content: '', loading: false },
+  ], [t]);
+
+  const [rewriteVersions, setRewriteVersions] = useState<RewriteVersion[]>(initialRewriteVersions);
+
+  useEffect(() => {
+    setRewriteVersions(prev => prev.map((v, i) => ({
+      ...v,
+      label: initialRewriteVersions[i].label,
+      description: initialRewriteVersions[i].description,
+    })));
+  }, [initialRewriteVersions]);
 
   useEffect(() => {
     if (open) {
@@ -107,7 +120,7 @@ export function AISectionReview({
       setSelectedImprovements(new Set(highPriority));
     } catch (error) {
       console.error('Error loading suggestions:', error);
-      toast.error('Failed to load AI suggestions');
+      toast.error(t.aiReview.failedToLoad);
     } finally {
       setLoading(false);
     }
@@ -136,7 +149,7 @@ export function AISectionReview({
       );
     } catch (error) {
       console.error('Error rewriting section:', error);
-      toast.error(`Failed to generate ${tone} version`);
+      toast.error(`${t.aiReview.failedToGenerate} ${tone}`);
       setRewriteVersions(prev =>
         prev.map(v => v.tone === tone ? { ...v, loading: false } : v)
       );
@@ -194,7 +207,7 @@ export function AISectionReview({
   const applyImprovements = async () => {
     const selected = improvements.filter(imp => selectedImprovements.has(imp.id));
     if (selected.length === 0) {
-      toast.error('No improvements selected');
+      toast.error(t.aiReview.noImprovementsSelected);
       return;
     }
 
@@ -216,11 +229,11 @@ export function AISectionReview({
       );
 
       onApplyChanges(updatedContent, 'improvements');
-      toast.success(`Applied ${selected.length} improvements`);
+      toast.success(t.aiReview.appliedImprovements.replace('{count}', String(selected.length)));
       onOpenChange(false);
     } catch (error) {
       console.error('Error applying improvements:', error);
-      toast.error('Failed to apply improvements');
+      toast.error(t.aiReview.failedToApply);
     } finally {
       setApplying(false);
     }
@@ -238,11 +251,11 @@ export function AISectionReview({
       );
 
       onApplyChanges(rewrittenContent, 'rewrite');
-      toast.success(`Applied ${tone} rewrite`);
+      toast.success(t.aiReview.appliedRewrite.replace('{tone}', tone));
       onOpenChange(false);
     } catch (error) {
       console.error('Error applying rewrite:', error);
-      toast.error('Failed to apply rewrite');
+      toast.error(t.aiReview.failedToApply);
     } finally {
       setApplying(false);
     }
@@ -265,26 +278,39 @@ export function AISectionReview({
     }
   };
 
+  const getReadabilityText = (score: number) => {
+    if (score >= 80) return t.aiReview.excellent;
+    if (score >= 60) return t.aiReview.good;
+    if (score >= 40) return t.aiReview.fair;
+    return t.aiReview.challenging;
+  };
+
+  const getSentenceLengthText = (avg: number) => {
+    if (avg <= 15) return t.aiReview.shortSentences;
+    if (avg <= 20) return t.aiReview.moderateSentences;
+    return t.aiReview.longSentences;
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>AI Section Review: {sectionTitle}</DialogTitle>
+          <DialogTitle>{t.aiReview.title}: {sectionTitle}</DialogTitle>
         </DialogHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="suggestions">
               <Wand2 className="h-4 w-4 mr-2" />
-              Suggestions
+              {t.aiReview.suggestionsTab}
             </TabsTrigger>
             <TabsTrigger value="rewrite">
               <BookOpen className="h-4 w-4 mr-2" />
-              Full Rewrite
+              {t.aiReview.rewriteTab}
             </TabsTrigger>
             <TabsTrigger value="statistics">
               <BarChart3 className="h-4 w-4 mr-2" />
-              Statistics
+              {t.aiReview.statisticsTab}
             </TabsTrigger>
           </TabsList>
 
@@ -293,13 +319,13 @@ export function AISectionReview({
               {loading ? (
                 <div className="flex items-center justify-center py-12">
                   <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                  <span className="ml-2 text-muted-foreground">Analyzing content...</span>
+                  <span className="ml-2 text-muted-foreground">{t.aiReview.analyzingContent}</span>
                 </div>
               ) : improvements.filter(imp => !imp.ignored).length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <CheckCircle2 className="h-12 w-12 text-green-500 mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Looks Great!</h3>
-                  <p className="text-muted-foreground">No improvements needed. Your content is well-written.</p>
+                  <h3 className="text-lg font-semibold mb-2">{t.aiReview.looksGreat}</h3>
+                  <p className="text-muted-foreground">{t.aiReview.noImprovementsNeeded}</p>
                 </div>
               ) : (
                 <div className="space-y-6">
@@ -321,11 +347,11 @@ export function AISectionReview({
                             </CardHeader>
                             <CardContent className="space-y-3">
                               <div>
-                                <p className="text-sm text-muted-foreground mb-1">Original:</p>
+                                <p className="text-sm text-muted-foreground mb-1">{t.aiReview.original}</p>
                                 <p className="text-sm bg-muted p-2 rounded italic">{imp.original}</p>
                               </div>
                               <div>
-                                <p className="text-sm text-muted-foreground mb-1">Suggestion:</p>
+                                <p className="text-sm text-muted-foreground mb-1">{t.aiReview.suggestion}</p>
                                 <p className="text-sm bg-green-50 dark:bg-green-950/20 p-2 rounded font-medium">{imp.suggestion}</p>
                               </div>
                               <div className="flex gap-2">
@@ -337,10 +363,10 @@ export function AISectionReview({
                                   {selectedImprovements.has(imp.id) ? (
                                     <>
                                       <CheckCircle2 className="h-3 w-3 mr-1" />
-                                      Selected
+                                      {t.aiReview.selected}
                                     </>
                                   ) : (
-                                    'Select'
+                                    t.aiReview.select
                                   )}
                                 </Button>
                                 <Button
@@ -349,7 +375,7 @@ export function AISectionReview({
                                   onClick={() => ignoreImprovement(imp.id)}
                                 >
                                   <XCircle className="h-3 w-3 mr-1" />
-                                  Ignore
+                                  {t.aiReview.ignore}
                                 </Button>
                               </div>
                             </CardContent>
@@ -383,12 +409,12 @@ export function AISectionReview({
                           {version.loading ? (
                             <>
                               <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                              Generating...
+                              {t.aiReview.generating}
                             </>
                           ) : version.content ? (
-                            'Regenerate'
+                            t.aiReview.regenerate
                           ) : (
-                            'Generate'
+                            t.aiReview.generate
                           )}
                         </Button>
                       </div>
@@ -397,13 +423,13 @@ export function AISectionReview({
                       <CardContent className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <p className="text-sm font-medium mb-2">Original Version</p>
+                            <p className="text-sm font-medium mb-2">{t.aiReview.originalVersion}</p>
                             <ScrollArea className="h-48 border rounded p-3 bg-muted/30">
                               <p className="text-sm whitespace-pre-wrap">{content}</p>
                             </ScrollArea>
                           </div>
                           <div>
-                            <p className="text-sm font-medium mb-2">Rewritten Version</p>
+                            <p className="text-sm font-medium mb-2">{t.aiReview.rewrittenVersion}</p>
                             <ScrollArea className="h-48 border rounded p-3 bg-green-50 dark:bg-green-950/20">
                               <p className="text-sm whitespace-pre-wrap">{version.content}</p>
                             </ScrollArea>
@@ -417,14 +443,14 @@ export function AISectionReview({
                             {applying ? (
                               <>
                                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                Applying...
+                                {t.aiReview.applying}
                               </>
                             ) : (
-                              'Replace with this version'
+                              t.aiReview.replaceWithVersion
                             )}
                           </Button>
                           <Button variant="outline" onClick={() => onOpenChange(false)}>
-                            Keep original
+                            {t.aiReview.keepOriginal}
                           </Button>
                         </div>
                       </CardContent>
@@ -441,24 +467,24 @@ export function AISectionReview({
                 <div className="space-y-6">
                   <Card>
                     <CardHeader>
-                      <CardTitle>Content Metrics</CardTitle>
-                      <CardDescription>Basic statistics about your writing</CardDescription>
+                      <CardTitle>{t.aiReview.contentMetrics}</CardTitle>
+                      <CardDescription>{t.aiReview.contentMetricsDesc}</CardDescription>
                     </CardHeader>
                     <CardContent className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className="text-sm text-muted-foreground">Word Count</p>
+                        <p className="text-sm text-muted-foreground">{t.aiReview.wordCount}</p>
                         <p className="text-2xl font-bold">{statistics.wordCount}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground">Character Count</p>
+                        <p className="text-sm text-muted-foreground">{t.aiReview.characterCount}</p>
                         <p className="text-2xl font-bold">{statistics.characterCount}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground">Sentences</p>
+                        <p className="text-sm text-muted-foreground">{t.aiReview.sentences}</p>
                         <p className="text-2xl font-bold">{statistics.sentenceCount}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-muted-foreground">Paragraphs</p>
+                        <p className="text-sm text-muted-foreground">{t.aiReview.paragraphs}</p>
                         <p className="text-2xl font-bold">{statistics.paragraphCount}</p>
                       </div>
                     </CardContent>
@@ -466,13 +492,13 @@ export function AISectionReview({
 
                   <Card>
                     <CardHeader>
-                      <CardTitle>Readability</CardTitle>
-                      <CardDescription>How easy is your content to read?</CardDescription>
+                      <CardTitle>{t.aiReview.readability}</CardTitle>
+                      <CardDescription>{t.aiReview.readabilityDesc}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <p className="text-sm font-medium">Readability Score</p>
+                          <p className="text-sm font-medium">{t.aiReview.readabilityScore}</p>
                           <p className="text-2xl font-bold">{statistics.readabilityScore}%</p>
                         </div>
                         <div className="w-full bg-muted rounded-full h-2">
@@ -482,20 +508,15 @@ export function AISectionReview({
                           />
                         </div>
                         <p className="text-xs text-muted-foreground mt-1">
-                          {statistics.readabilityScore >= 80 && 'Excellent - Very easy to read'}
-                          {statistics.readabilityScore >= 60 && statistics.readabilityScore < 80 && 'Good - Easy to read'}
-                          {statistics.readabilityScore >= 40 && statistics.readabilityScore < 60 && 'Fair - Moderately easy'}
-                          {statistics.readabilityScore < 40 && 'Challenging - Consider simplifying'}
+                          {getReadabilityText(statistics.readabilityScore)}
                         </p>
                       </div>
                       <Separator />
                       <div>
-                        <p className="text-sm text-muted-foreground">Average Words per Sentence</p>
+                        <p className="text-sm text-muted-foreground">{t.aiReview.avgWordsPerSentence}</p>
                         <p className="text-2xl font-bold">{statistics.avgWordsPerSentence}</p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          {statistics.avgWordsPerSentence <= 15 && 'Short sentences - Easy to follow'}
-                          {statistics.avgWordsPerSentence > 15 && statistics.avgWordsPerSentence <= 20 && 'Moderate length - Well balanced'}
-                          {statistics.avgWordsPerSentence > 20 && 'Long sentences - Consider breaking them up'}
+                          {getSentenceLengthText(statistics.avgWordsPerSentence)}
                         </p>
                       </div>
                     </CardContent>
@@ -503,24 +524,24 @@ export function AISectionReview({
 
                   <Card>
                     <CardHeader>
-                      <CardTitle>Improvement Summary</CardTitle>
-                      <CardDescription>Based on AI analysis</CardDescription>
+                      <CardTitle>{t.aiReview.improvementSummary}</CardTitle>
+                      <CardDescription>{t.aiReview.basedOnAi}</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm">Improvements Found</span>
+                        <span className="text-sm">{t.aiReview.improvementsFound}</span>
                         <Badge variant="outline">{improvements.length}</Badge>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm">High Priority</span>
+                        <span className="text-sm">{t.aiReview.highPriority}</span>
                         <Badge variant="destructive">{improvements.filter(i => i.priority === 'high').length}</Badge>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm">Medium Priority</span>
+                        <span className="text-sm">{t.aiReview.mediumPriority}</span>
                         <Badge variant="default">{improvements.filter(i => i.priority === 'medium').length}</Badge>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm">Low Priority</span>
+                        <span className="text-sm">{t.aiReview.lowPriority}</span>
                         <Badge variant="secondary">{improvements.filter(i => i.priority === 'low').length}</Badge>
                       </div>
                     </CardContent>
@@ -535,7 +556,7 @@ export function AISectionReview({
           {activeTab === 'suggestions' && (
             <>
               <Button variant="outline" onClick={() => onOpenChange(false)}>
-                Close
+                {t.aiReview.close}
               </Button>
               <Button
                 onClick={applyImprovements}
@@ -544,17 +565,17 @@ export function AISectionReview({
                 {applying ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Applying...
+                    {t.aiReview.applying}
                   </>
                 ) : (
-                  `Apply Selected (${selectedImprovements.size})`
+                  `${t.aiReview.applySelected} (${selectedImprovements.size})`
                 )}
               </Button>
             </>
           )}
           {(activeTab === 'rewrite' || activeTab === 'statistics') && (
             <Button variant="outline" onClick={() => onOpenChange(false)}>
-              Close
+              {t.aiReview.close}
             </Button>
           )}
         </DialogFooter>
