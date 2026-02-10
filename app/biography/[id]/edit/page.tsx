@@ -397,9 +397,9 @@ export default function BiographyEditorPage() {
   );
 
   const getToken = useCallback(async () => {
-    const { data: { session: freshSession }, error } = await supabase.auth.getSession();
+    const { data: { session: freshSession }, error } = await supabase.auth.refreshSession();
     if (error) {
-      console.error('Error getting session:', error);
+      console.error('Error refreshing session:', error);
       return '';
     }
     if (!freshSession || !freshSession.access_token) {
