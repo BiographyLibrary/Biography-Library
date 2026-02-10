@@ -1,7 +1,13 @@
 import { supabase } from './supabase';
 
 export async function getFreshAccessToken(): Promise<string | null> {
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session }, error } = await supabase.auth.refreshSession();
+
+  if (error) {
+    console.error('Session refresh error:', error);
+    return null;
+  }
+
   return session?.access_token || null;
 }
 
