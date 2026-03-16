@@ -3,40 +3,40 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-const COOKIE_NAME = 'sb-gckmusbozgbclokvbnwx-auth-token';
+const STORAGE_KEY = 'supabase.auth.token';
+const COOKIE_NAME = 'sb-session';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
-function setCookie(name: string, value: string) {
+function setCookie(value: string) {
   if (typeof document === 'undefined') return;
-  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax`;
+  document.cookie = `${COOKIE_NAME}=1; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax`;
 }
 
-function deleteCookie(name: string) {
+function deleteCookie() {
   if (typeof document === 'undefined') return;
-  document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax`;
+  document.cookie = `${COOKIE_NAME}=; path=/; max-age=0; SameSite=Lax`;
 }
 
-function getCookie(name: string): string | null {
+function getCookie(): string | null {
   if (typeof document === 'undefined') return null;
-  const match = document.cookie.split('; ').find((row) => row.startsWith(`${name}=`));
-  if (!match) return null;
-  return decodeURIComponent(match.split('=').slice(1).join('='));
+  const match = document.cookie.split('; ').find((row) => row.startsWith(`${COOKIE_NAME}=`));
+  return match ? match.split('=')[1] : null;
 }
 
 const cookieStorage = {
   getItem: (key: string): string | null => {
-    return getCookie(key) ?? localStorage.getItem(key);
+    return localStorage.getItem(key);
   },
   setItem: (key: string, value: string): void => {
     localStorage.setItem(key, value);
-    if (key === COOKIE_NAME) {
-      setCookie(key, value);
+    if (key === STORAGE_KEY) {
+      setCookie(value);
     }
   },
   removeItem: (key: string): void => {
     localStorage.removeItem(key);
-    if (key === COOKIE_NAME) {
-      deleteCookie(key);
+    if (key === STORAGE_KEY) {
+      deleteCookie();
     }
   },
 };
@@ -47,6 +47,5 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     detectSessionInUrl: true,
     storage: typeof window !== 'undefined' ? cookieStorage : undefined,
-    storageKey: COOKIE_NAME,
   },
 });

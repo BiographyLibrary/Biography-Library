@@ -9,19 +9,21 @@ const PROTECTED_ROUTES = [
   '/deceased-biography/declaration',
 ];
 
+const SESSION_COOKIE = 'sb-session';
+
 function isProtectedRoute(pathname: string): boolean {
   return PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
 }
 
-function hasSupabaseSession(request: NextRequest): boolean {
-  const cookies = request.cookies.getAll();
-  return cookies.some((cookie) => cookie.name.startsWith('sb-') && cookie.name.endsWith('-auth-token') && cookie.value.length > 0);
+function hasSession(request: NextRequest): boolean {
+  const cookie = request.cookies.get(SESSION_COOKIE);
+  return cookie?.value === '1';
 }
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (isProtectedRoute(pathname) && !hasSupabaseSession(request)) {
+  if (isProtectedRoute(pathname) && !hasSession(request)) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('redirectTo', pathname);
     return NextResponse.redirect(loginUrl);
