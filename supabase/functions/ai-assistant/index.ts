@@ -5,10 +5,19 @@ const ALLOWED_ORIGINS = [
   "https://biographylibrary.org",
   "https://www.biographylibrary.org",
   "http://localhost:3000",
+  "http://localhost:3001",
 ];
 
+function isAllowedOrigin(origin: string | null): boolean {
+  if (!origin) return false;
+  if (ALLOWED_ORIGINS.includes(origin)) return true;
+  if (origin.endsWith(".bolt.new")) return true;
+  if (origin.endsWith(".stackblitz.io")) return true;
+  return false;
+}
+
 function getCorsHeaders(origin: string | null): Record<string, string> {
-  const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin) ? origin : "*";
+  const allowedOrigin = isAllowedOrigin(origin) ? origin! : ALLOWED_ORIGINS[0];
   return {
     "Access-Control-Allow-Origin": allowedOrigin,
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
