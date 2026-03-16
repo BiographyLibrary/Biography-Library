@@ -1,12 +1,20 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers":
-    "Content-Type, Authorization, X-Client-Info, Apikey",
-};
+const ALLOWED_ORIGINS = [
+  "https://biographylibrary.org",
+  "https://www.biographylibrary.org",
+  "http://localhost:3000",
+];
+
+function getCorsHeaders(origin: string | null): Record<string, string> {
+  const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
+  };
+}
 
 const RATE_LIMIT = 5;
 const RATE_WINDOW_MS = 60_000;
@@ -18,10 +26,10 @@ const LANGUAGE_NAMES: Record<string, string> = {
   de: "German",
 };
 
-function errorResponse(message: string, status: number) {
+function errorResponse(message: string, status: number, origin: string | null = null) {
   return new Response(JSON.stringify({ error: message }), {
     status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    headers: { ...getCorsHeaders(origin), "Content-Type": "application/json" },
   });
 }
 
@@ -320,8 +328,10 @@ async function callInfomaniakAI(
 }
 
 Deno.serve(async (req: Request) => {
+  const origin = req.headers.get("origin");
+
   if (req.method === "OPTIONS") {
-    return new Response(null, { status: 200, headers: corsHeaders });
+    return new Response(null, { status: 200, headers: getCorsHeaders(origin) });
   }
 
   try {
@@ -335,13 +345,14 @@ Deno.serve(async (req: Request) => {
     if (!infomaniakToken) {
       return errorResponse(
         "Infomaniak AI is not configured. Please set INFOMANIAK_AI_TOKEN in Supabase Dashboard > Project Settings > Edge Functions > Manage secrets.",
-        503
+        503,
+        origin
       );
     }
 
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return errorResponse("Missing authorization header", 401);
+      return errorResponse("Missing authorization header", 401, origin);
     }
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
@@ -352,7 +363,7 @@ Deno.serve(async (req: Request) => {
     } = await supabase.auth.getUser(token);
 
     if (authError || !user) {
-      return errorResponse("Unauthorized", 401);
+      return errorResponse("Unauthorized", 401, origin);
     }
 
     const windowStart = new Date(Date.now() - RATE_WINDOW_MS).toISOString();
@@ -365,7 +376,8 @@ Deno.serve(async (req: Request) => {
     if (count !== null && count >= RATE_LIMIT) {
       return errorResponse(
         "Rate limit exceeded. Please wait a moment before trying again.",
-        429
+        429,
+        origin
       );
     }
 
@@ -389,7 +401,7 @@ Deno.serve(async (req: Request) => {
     } = body;
 
     if (!action) {
-      return errorResponse("Missing action parameter", 400);
+      return errorResponse("Missing action parameter", 400, origin);
     }
 
     let systemPrompt: string;
@@ -401,7 +413,8 @@ Deno.serve(async (req: Request) => {
         if (!content || !sectionTitle) {
           return errorResponse(
             "Missing content or sectionTitle for grammar check",
-            400
+            400,
+            origin
           );
         }
         const p = buildGrammarPrompt(sectionTitle, content, language);
@@ -414,7 +427,8 @@ Deno.serve(async (req: Request) => {
         if (!sectionKey || !sectionTitle) {
           return errorResponse(
             "Missing sectionKey or sectionTitle for prompts",
-            400
+            400,
+            origin
           );
         }
         const p = buildPromptsPrompt(sectionKey, sectionTitle, language);
@@ -426,7 +440,8 @@ Deno.serve(async (req: Request) => {
         if (!content || !sectionTitle) {
           return errorResponse(
             "Missing content or sectionTitle for summary",
-            400
+            400,
+            origin
           );
         }
         const p = buildSummaryPrompt(sectionTitle, content, language);
@@ -439,7 +454,8 @@ Deno.serve(async (req: Request) => {
         if (!userAnswer || !originalQuestion) {
           return errorResponse(
             "Missing userAnswer or originalQuestion for analysis",
-            400
+            400,
+            origin
           );
         }
         const p = buildAnalyzeAnswerPrompt(
@@ -457,7 +473,8 @@ Deno.serve(async (req: Request) => {
         if (!currentSection || !sectionContent || !availableSections) {
           return errorResponse(
             "Missing currentSection, sectionContent, or availableSections for recommendation",
-            400
+            400,
+            origin
           );
         }
         const p = buildRecommendSectionPrompt(
@@ -476,7 +493,8 @@ Deno.serve(async (req: Request) => {
         if (!content || !sectionTitle) {
           return errorResponse(
             "Missing content or sectionTitle for rewrite",
-            400
+            400,
+            origin
           );
         }
         const tone = body.tone || 'narrative';
@@ -490,7 +508,8 @@ Deno.serve(async (req: Request) => {
         if (!sections || !Array.isArray(sections)) {
           return errorResponse(
             "Missing sections array for theme analysis",
-            400
+            400,
+            origin
           );
         }
         const p = buildAnalyzeThemesPrompt(sections, language);
@@ -503,7 +522,8 @@ Deno.serve(async (req: Request) => {
         if (!themeAnalysis || !originalOrder) {
           return errorResponse(
             "Missing themeAnalysis or originalOrder for structure proposals",
-            400
+            400,
+            origin
           );
         }
         const p = buildProposeStructuresPrompt(themeAnalysis, originalOrder, language);
@@ -513,7 +533,7 @@ Deno.serve(async (req: Request) => {
         break;
       }
       default:
-        return errorResponse(`Unknown action: ${action}`, 400);
+        return errorResponse(`Unknown action: ${action}`, 400, origin);
     }
 
     await supabase
@@ -535,7 +555,8 @@ Deno.serve(async (req: Request) => {
       console.error("AI API error:", apiError);
       return errorResponse(
         apiError.message || "AI service error. Please try again.",
-        502
+        502,
+        origin
       );
     }
 
@@ -556,7 +577,8 @@ Deno.serve(async (req: Request) => {
       } catch {
         return errorResponse(
           "AI returned an invalid response. Please try again.",
-          502
+          502,
+          origin
         );
       }
     } else if (action === "recommend-next-section") {
@@ -571,7 +593,8 @@ Deno.serve(async (req: Request) => {
       } catch {
         return errorResponse(
           "AI returned an invalid response. Please try again.",
-          502
+          502,
+          origin
         );
       }
     } else if (action === "analyze-themes") {
@@ -582,7 +605,8 @@ Deno.serve(async (req: Request) => {
       } catch {
         return errorResponse(
           "AI returned an invalid response. Please try again.",
-          502
+          502,
+          origin
         );
       }
     } else if (action === "propose-structures") {
@@ -593,7 +617,8 @@ Deno.serve(async (req: Request) => {
       } catch {
         return errorResponse(
           "AI returned an invalid response. Please try again.",
-          502
+          502,
+          origin
         );
       }
     } else {
@@ -603,13 +628,14 @@ Deno.serve(async (req: Request) => {
       } catch {
         return errorResponse(
           "AI returned an invalid response. Please try again.",
-          502
+          502,
+          origin
         );
       }
     }
 
     return new Response(JSON.stringify({ action, ...parsed }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...getCorsHeaders(origin), "Content-Type": "application/json" },
     });
   } catch (e) {
     console.error("Edge function error:", e);
