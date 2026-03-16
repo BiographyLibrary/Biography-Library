@@ -36,6 +36,12 @@ export async function createBiography(
   title: string,
   privacy: 'private' | 'family' | 'public'
 ) {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('name')
+    .eq('id', userId)
+    .maybeSingle();
+
   const { data, error } = await supabase
     .from('biographies')
     .insert({
@@ -44,6 +50,7 @@ export async function createBiography(
       privacy,
       status: 'draft',
       content: {},
+      author_name: profile?.name ?? '',
     })
     .select()
     .maybeSingle();
