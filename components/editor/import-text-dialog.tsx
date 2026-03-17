@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
-import { Upload, FileText, AlertCircle, Loader2, Sparkles } from 'lucide-react';
+import { Upload, FileText, CircleAlert as AlertCircle, Loader as Loader2, Sparkles } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -26,7 +26,6 @@ import { detectSections, type SectionSuggestion } from '@/lib/import/section-mat
 import { SectionAssignmentWizard } from '@/components/import/SectionAssignmentWizard';
 import { useAuth } from '@/lib/auth-context';
 import { useTranslation } from '@/lib/i18n/i18n-context';
-import { ensureValidSession } from '@/lib/session-helper';
 
 interface ImportTextDialogProps {
   open: boolean;
@@ -151,8 +150,7 @@ export function ImportTextDialog({
     setError(null);
 
     try {
-      const token = await ensureValidSession();
-      const result = await detectSections(parsedContent.content, language, token);
+      const result = await detectSections(parsedContent.content, language);
 
       if (result.suggestions.length === 0) {
         setError(t.importDialog.aiNoSections);

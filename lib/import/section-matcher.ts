@@ -1,4 +1,5 @@
 import { BIOGRAPHY_SECTIONS } from '@/lib/editor-constants';
+import { callAI } from '@/lib/ai/ai-client';
 
 export interface SectionSuggestion {
   section: string;
@@ -35,17 +36,12 @@ function splitIntoChunks(text: string): string[] {
 
 async function analyzeChunk(
   chunk: string,
-  language: string,
-  authToken: string
+  language: string
 ): Promise<{
   section: string;
   confidence: 'high' | 'medium' | 'low';
   reason: string;
 }> {
-  const sectionDescriptions = BIOGRAPHY_SECTIONS.map(s =>
-    `- ${s.key}: ${s.title}`
-  ).join('\n');
-
   const languageNames: Record<string, string> = {
     en: 'English',
     it: 'Italian',
@@ -88,30 +84,15 @@ Respond with ONLY a valid JSON object in this exact format (no markdown, no code
 {"section": "section_key", "confidence": "high|medium|low", "reason": "Brief explanation in ${languageNames[language] || 'English'}"}`;
 
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/ai-assistant`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authToken}`,
+    const data = await callAI({
+      messages: [
+        {
+          role: 'user',
+          content: prompt,
         },
-        body: JSON.stringify({
-          messages: [
-            {
-              role: 'user',
-              content: prompt,
-            },
-          ],
-        }),
-      }
-    );
+      ],
+    });
 
-    if (!response.ok) {
-      throw new Error(`AI analysis failed: ${response.status}`);
-    }
-
-    const data = await response.json();
     const content = data.content || '';
 
     const jsonMatch = content.match(/\{[\s\S]*\}/);
@@ -147,14 +128,13 @@ Respond with ONLY a valid JSON object in this exact format (no markdown, no code
 
 export async function detectSections(
   importedText: string,
-  language: string,
-  authToken: string
+  language: string
 ): Promise<SectionDetectionResult> {
   const chunks = splitIntoChunks(importedText);
   const suggestions: SectionSuggestion[] = [];
 
   for (const chunk of chunks) {
-    const analysis = await analyzeChunk(chunk, language, authToken);
+    const analysis = await analyzeChunk(chunk, language);
 
     const excerpt = chunk.length > 100
       ? chunk.substring(0, 100) + '...'

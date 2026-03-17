@@ -1,4 +1,4 @@
-const AI_FUNCTION_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/ai-assistant`;
+import { callAI } from './ai-client';
 
 export interface AnalyzeResponse {
   needsFollowUp: boolean;
@@ -28,40 +28,7 @@ function countWords(text: string): number {
   return text.trim().split(/\s+/).filter(word => word.length > 0).length;
 }
 
-async function callAiFunction(
-  token: string,
-  body: Record<string, any>
-): Promise<any> {
-  const res = await fetch(AI_FUNCTION_URL, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      Apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    },
-    body: JSON.stringify(body),
-  });
-
-  if (res.status === 429) {
-    throw new Error('Rate limit exceeded. Please wait a moment before trying again.');
-  }
-
-  if (res.status === 503) {
-    throw new Error('AI service is not configured yet.');
-  }
-
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    console.error('AI request failed:', { status: res.status, statusText: res.statusText, data });
-    const errorMsg = data.error || `AI request failed with status ${res.status}`;
-    throw new Error(errorMsg);
-  }
-
-  return res.json();
-}
-
 export async function analyzeAndRespond(
-  token: string,
   userAnswer: string,
   originalQuestion: string,
   conversationHistory: ConversationHistory[],
@@ -113,7 +80,7 @@ export async function analyzeAndRespond(
   }
 
   try {
-    const result = await callAiFunction(token, {
+    const result = await callAI({
       action: 'analyze-answer',
       userAnswer,
       originalQuestion,
@@ -122,7 +89,6 @@ export async function analyzeAndRespond(
     });
 
     if (!result || typeof result !== 'object') {
-      console.error('Invalid result format:', result);
       throw new Error('Invalid response format from AI service');
     }
 

@@ -400,40 +400,12 @@ export default function BiographyEditorPage() {
     [markDirty]
   );
 
-  const getToken = useCallback(async () => {
-    try {
-      const { data: { session: currentSession }, error } = await supabase.auth.getSession();
-      if (error || !currentSession?.access_token) {
-        console.error('Error getting session:', error);
-        return '';
-      }
-
-      const expiresAt = currentSession.expires_at ?? 0;
-      const nowSec = Math.floor(Date.now() / 1000);
-
-      if (expiresAt - nowSec < 60) {
-        const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
-        if (refreshError || !refreshed.session?.access_token) {
-          console.error('Error refreshing session:', refreshError);
-          return '';
-        }
-        return refreshed.session.access_token;
-      }
-
-      return currentSession.access_token;
-    } catch (err) {
-      console.error('getToken error:', err);
-      return '';
-    }
-  }, []);
-
   const handleGrammarCheck = useCallback(async () => {
-    const token = await getToken();
     const sectionData = getSectionData(contentRef.current, activeSection);
     const section = BIOGRAPHY_SECTIONS.find((s) => s.key === activeSection);
     if (!sectionData.text.trim() || !section) return;
 
-    if (!token) {
+    if (!session) {
       setAiState({
         type: 'grammar',
         loading: false,
@@ -456,7 +428,6 @@ export default function BiographyEditorPage() {
 
     try {
       const suggestions = await checkGrammar(
-        token,
         section.title,
         sectionData.text,
         language
@@ -479,10 +450,9 @@ export default function BiographyEditorPage() {
         error: err.message || t.editor.failedGrammar,
       }));
     }
-  }, [activeSection, getToken, language, t]);
+  }, [activeSection, session, language, t]);
 
   const handleGuidedPrompts = useCallback(async () => {
-    const token = await getToken();
     const section = BIOGRAPHY_SECTIONS.find((s) => s.key === activeSection);
     if (!section) return;
 
@@ -498,7 +468,7 @@ export default function BiographyEditorPage() {
       error: null,
     });
 
-    if (!token) {
+    if (!session) {
       setAiState((prev) => ({
         ...prev,
         loading: false,
@@ -509,7 +479,6 @@ export default function BiographyEditorPage() {
 
     try {
       const prompts = await getGuidedPrompts(
-        token,
         activeSection,
         section.title,
         language
@@ -533,15 +502,14 @@ export default function BiographyEditorPage() {
         error: null,
       }));
     }
-  }, [activeSection, getToken, language]);
+  }, [activeSection, session, language]);
 
   const handleSummarize = useCallback(async () => {
-    const token = await getToken();
     const sectionData = getSectionData(contentRef.current, activeSection);
     const section = BIOGRAPHY_SECTIONS.find((s) => s.key === activeSection);
     if (!sectionData.text.trim() || !section) return;
 
-    if (!token) {
+    if (!session) {
       setAiState({
         type: 'summary',
         loading: false,
@@ -564,7 +532,6 @@ export default function BiographyEditorPage() {
 
     try {
       const summary = await getSummary(
-        token,
         section.title,
         sectionData.text,
         language
@@ -587,7 +554,7 @@ export default function BiographyEditorPage() {
         error: err.message || t.editor.failedSummary,
       }));
     }
-  }, [activeSection, getToken, language, t]);
+  }, [activeSection, session, language, t]);
 
   const handleAcceptSuggestion = useCallback(
     (suggestionId: string) => {
@@ -686,8 +653,7 @@ export default function BiographyEditorPage() {
       setIsLoadingRecommendation(true);
 
       try {
-        const token = await getToken();
-        if (token && session) {
+        if (session) {
           const updatedContent = {
             ...contentRef.current,
             [activeSection]: {
@@ -701,7 +667,6 @@ export default function BiographyEditorPage() {
           const sectionContent = updatedContent[activeSection]?.text || '';
 
           const recommendation = await recommendNextSection(
-            token,
             activeSection,
             completedSections,
             sectionContent,
@@ -717,7 +682,7 @@ export default function BiographyEditorPage() {
         setIsLoadingRecommendation(false);
       }
     },
-    [activeSection, markDirty, getToken, session, language]
+    [activeSection, markDirty, session, language]
   );
 
   const todoCount = Object.values(content).filter((d) => d.todo).length;

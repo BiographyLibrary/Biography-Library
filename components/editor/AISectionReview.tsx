@@ -13,7 +13,6 @@ import { aiService, AiLimitError, type Improvement } from '@/lib/ai/ai-provider'
 import { useAuth } from '@/lib/auth-context';
 import { addRevisionToHistory } from '@/lib/revision-history-service';
 import { toast } from 'sonner';
-import { ensureValidSession } from '@/lib/session-helper';
 import { useTranslation } from '@/lib/i18n/i18n-context';
 
 interface AISectionReviewProps {
@@ -95,14 +94,11 @@ export function AISectionReview({
   }, [open, content]);
 
   const loadSuggestions = async () => {
-    if (!session?.access_token) return;
+    if (!session) return;
 
     setLoading(true);
     try {
-      const freshToken = await ensureValidSession();
-
       const results = await aiService.suggestImprovements(
-        freshToken,
         content,
         sectionTitle,
         language
@@ -132,17 +128,14 @@ export function AISectionReview({
   };
 
   const loadRewrite = async (tone: 'narrative' | 'formal' | 'intimate') => {
-    if (!session?.access_token) return;
+    if (!session) return;
 
     setRewriteVersions(prev =>
       prev.map(v => v.tone === tone ? { ...v, loading: true } : v)
     );
 
     try {
-      const freshToken = await ensureValidSession();
-
-      const rewritten = await aiService.rewriteSectionWithToken(
-        freshToken,
+      const rewritten = await aiService.rewriteSection(
         sectionTitle,
         content,
         tone,

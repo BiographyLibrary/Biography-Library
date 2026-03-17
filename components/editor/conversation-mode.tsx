@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
-import { User, Send, Mic, Loader2, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { User, Send, Mic, Loader as Loader2, ArrowLeft, CircleCheck as CheckCircle2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/i18n-context';
 import { getFallbackPrompts } from '@/lib/ai-constants';
 import { BIOGRAPHY_SECTIONS } from '@/lib/editor-constants';
@@ -31,7 +31,6 @@ import {
 import { useParams } from 'next/navigation';
 import { Logo } from '@/components/logo';
 import { useTheme } from 'next-themes';
-import { ensureValidSession } from '@/lib/session-helper';
 
 interface Message {
   id: string;
@@ -255,7 +254,7 @@ export function ConversationMode({
 
   const handleSendAnswer = useCallback(async () => {
     if (!currentAnswer.trim() || currentQuestionIndex >= prompts.length) return;
-    if (!session?.access_token) return;
+    if (!session) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -284,11 +283,9 @@ export function ConversationMode({
     setIsAnalyzing(true);
 
     try {
-      const freshToken = await ensureValidSession();
       const conversationHistory: ConversationHistory[] = answers.slice(-3);
 
       const analysis = await analyzeAndRespond(
-        freshToken,
         currentAnswer.trim(),
         currentQuestion,
         conversationHistory,

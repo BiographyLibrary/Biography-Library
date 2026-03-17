@@ -23,7 +23,6 @@ import { supabase } from '@/lib/supabase';
 import { BIOGRAPHY_SECTIONS } from '@/lib/editor-constants';
 import { useTranslation } from '@/lib/i18n/i18n-context';
 import { cn } from '@/lib/utils';
-import { ensureValidSession } from '@/lib/session-helper';
 
 interface FinalReviewDialogProps {
   open: boolean;
@@ -51,22 +50,19 @@ export function FinalReviewDialog({
   const originalOrder = BIOGRAPHY_SECTIONS.map(s => s.key);
 
   useEffect(() => {
-    if (open && session?.access_token && sections.length > 0) {
+    if (open && session && sections.length > 0) {
       analyzeStructure();
     }
   }, [open, session, sections]);
 
   const analyzeStructure = async () => {
-    if (!session?.access_token) return;
+    if (!session) return;
 
     setIsAnalyzing(true);
     setError(null);
 
     try {
-      const freshToken = await ensureValidSession();
-
       const themes = await analyzeThemes(
-        freshToken,
         sections.filter(s => s.content.trim().length > 50),
         language
       );
@@ -74,7 +70,6 @@ export function FinalReviewDialog({
       setThemeAnalysis(themes);
 
       const structureProposals = await proposeAlternativeStructures(
-        freshToken,
         themes,
         originalOrder,
         language
