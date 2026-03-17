@@ -42,84 +42,31 @@ async function analyzeChunk(
   confidence: 'high' | 'medium' | 'low';
   reason: string;
 }> {
-  const languageNames: Record<string, string> = {
-    en: 'English',
-    it: 'Italian',
-    fr: 'French',
-    de: 'German',
-  };
-
-  const sectionHints: Record<string, string> = {
-    childhood: 'early memories, youth, first experiences',
-    family: 'parents, siblings, relatives, ancestry',
-    education: 'school, university, learning, studies',
-    career: 'work, jobs, professional life, career milestones',
-    'life-events': 'important moments, major events, turning points',
-    relationships: 'spouse, partners, friendships, romantic life',
-    challenges: 'difficulties, hardships, obstacles, lessons learned',
-    passions: 'hobbies, interests, leisure activities',
-    legacy: 'impact, what to be remembered for, final thoughts',
-  };
-
-  const detailedSections = BIOGRAPHY_SECTIONS.map(s =>
-    `- ${s.key}: ${s.title} (${sectionHints[s.key] || ''})`
-  ).join('\n');
-
-  const prompt = `You are analyzing a biography excerpt to determine which section it belongs to.
-
-Available sections:
-${detailedSections}
-
-Text excerpt:
-"""
-${chunk.substring(0, 500)}${chunk.length > 500 ? '...' : ''}
-"""
-
-Analyze this text and determine which biography section it most likely belongs to. Consider:
-- The main theme and content
-- Time period mentioned (childhood, adulthood, etc.)
-- Subject matter (family, work, education, personal life, etc.)
-
-Respond with ONLY a valid JSON object in this exact format (no markdown, no code blocks):
-{"section": "section_key", "confidence": "high|medium|low", "reason": "Brief explanation in ${languageNames[language] || 'English'}"}`;
-
   try {
     const data = await callAI({
-      messages: [
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
+      action: 'detect-section',
+      chunkText: chunk.substring(0, 500),
+      language,
     });
 
-    const content = data.content || '';
+    const section = data.section || '';
+    const confidence = data.confidence || 'low';
+    const reason = data.reason || '';
 
-    const jsonMatch = content.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error('No JSON found in response');
-    }
-
-    const result = JSON.parse(jsonMatch[0]);
-
-    const validSection = BIOGRAPHY_SECTIONS.find(s => s.key === result.section);
+    const validSection = BIOGRAPHY_SECTIONS.find(s => s.key === section);
     if (!validSection) {
       return {
-        section: 'early_years',
+        section: 'childhood',
         confidence: 'low',
         reason: 'Could not determine appropriate section',
       };
     }
 
-    return {
-      section: result.section,
-      confidence: result.confidence,
-      reason: result.reason,
-    };
+    return { section, confidence, reason };
   } catch (error) {
     console.error('Error analyzing chunk:', error);
     return {
-      section: 'early_years',
+      section: 'childhood',
       confidence: 'low',
       reason: 'Automatic detection failed',
     };

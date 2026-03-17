@@ -23,6 +23,8 @@ const LANGUAGE_NAMES: Record<string, string> = {
   de: "German",
 };
 
+const AI_CALL_TIMEOUT_MS = 30_000;
+
 function errorResponse(message: string, status: number, extra?: Record<string, unknown>) {
   return new Response(JSON.stringify({ error: message, ...extra }), {
     status,
@@ -148,10 +150,10 @@ function buildRecommendSectionPrompt(
     system: `You are a biography writing coach helping someone write their life story in ${langName}. The user just completed a section. Based on the content they wrote, recommend which section they should work on next.
 
 Consider:
-1. Natural chronological flow (childhood → education → career → relationships → legacy)
-2. Topics they mentioned but didn't fully explore (e.g., they mentioned "studying medicine" → recommend Education section)
-3. Emotional readiness (avoid suggesting heavy topics like Challenges too early unless they're ready)
-4. Building narrative momentum (if they wrote about career success, relationships or passions might be good next)
+1. Natural chronological flow (childhood -> education -> career -> relationships -> legacy)
+2. Topics they mentioned but didn't fully explore
+3. Emotional readiness (avoid suggesting heavy topics too early)
+4. Building narrative momentum
 
 Available sections to recommend from:
 ${availableSectionsWithDesc}
@@ -259,7 +261,7 @@ function buildProposeStructuresPrompt(
 Theme Analysis:
 ${JSON.stringify(themeAnalysis, null, 2)}
 
-Original Order: ${originalOrder.join(' → ')}
+Original Order: ${originalOrder.join(' -> ')}
 
 IMPORTANT RULES:
 - DO NOT change any content or words
@@ -288,6 +290,41 @@ Respond in JSON format:
   };
 }
 
+function buildDetectSectionPrompt(chunkText: string, language: string) {
+  const langName = getLangName(language);
+
+  const sectionHints: Record<string, string> = {
+    childhood: 'early memories, youth, first experiences',
+    family: 'parents, siblings, relatives, ancestry',
+    education: 'school, university, learning, studies',
+    career: 'work, jobs, professional life, career milestones',
+    'life-events': 'important moments, major events, turning points',
+    relationships: 'spouse, partners, friendships, romantic life',
+    challenges: 'difficulties, hardships, obstacles, lessons learned',
+    passions: 'hobbies, interests, leisure activities',
+    legacy: 'impact, what to be remembered for, final thoughts',
+  };
+
+  const detailedSections = Object.entries(sectionHints)
+    .map(([key, hint]) => `- ${key}: ${hint}`)
+    .join('\n');
+
+  return {
+    system: `You are analyzing a biography excerpt to determine which section it belongs to.
+
+Available sections:
+${detailedSections}
+
+Analyze the text and determine which biography section it most likely belongs to. Consider the main theme, time period, and subject matter.
+
+Return a JSON object:
+{"section": "section_key", "confidence": "high|medium|low", "reason": "Brief explanation in ${langName}"}
+
+Return ONLY valid JSON, no markdown fences.`,
+    user: `Text excerpt:\n"""\n${chunkText}\n"""`,
+  };
+}
+
 async function callInfomaniakAI(
   systemPrompt: string,
   userPrompt: string,
@@ -296,43 +333,60 @@ async function callInfomaniakAI(
   infomaniakEndpoint: string,
   infomaniakModel: string
 ) {
-  const response = await fetch(infomaniakEndpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${infomaniakToken}`,
-    },
-    body: JSON.stringify({
-      model: infomaniakModel,
-      max_tokens: maxTokens,
-      temperature: 0.7,
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
-      ],
-    }),
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), AI_CALL_TIMEOUT_MS);
 
-  if (!response.ok) {
-    const errText = await response.text();
-    console.error("Infomaniak AI error:", {
-      status: response.status,
-      body: errText,
+  try {
+    const response = await fetch(infomaniakEndpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${infomaniakToken}`,
+      },
+      body: JSON.stringify({
+        model: infomaniakModel,
+        max_tokens: maxTokens,
+        temperature: 0.7,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ],
+      }),
+      signal: controller.signal,
     });
 
-    if (response.status === 401) {
-      throw new Error("Invalid API key. Please check your INFOMANIAK_AI_TOKEN.");
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error("Infomaniak AI error:", {
+        status: response.status,
+        body: errText,
+      });
+
+      if (response.status === 401) {
+        throw new Error("Invalid API key. Please check your INFOMANIAK_AI_TOKEN.");
+      }
+
+      if (response.status === 404) {
+        throw new Error("AI model not found. The configured model may not be available.");
+      }
+
+      if (response.status === 429) {
+        throw new Error("Infomaniak rate limit exceeded. Please wait a moment.");
+      }
+
+      throw new Error(`Infomaniak AI error (${response.status}). Please try again.`);
     }
 
-    if (response.status === 404) {
-      throw new Error("AI model not found. The configured model may not be available.");
+    const result = await response.json();
+    return result.choices?.[0]?.message?.content ?? "";
+  } catch (err: any) {
+    if (err.name === "AbortError") {
+      throw new Error("AI request timed out. Please try again.");
     }
-
-    throw new Error(`Infomaniak AI error (${response.status}). Please try again.`);
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  const result = await response.json();
-  return result.choices?.[0]?.message?.content ?? "";
 }
 
 async function checkAndIncrementUsage(
@@ -486,7 +540,8 @@ Deno.serve(async (req: Request) => {
       availableSections,
       sections,
       themeAnalysis,
-      originalOrder
+      originalOrder,
+      chunkText
     } = body;
 
     if (!action) {
@@ -631,6 +686,19 @@ Deno.serve(async (req: Request) => {
         maxTokens = 3000;
         break;
       }
+      case "detect-section": {
+        if (!chunkText) {
+          return errorResponse(
+            "Missing chunkText for section detection",
+            400
+          );
+        }
+        const p = buildDetectSectionPrompt(chunkText, language);
+        systemPrompt = p.system;
+        userPrompt = p.user;
+        maxTokens = 256;
+        break;
+      }
       default:
         return errorResponse(`Unknown action: ${action}`, 400);
     }
@@ -714,6 +782,24 @@ Deno.serve(async (req: Request) => {
           "AI returned an invalid response. Please try again.",
           502
         );
+      }
+    } else if (action === "detect-section") {
+      try {
+        const cleaned = extractJson(textContent);
+        const jsonData = JSON.parse(cleaned);
+        parsed = {
+          section: jsonData.section || "childhood",
+          confidence: jsonData.confidence || "low",
+          reason: jsonData.reason || "",
+          content: textContent,
+        };
+      } catch {
+        parsed = {
+          section: "childhood",
+          confidence: "low",
+          reason: "Failed to parse AI response",
+          content: textContent,
+        };
       }
     } else {
       try {
