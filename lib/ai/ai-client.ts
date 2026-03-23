@@ -14,7 +14,7 @@ async function getValidToken(): Promise<string> {
   const expiresAt = session.expires_at ?? 0;
   const nowSec = Math.floor(Date.now() / 1000);
 
-  if (expiresAt - nowSec < 120) {
+  if (expiresAt - nowSec < 300) {
     const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
     if (refreshError || !refreshed.session?.access_token) {
       throw new Error('Session expired. Please sign in again.');
@@ -30,12 +30,17 @@ export async function callAI(body: Record<string, unknown>): Promise<any> {
   let res = await doFetch(token, body);
 
   if (res.status === 401) {
+    await new Promise(resolve => setTimeout(resolve, 500));
     const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
     if (refreshError || !refreshed.session?.access_token) {
       throw new Error('Session expired. Please sign in again.');
     }
     token = refreshed.session.access_token;
     res = await doFetch(token, body);
+
+    if (res.status === 401) {
+      throw new Error('Session expired. Please sign in again.');
+    }
   }
 
   if (res.status === 429) {
@@ -45,7 +50,7 @@ export async function callAI(body: Record<string, unknown>): Promise<any> {
         data.limitType,
         data.resetAt,
         data.dailyLimit ?? 40,
-        data.weeklyLimit ?? 150
+        data.weeklyLimit ?? 200
       );
     }
     throw new Error('Rate limit exceeded. Please wait a moment before trying again.');
