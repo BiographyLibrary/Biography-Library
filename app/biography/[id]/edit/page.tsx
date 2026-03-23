@@ -11,6 +11,7 @@ import { TodoPanel } from '@/components/editor/todo-panel';
 import { NotesOverviewPanel } from '@/components/editor/notes-overview-panel';
 import { AiSuggestionsPanel } from '@/components/editor/ai-suggestions-panel';
 import { ShareLinkPanel } from '@/components/editor/share-link-panel';
+import { PhotoGalleryPanel } from '@/components/editor/PhotoGalleryPanel';
 import { ConversationMode } from '@/components/editor/conversation-mode';
 import { NextSectionPrompt } from '@/components/editor/next-section-prompt';
 import { AISectionReview } from '@/components/editor/AISectionReview';
@@ -77,6 +78,7 @@ export default function BiographyEditorPage() {
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [showTodoPanel, setShowTodoPanel] = useState(false);
   const [showNotesPanel, setShowNotesPanel] = useState(false);
+  const [showPhotosPanel, setShowPhotosPanel] = useState(false);
   const [notesCount, setNotesCount] = useState(0);
   const [editorMode, setEditorMode] = useState<'editor' | 'conversation'>('editor');
   const [editorFontSize, setEditorFontSize] = useState<number>(16);
@@ -836,8 +838,10 @@ export default function BiographyEditorPage() {
             notesCount={notesCount}
             onToggleTodoPanel={() => setShowTodoPanel(!showTodoPanel)}
             onToggleNotesPanel={() => setShowNotesPanel(!showNotesPanel)}
+            onTogglePhotosPanel={() => setShowPhotosPanel(!showPhotosPanel)}
             showTodoPanel={showTodoPanel}
             showNotesPanel={showNotesPanel}
+            showPhotosPanel={showPhotosPanel}
             completedSections={completedSections}
           />
         </aside>
@@ -987,6 +991,15 @@ export default function BiographyEditorPage() {
               onRejectSuggestion={handleRejectSuggestion}
               onInsertPrompt={handleInsertPrompt}
             />
+          )}
+
+          {showPhotosPanel && (
+            <div className="w-[320px] shrink-0 border-l border-border/50 bg-card flex flex-col min-h-0 overflow-hidden">
+              <PhotoGalleryPanel
+                biographyId={id}
+                userId={user.id}
+              />
+            </div>
           )}
         </div>
       </div>

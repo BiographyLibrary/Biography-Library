@@ -587,6 +587,27 @@ export interface Translations {
     thisWeek: string;
     usageIndicatorTitle: string;
   };
+  photos: {
+    panelTitle: string;
+    counter: string;
+    uploadButton: string;
+    captionPlaceholder: string;
+    layoutLabel: string;
+    layoutFullPage: string;
+    layoutCover: string;
+    layoutTwoVertical: string;
+    layoutTwoHorizontal: string;
+    layoutThreeMixed: string;
+    deleteButton: string;
+    deleteConfirmTitle: string;
+    deleteConfirmMessage: string;
+    uploadProgress: string;
+    fileTooLarge: string;
+    invalidFileType: string;
+    uploadError: string;
+    limitReached: string;
+    deleteError: string;
+  };
 }
 
 export const translations: Record<Language, Translations> = {
@@ -1177,6 +1198,27 @@ export const translations: Record<Language, Translations> = {
       thisWeek: 'This week',
       usageIndicatorTitle: 'AI usage',
     },
+    photos: {
+      panelTitle: 'Photos',
+      counter: '{count}/10 photos',
+      uploadButton: 'Upload photo',
+      captionPlaceholder: 'Add a caption...',
+      layoutLabel: 'Layout',
+      layoutFullPage: 'Full page',
+      layoutCover: 'Cover',
+      layoutTwoVertical: 'Two photos — vertical',
+      layoutTwoHorizontal: 'Two photos — horizontal',
+      layoutThreeMixed: 'Three photos (mixed)',
+      deleteButton: 'Delete photo',
+      deleteConfirmTitle: 'Delete photo',
+      deleteConfirmMessage: 'Are you sure you want to delete this photo? This action cannot be undone.',
+      uploadProgress: 'Uploading...',
+      fileTooLarge: 'File is too large. Maximum size is 5 MB.',
+      invalidFileType: 'Invalid file type. Please upload a JPG, PNG, or WEBP image.',
+      uploadError: 'Failed to upload photo. Please try again.',
+      limitReached: 'You have reached the maximum of 10 photos per biography.',
+      deleteError: 'Failed to delete photo. Please try again.',
+    },
   },
   it: {
     common: {
@@ -1764,6 +1806,27 @@ export const translations: Record<Language, Translations> = {
       today: 'Oggi',
       thisWeek: 'Questa settimana',
       usageIndicatorTitle: 'Utilizzo AI',
+    },
+    photos: {
+      panelTitle: 'Foto',
+      counter: '{count}/10 foto',
+      uploadButton: 'Carica foto',
+      captionPlaceholder: 'Aggiungi una didascalia...',
+      layoutLabel: 'Layout',
+      layoutFullPage: 'Pagina intera',
+      layoutCover: 'Copertina',
+      layoutTwoVertical: 'Due foto — verticale',
+      layoutTwoHorizontal: 'Due foto — orizzontale',
+      layoutThreeMixed: 'Tre foto (misto)',
+      deleteButton: 'Elimina foto',
+      deleteConfirmTitle: 'Elimina foto',
+      deleteConfirmMessage: 'Sei sicuro di voler eliminare questa foto? Questa azione non può essere annullata.',
+      uploadProgress: 'Caricamento...',
+      fileTooLarge: 'Il file è troppo grande. La dimensione massima è 5 MB.',
+      invalidFileType: 'Tipo di file non valido. Carica un\'immagine JPG, PNG o WEBP.',
+      uploadError: 'Caricamento foto fallito. Riprova.',
+      limitReached: 'Hai raggiunto il massimo di 10 foto per biografia.',
+      deleteError: 'Eliminazione foto fallita. Riprova.',
     },
   },
   fr: {
@@ -2353,6 +2416,27 @@ export const translations: Record<Language, Translations> = {
       thisWeek: 'Cette semaine',
       usageIndicatorTitle: 'Utilisation IA',
     },
+    photos: {
+      panelTitle: 'Photos',
+      counter: '{count}/10 photos',
+      uploadButton: 'Télécharger une photo',
+      captionPlaceholder: 'Ajouter une légende...',
+      layoutLabel: 'Mise en page',
+      layoutFullPage: 'Pleine page',
+      layoutCover: 'Couverture',
+      layoutTwoVertical: 'Deux photos — vertical',
+      layoutTwoHorizontal: 'Deux photos — horizontal',
+      layoutThreeMixed: 'Trois photos (mixte)',
+      deleteButton: 'Supprimer la photo',
+      deleteConfirmTitle: 'Supprimer la photo',
+      deleteConfirmMessage: 'Êtes-vous sûr de vouloir supprimer cette photo ? Cette action est irréversible.',
+      uploadProgress: 'Téléchargement...',
+      fileTooLarge: 'Fichier trop volumineux. La taille maximale est de 5 Mo.',
+      invalidFileType: 'Type de fichier invalide. Veuillez télécharger une image JPG, PNG ou WEBP.',
+      uploadError: 'Échec du téléchargement. Veuillez réessayer.',
+      limitReached: 'Vous avez atteint le maximum de 10 photos par biographie.',
+      deleteError: 'Échec de la suppression. Veuillez réessayer.',
+    },
   },
   de: {
     common: {
@@ -2940,6 +3024,27 @@ export const translations: Record<Language, Translations> = {
       today: 'Heute',
       thisWeek: 'Diese Woche',
       usageIndicatorTitle: 'KI-Nutzung',
+    },
+    photos: {
+      panelTitle: 'Fotos',
+      counter: '{count}/10 Fotos',
+      uploadButton: 'Foto hochladen',
+      captionPlaceholder: 'Bildunterschrift hinzufügen...',
+      layoutLabel: 'Layout',
+      layoutFullPage: 'Ganze Seite',
+      layoutCover: 'Titelseite',
+      layoutTwoVertical: 'Zwei Fotos — vertikal',
+      layoutTwoHorizontal: 'Zwei Fotos — horizontal',
+      layoutThreeMixed: 'Drei Fotos (gemischt)',
+      deleteButton: 'Foto löschen',
+      deleteConfirmTitle: 'Foto löschen',
+      deleteConfirmMessage: 'Möchten Sie dieses Foto wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.',
+      uploadProgress: 'Wird hochgeladen...',
+      fileTooLarge: 'Datei zu groß. Maximale Größe ist 5 MB.',
+      invalidFileType: 'Ungültiger Dateityp. Bitte laden Sie ein JPG-, PNG- oder WEBP-Bild hoch.',
+      uploadError: 'Foto konnte nicht hochgeladen werden. Bitte versuchen Sie es erneut.',
+      limitReached: 'Sie haben das Maximum von 10 Fotos pro Biografie erreicht.',
+      deleteError: 'Foto konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.',
     },
   },
 };

@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, Circle, Flag, ChevronRight, ListTodo, StickyNote } from 'lucide-react';
+import { Check, Circle, Flag, ChevronRight, ListTodo, StickyNote, Images } from 'lucide-react';
 import {
   BIOGRAPHY_SECTIONS,
   type BiographyContent,
@@ -17,8 +17,10 @@ interface SectionSidebarProps {
   notesCount: number;
   onToggleTodoPanel: () => void;
   onToggleNotesPanel: () => void;
+  onTogglePhotosPanel: () => void;
   showTodoPanel: boolean;
   showNotesPanel: boolean;
+  showPhotosPanel: boolean;
   completedSections?: string[];
 }
 
@@ -30,8 +32,10 @@ export function SectionSidebar({
   notesCount,
   onToggleTodoPanel,
   onToggleNotesPanel,
+  onTogglePhotosPanel,
   showTodoPanel,
   showNotesPanel,
+  showPhotosPanel,
   completedSections = [],
 }: SectionSidebarProps) {
   const { t } = useTranslation();
@@ -119,6 +123,18 @@ export function SectionSidebar({
             </span>
           </button>
         )}
+        <button
+          onClick={onTogglePhotosPanel}
+          className={cn(
+            'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors',
+            showPhotosPanel
+              ? 'bg-primary/10 text-primary font-medium'
+              : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+          )}
+        >
+          <Images className="h-4 w-4" />
+          <span>{t.photos.panelTitle}</span>
+        </button>
       </div>
     </nav>
   );
