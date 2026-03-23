@@ -32,6 +32,8 @@ interface SectionEditorProps {
   onMarkComplete?: () => void;
   isCompleted?: boolean;
   onTogglePhotos?: () => void;
+  openImportDialog?: boolean;
+  onImportDialogOpenChange?: (open: boolean) => void;
 }
 
 export function SectionEditor({
@@ -54,9 +56,15 @@ export function SectionEditor({
   onMarkComplete,
   isCompleted = false,
   onTogglePhotos,
+  openImportDialog,
+  onImportDialogOpenChange,
 }: SectionEditorProps) {
   const [showVoice, setShowVoice] = useState(false);
   const [showImportDialog, setShowImportDialog] = useState(false);
+
+  useEffect(() => {
+    if (openImportDialog !== undefined) setShowImportDialog(openImportDialog);
+  }, [openImportDialog]);
   const [showNotesDialog, setShowNotesDialog] = useState(false);
   const section = BIOGRAPHY_SECTIONS.find((s) => s.key === sectionKey);
   const { t } = useTranslation();
@@ -250,7 +258,7 @@ export function SectionEditor({
 
       <ImportTextDialog
         open={showImportDialog}
-        onOpenChange={setShowImportDialog}
+        onOpenChange={(v) => { setShowImportDialog(v); onImportDialogOpenChange?.(v); }}
         sectionName={sectionTitle}
         onImport={handleImportText}
         onImportMultipleSections={onImportMultipleSections}

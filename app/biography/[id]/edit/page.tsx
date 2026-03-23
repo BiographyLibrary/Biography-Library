@@ -79,6 +79,7 @@ export default function BiographyEditorPage() {
   const [showTodoPanel, setShowTodoPanel] = useState(false);
   const [showNotesPanel, setShowNotesPanel] = useState(false);
   const [showPhotosPanel, setShowPhotosPanel] = useState(false);
+  const [showSidebarImport, setShowSidebarImport] = useState(false);
   const [notesCount, setNotesCount] = useState(0);
   const [editorMode, setEditorMode] = useState<'editor' | 'conversation'>('editor');
   const [editorFontSize, setEditorFontSize] = useState<number>(16);
@@ -839,6 +840,7 @@ export default function BiographyEditorPage() {
             onToggleTodoPanel={() => setShowTodoPanel(!showTodoPanel)}
             onToggleNotesPanel={() => setShowNotesPanel(!showNotesPanel)}
             onTogglePhotosPanel={() => setShowPhotosPanel(!showPhotosPanel)}
+            onToggleImportText={() => setShowSidebarImport(true)}
             showTodoPanel={showTodoPanel}
             showNotesPanel={showNotesPanel}
             showPhotosPanel={showPhotosPanel}
@@ -912,6 +914,8 @@ export default function BiographyEditorPage() {
                   onMarkComplete={handleMarkSectionComplete}
                   isCompleted={completedSections.includes(activeSection)}
                   onTogglePhotos={() => setShowPhotosPanel((v) => !v)}
+                  openImportDialog={showSidebarImport}
+                  onImportDialogOpenChange={(v) => { if (!v) setShowSidebarImport(false); }}
                 />
               )}
 

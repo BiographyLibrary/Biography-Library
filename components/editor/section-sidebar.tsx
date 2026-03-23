@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, Circle, Flag, ChevronRight, ListTodo, StickyNote, Images } from 'lucide-react';
+import { Check, Circle, Flag, ChevronRight, ListTodo, StickyNote, Images, Upload } from 'lucide-react';
 import {
   BIOGRAPHY_SECTIONS,
   type BiographyContent,
@@ -18,6 +18,7 @@ interface SectionSidebarProps {
   onToggleTodoPanel: () => void;
   onToggleNotesPanel: () => void;
   onTogglePhotosPanel: () => void;
+  onToggleImportText: () => void;
   showTodoPanel: boolean;
   showNotesPanel: boolean;
   showPhotosPanel: boolean;
@@ -33,6 +34,7 @@ export function SectionSidebar({
   onToggleTodoPanel,
   onToggleNotesPanel,
   onTogglePhotosPanel,
+  onToggleImportText,
   showTodoPanel,
   showNotesPanel,
   showPhotosPanel,
@@ -134,6 +136,13 @@ export function SectionSidebar({
         >
           <Images className="h-4 w-4" />
           <span>{t.photos.panelTitle}</span>
+        </button>
+        <button
+          onClick={onToggleImportText}
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+        >
+          <Upload className="h-4 w-4" />
+          <span>{t.notesAndTodos.importText}</span>
         </button>
       </div>
     </nav>
