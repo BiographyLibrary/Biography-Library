@@ -68,9 +68,21 @@ export interface Translations {
     verifyEmailTitle: string;
     verifyEmailSubtitle: string;
     verifyEmailDetail: string;
+    verifyEmailLinkSent: string;
+    verifyEmailAutoUpdate: string;
+    verifyEmailChecking: string;
+    verifyEmailAlreadyConfirmed: string;
+    verifyEmailConfirmedTitle: string;
+    verifyEmailConfirmedDetail: string;
+    verifyEmailFailedTitle: string;
+    verifyEmailFailedDetail: string;
+    verifyEmailResendSuccessInline: string;
+    verifyEmailDidntReceive: string;
     resendVerification: string;
     resendVerificationSending: string;
     resendVerificationSuccess: string;
+    resendCooldown: string;
+    resendNewConfirmEmail: string;
     emailNotVerified: string;
     emailNotVerifiedDetail: string;
     mustAcceptTerms: string;
@@ -646,9 +658,21 @@ export const translations: Record<Language, Translations> = {
       verifyEmailTitle: 'Verify your email',
       verifyEmailSubtitle: 'We\'ve sent a verification email to your address. Please check your inbox and click the link to activate your account.',
       verifyEmailDetail: 'Didn\'t receive the email? Check your spam folder or resend it below.',
+      verifyEmailLinkSent: 'We\'ve sent you a confirmation link. Click the link in the email to activate your account.',
+      verifyEmailAutoUpdate: 'This page will update automatically once confirmed.',
+      verifyEmailChecking: 'Checking...',
+      verifyEmailAlreadyConfirmed: 'I\'ve already confirmed, sign me in',
+      verifyEmailConfirmedTitle: 'Email confirmed!',
+      verifyEmailConfirmedDetail: 'Your account has been verified. Redirecting to dashboard...',
+      verifyEmailFailedTitle: 'Verification failed',
+      verifyEmailFailedDetail: 'The confirmation link has expired or has already been used. Please request a new one.',
+      verifyEmailResendSuccessInline: 'Email sent! Check your inbox.',
+      verifyEmailDidntReceive: 'Didn\'t receive the email? Send it again',
       resendVerification: 'Resend verification email',
       resendVerificationSending: 'Sending...',
       resendVerificationSuccess: 'Verification email sent',
+      resendCooldown: 'Resend in {seconds}s',
+      resendNewConfirmEmail: 'Send new confirmation email',
       emailNotVerified: 'Email not verified',
       emailNotVerifiedDetail: 'Please verify your email address to access the dashboard.',
       mustAcceptTerms: 'Required — you must accept the terms to continue',
@@ -1222,9 +1246,21 @@ export const translations: Record<Language, Translations> = {
       verifyEmailTitle: 'Verifica la tua email',
       verifyEmailSubtitle: 'Abbiamo inviato un\'email di verifica al tuo indirizzo. Controlla la tua casella di posta e clicca sul link per attivare il tuo account.',
       verifyEmailDetail: 'Non hai ricevuto l\'email? Controlla la cartella spam o reinviala qui sotto.',
+      verifyEmailLinkSent: 'Ti abbiamo inviato un link di conferma. Clicca sul link nell\'email per attivare il tuo account.',
+      verifyEmailAutoUpdate: 'Questa pagina si aggiornerà automaticamente dopo la conferma.',
+      verifyEmailChecking: 'Verifica in corso...',
+      verifyEmailAlreadyConfirmed: 'Ho già confermato, accedi',
+      verifyEmailConfirmedTitle: 'Email confermata!',
+      verifyEmailConfirmedDetail: 'Il tuo account è stato verificato. Reindirizzamento alla dashboard...',
+      verifyEmailFailedTitle: 'Verifica non riuscita',
+      verifyEmailFailedDetail: 'Il link di conferma è scaduto o è già stato utilizzato. Richiedine uno nuovo.',
+      verifyEmailResendSuccessInline: 'Email inviata! Controlla la casella di posta.',
+      verifyEmailDidntReceive: 'Non hai ricevuto l\'email? Inviala di nuovo',
       resendVerification: 'Reinvia email di verifica',
       resendVerificationSending: 'Invio in corso...',
       resendVerificationSuccess: 'Email di verifica inviata',
+      resendCooldown: 'Reinvia tra {seconds}s',
+      resendNewConfirmEmail: 'Invia nuova email di conferma',
       emailNotVerified: 'Email non verificata',
       emailNotVerifiedDetail: 'Per favore verifica il tuo indirizzo email per accedere alla dashboard.',
       mustAcceptTerms: 'Obbligatorio — devi accettare i termini per continuare',
@@ -1798,9 +1834,21 @@ export const translations: Record<Language, Translations> = {
       verifyEmailTitle: 'V\u00e9rifiez votre email',
       verifyEmailSubtitle: 'Nous avons envoy\u00e9 un email de v\u00e9rification \u00e0 votre adresse. Veuillez v\u00e9rifier votre bo\u00eete de r\u00e9ception et cliquer sur le lien pour activer votre compte.',
       verifyEmailDetail: 'Vous n\'avez pas re\u00e7u l\'email\u00a0? V\u00e9rifiez votre dossier spam ou renvoyez-le ci-dessous.',
+      verifyEmailLinkSent: 'Nous vous avons envoy\u00e9 un lien de confirmation. Cliquez sur le lien dans l\'email pour activer votre compte.',
+      verifyEmailAutoUpdate: 'Cette page se mettra \u00e0 jour automatiquement apr\u00e8s confirmation.',
+      verifyEmailChecking: 'V\u00e9rification en cours...',
+      verifyEmailAlreadyConfirmed: 'J\'ai d\u00e9j\u00e0 confirm\u00e9, connectez-moi',
+      verifyEmailConfirmedTitle: 'Email confirm\u00e9\u00a0!',
+      verifyEmailConfirmedDetail: 'Votre compte a \u00e9t\u00e9 v\u00e9rifi\u00e9. Redirection vers le tableau de bord...',
+      verifyEmailFailedTitle: 'Echec de la v\u00e9rification',
+      verifyEmailFailedDetail: 'Le lien de confirmation a expir\u00e9 ou a d\u00e9j\u00e0 \u00e9t\u00e9 utilis\u00e9. Veuillez en demander un nouveau.',
+      verifyEmailResendSuccessInline: 'Email envoy\u00e9\u00a0! V\u00e9rifiez votre bo\u00eete de r\u00e9ception.',
+      verifyEmailDidntReceive: 'Vous n\'avez pas re\u00e7u l\'email\u00a0? Renvoyez-le',
       resendVerification: 'Renvoyer l\'email de v\u00e9rification',
       resendVerificationSending: 'Envoi en cours...',
       resendVerificationSuccess: 'Email de v\u00e9rification envoy\u00e9',
+      resendCooldown: 'Renvoyer dans {seconds}s',
+      resendNewConfirmEmail: 'Envoyer un nouvel email de confirmation',
       emailNotVerified: 'Email non v\u00e9rifi\u00e9',
       emailNotVerifiedDetail: 'Veuillez v\u00e9rifier votre adresse email pour acc\u00e9der au tableau de bord.',
       mustAcceptTerms: 'Obligatoire \u2014 vous devez accepter les conditions pour continuer',
@@ -2374,9 +2422,21 @@ export const translations: Record<Language, Translations> = {
       verifyEmailTitle: 'E-Mail best\u00e4tigen',
       verifyEmailSubtitle: 'Wir haben eine Best\u00e4tigungs-E-Mail an Ihre Adresse gesendet. Bitte \u00fcberpr\u00fcfen Sie Ihren Posteingang und klicken Sie auf den Link, um Ihr Konto zu aktivieren.',
       verifyEmailDetail: 'Keine E-Mail erhalten? \u00dcberpr\u00fcfen Sie Ihren Spam-Ordner oder senden Sie sie erneut.',
+      verifyEmailLinkSent: 'Wir haben Ihnen einen Best\u00e4tigungslink gesendet. Klicken Sie auf den Link in der E-Mail, um Ihr Konto zu aktivieren.',
+      verifyEmailAutoUpdate: 'Diese Seite wird nach der Best\u00e4tigung automatisch aktualisiert.',
+      verifyEmailChecking: 'Wird \u00fcberpr\u00fcft...',
+      verifyEmailAlreadyConfirmed: 'Ich habe bereits best\u00e4tigt, anmelden',
+      verifyEmailConfirmedTitle: 'E-Mail best\u00e4tigt!',
+      verifyEmailConfirmedDetail: 'Ihr Konto wurde verifiziert. Weiterleitung zum Dashboard...',
+      verifyEmailFailedTitle: 'Best\u00e4tigung fehlgeschlagen',
+      verifyEmailFailedDetail: 'Der Best\u00e4tigungslink ist abgelaufen oder wurde bereits verwendet. Bitte fordern Sie einen neuen an.',
+      verifyEmailResendSuccessInline: 'E-Mail gesendet! \u00dcberpr\u00fcfen Sie Ihren Posteingang.',
+      verifyEmailDidntReceive: 'Keine E-Mail erhalten? Erneut senden',
       resendVerification: 'Best\u00e4tigungs-E-Mail erneut senden',
       resendVerificationSending: 'Wird gesendet...',
       resendVerificationSuccess: 'Best\u00e4tigungs-E-Mail gesendet',
+      resendCooldown: 'Erneut senden in {seconds}s',
+      resendNewConfirmEmail: 'Neue Best\u00e4tigungs-E-Mail senden',
       emailNotVerified: 'E-Mail nicht best\u00e4tigt',
       emailNotVerifiedDetail: 'Bitte best\u00e4tigen Sie Ihre E-Mail-Adresse, um auf das Dashboard zuzugreifen.',
       mustAcceptTerms: 'Erforderlich \u2014 Sie m\u00fcssen die Bedingungen akzeptieren, um fortzufahren',

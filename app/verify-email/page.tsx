@@ -122,10 +122,10 @@ export default function VerifyEmailPage() {
               </div>
               <div className="space-y-1">
                 <h2 className="text-xl font-serif font-semibold text-green-900 dark:text-green-100">
-                  Email confermata!
+                  {t.auth.verifyEmailConfirmedTitle}
                 </h2>
                 <p className="text-sm text-green-800 dark:text-green-200">
-                  Il tuo account è stato verificato. Reindirizzamento alla dashboard...
+                  {t.auth.verifyEmailConfirmedDetail}
                 </p>
               </div>
               <Loader2 className="h-4 w-4 animate-spin text-green-600 dark:text-green-400" />
@@ -136,9 +136,9 @@ export default function VerifyEmailPage() {
                 <AlertCircle className="h-7 w-7 text-destructive" />
               </div>
               <div>
-                <p className="font-semibold text-destructive">Verifica non riuscita</p>
+                <p className="font-semibold text-destructive">{t.auth.verifyEmailFailedTitle}</p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Il link di conferma è scaduto o è già stato utilizzato. Richiedine uno nuovo.
+                  {t.auth.verifyEmailFailedDetail}
                 </p>
               </div>
               {emailForResend && (
@@ -151,12 +151,12 @@ export default function VerifyEmailPage() {
                   {resendLoading ? (
                     <>
                       <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                      Invio in corso...
+                      {t.auth.resendVerificationSending}
                     </>
                   ) : resendCooldown > 0 ? (
-                    `Reinvia tra ${resendCooldown}s`
+                    t.auth.resendCooldown.replace('{seconds}', String(resendCooldown))
                   ) : (
-                    'Invia nuova email di conferma'
+                    t.auth.resendNewConfirmEmail
                   )}
                 </Button>
               )}
@@ -168,7 +168,7 @@ export default function VerifyEmailPage() {
               </div>
               <div className="space-y-2">
                 <h2 className="text-xl font-serif font-semibold text-blue-900 dark:text-blue-100">
-                  Controlla la tua email
+                  {t.auth.verifyEmailTitle}
                 </h2>
                 {emailForResend && (
                   <p className="text-sm font-medium text-blue-700 dark:text-blue-300">
@@ -176,10 +176,10 @@ export default function VerifyEmailPage() {
                   </p>
                 )}
                 <p className="text-sm text-blue-800 dark:text-blue-200">
-                  Ti abbiamo inviato un link di conferma. Clicca sul link nell&apos;email per attivare il tuo account.
+                  {t.auth.verifyEmailLinkSent}
                 </p>
                 <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                  Questa pagina si aggiornerà automaticamente dopo la conferma.
+                  {t.auth.verifyEmailAutoUpdate}
                 </p>
               </div>
 
@@ -200,12 +200,12 @@ export default function VerifyEmailPage() {
                   {checkingStatus ? (
                     <>
                       <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                      Verifica in corso...
+                      {t.auth.verifyEmailChecking}
                     </>
                   ) : (
                     <>
                       <RefreshCw className="mr-2 h-3 w-3" />
-                      Ho già confermato, accedi
+                      {t.auth.verifyEmailAlreadyConfirmed}
                     </>
                   )}
                 </Button>
@@ -213,7 +213,7 @@ export default function VerifyEmailPage() {
                 {resendSuccess ? (
                   <div className="flex items-center justify-center gap-2 text-sm text-green-700 dark:text-green-400 font-medium py-1">
                     <CheckCircle2 className="h-4 w-4" />
-                    Email inviata! Controlla la casella di posta.
+                    {t.auth.verifyEmailResendSuccessInline}
                   </div>
                 ) : (
                   <Button
@@ -226,12 +226,12 @@ export default function VerifyEmailPage() {
                     {resendLoading ? (
                       <>
                         <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                        Invio in corso...
+                        {t.auth.resendVerificationSending}
                       </>
                     ) : resendCooldown > 0 ? (
-                      `Reinvia tra ${resendCooldown}s`
+                      t.auth.resendCooldown.replace('{seconds}', String(resendCooldown))
                     ) : (
-                      "Non hai ricevuto l'email? Inviala di nuovo"
+                      t.auth.verifyEmailDidntReceive
                     )}
                   </Button>
                 )}
