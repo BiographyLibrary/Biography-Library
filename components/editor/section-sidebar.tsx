@@ -44,8 +44,8 @@ export function SectionSidebar({
 
   return (
     <nav className="flex flex-col h-full overflow-hidden">
-      <div className="px-3 py-2 border-b border-border/50 shrink-0">
-        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+      <div className="px-3 py-3 border-b border-border/50 shrink-0">
+        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider leading-none">
           {t.biography.sections}
         </h3>
       </div>
