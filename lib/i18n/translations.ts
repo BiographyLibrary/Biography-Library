@@ -913,9 +913,9 @@ export const translations: Record<Language, Translations> = {
     },
     footer: {
       hostedInSwitzerland: 'Biography Library - Hosted in Switzerland',
-      termsOfService: 'Terms of Service',
-      privacyPolicy: 'Privacy Policy',
-      cookiePolicy: 'Cookie Policy',
+      termsOfService: 'T&C',
+      privacyPolicy: 'Privacy',
+      cookiePolicy: 'Cookies',
     },
     welcome: {
       title: 'Welcome to Biography Library',
@@ -1523,9 +1523,9 @@ export const translations: Record<Language, Translations> = {
     },
     footer: {
       hostedInSwitzerland: 'Biography Library - Ospitato in Svizzera',
-      termsOfService: 'Termini di Servizio',
-      privacyPolicy: 'Informativa sulla Privacy',
-      cookiePolicy: 'Informativa sui Cookie',
+      termsOfService: 'T&C',
+      privacyPolicy: 'Privacy',
+      cookiePolicy: 'Cookie',
     },
     welcome: {
       title: 'Benvenuto in Biography Library',
@@ -2133,9 +2133,9 @@ export const translations: Record<Language, Translations> = {
     },
     footer: {
       hostedInSwitzerland: 'Biography Library - H\u00e9berg\u00e9 en Suisse',
-      termsOfService: 'Conditions d\'Utilisation',
-      privacyPolicy: 'Politique de Confidentialit\u00e9',
-      cookiePolicy: 'Politique des Cookies',
+      termsOfService: 'T&C',
+      privacyPolicy: 'Confidentialit\u00e9',
+      cookiePolicy: 'Cookies',
     },
     welcome: {
       title: 'Bienvenue dans Biography Library',
