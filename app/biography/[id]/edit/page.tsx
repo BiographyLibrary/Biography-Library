@@ -995,12 +995,23 @@ export default function BiographyEditorPage() {
           )}
 
           {showPhotosPanel && (
-            <div className="w-[320px] shrink-0 border-l border-border/50 bg-card flex flex-col min-h-0 overflow-hidden">
-              <PhotoGalleryPanel
-                biographyId={id}
-                userId={user.id}
+            <>
+              <div
+                className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+                onClick={() => setShowPhotosPanel(false)}
               />
-            </div>
+              <div className={[
+                'border-l border-border/50 bg-card flex flex-col min-h-0 overflow-hidden',
+                'fixed right-0 top-0 bottom-0 z-50 w-[320px] shadow-2xl',
+                'lg:relative lg:z-auto lg:shadow-none lg:shrink-0',
+              ].join(' ')}>
+                <PhotoGalleryPanel
+                  biographyId={id}
+                  userId={user.id}
+                  onClose={() => setShowPhotosPanel(false)}
+                />
+              </div>
+            </>
           )}
         </div>
       </div>
