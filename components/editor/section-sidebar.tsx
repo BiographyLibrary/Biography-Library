@@ -44,7 +44,7 @@ export function SectionSidebar({
 
   return (
     <nav className="flex flex-col h-full overflow-hidden">
-      <div className="px-3 py-3 border-b border-border/50 shrink-0">
+      <div className="px-3 py-2 border-b border-border/50 shrink-0">
         <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
           {t.biography.sections}
         </h3>
@@ -64,7 +64,7 @@ export function SectionSidebar({
               key={section.key}
               onClick={() => onSectionChange(section.key)}
               className={cn(
-                'w-full flex items-center gap-2.5 px-3 py-2.5 text-left text-sm transition-colors',
+                'w-full flex items-center gap-2.5 px-3 py-2 lg:py-2.5 text-left text-sm transition-colors',
                 isCompleted
                   ? 'bg-[#C8DFBE] dark:bg-[#C8DFBE]/20 font-bold text-foreground'
                   : isActive
@@ -90,18 +90,18 @@ export function SectionSidebar({
         })}
       </div>
 
-      <div className="border-t border-border/50 p-2 pb-16 lg:pb-2 space-y-1 shrink-0">
+      <div className="border-t border-border/50 p-1.5 pb-16 lg:pb-1.5 space-y-0.5 shrink-0">
         {notesCount > 0 && (
           <button
             onClick={onToggleNotesPanel}
             className={cn(
-              'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors',
+              'w-full flex items-center gap-2 px-3 py-1 lg:py-2 rounded-lg text-sm transition-colors',
               showNotesPanel
                 ? 'bg-primary/10 text-primary font-medium'
                 : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
             )}
           >
-            <StickyNote className="h-4 w-4" />
+            <StickyNote className="h-4 w-4 shrink-0" />
             <span>{t.biography.notes}</span>
             <span className="ml-auto text-xs font-medium bg-primary/20 text-foreground rounded-full px-2 py-0.5">
               {notesCount}
@@ -112,13 +112,13 @@ export function SectionSidebar({
           <button
             onClick={onToggleTodoPanel}
             className={cn(
-              'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors',
+              'w-full flex items-center gap-2 px-3 py-1 lg:py-2 rounded-lg text-sm transition-colors',
               showTodoPanel
                 ? 'bg-status-warning/30 text-text-primary dark:text-dark-text-primary font-medium'
                 : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
             )}
           >
-            <ListTodo className="h-4 w-4" />
+            <ListTodo className="h-4 w-4 shrink-0" />
             <span>{t.biography.todos}</span>
             <span className="ml-auto text-xs font-medium bg-status-warning/40 text-text-primary dark:text-dark-text-primary rounded-full px-2 py-0.5">
               {todoCount}
@@ -128,20 +128,20 @@ export function SectionSidebar({
         <button
           onClick={onTogglePhotosPanel}
           className={cn(
-            'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors',
+            'w-full flex items-center gap-2 px-3 py-1 lg:py-2 rounded-lg text-sm transition-colors',
             showPhotosPanel
               ? 'bg-primary/10 text-primary font-medium'
               : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
           )}
         >
-          <Images className="h-4 w-4" />
+          <Images className="h-4 w-4 shrink-0" />
           <span>{t.photos.panelTitle}</span>
         </button>
         <button
           onClick={onToggleImportText}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+          className="w-full flex items-center gap-2 px-3 py-1 lg:py-2 rounded-lg text-sm transition-colors text-muted-foreground hover:bg-muted/50 hover:text-foreground"
         >
-          <Upload className="h-4 w-4" />
+          <Upload className="h-4 w-4 shrink-0" />
           <span>{t.notesAndTodos.importText}</span>
         </button>
       </div>
