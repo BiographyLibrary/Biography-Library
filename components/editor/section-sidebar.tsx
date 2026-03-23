@@ -90,7 +90,7 @@ export function SectionSidebar({
         })}
       </div>
 
-      <div className="border-t border-border/50 p-2 space-y-1 shrink-0">
+      <div className="border-t border-border/50 p-2 pb-16 lg:pb-2 space-y-1 shrink-0">
         {notesCount > 0 && (
           <button
             onClick={onToggleNotesPanel}
