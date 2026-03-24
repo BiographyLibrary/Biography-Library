@@ -2,11 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RichTextEditor } from './rich-text-editor';
 import { VoiceRecorder } from './voice-recorder';
 import { ImportTextDialog } from './import-text-dialog';
-import { SectionNotes } from './SectionNotes';
 import { useTranslation } from '@/lib/i18n/i18n-context';
 import { Sparkles, Flag, Mic, SpellCheck, MessageSquareText, FileText, Power, Upload, StickyNote, Wand as Wand2, CircleCheck as CheckCircle2, Images, Lock } from 'lucide-react';
 import { BIOGRAPHY_SECTIONS, type SectionData } from '@/lib/editor-constants';
@@ -32,6 +30,7 @@ interface SectionEditorProps {
   onMarkComplete?: () => void;
   isCompleted?: boolean;
   onTogglePhotos?: () => void;
+  onToggleNotes?: () => void;
   openImportDialog?: boolean;
   onImportDialogOpenChange?: (open: boolean) => void;
   isPublished?: boolean;
@@ -57,6 +56,7 @@ export function SectionEditor({
   onMarkComplete,
   isCompleted = false,
   onTogglePhotos,
+  onToggleNotes,
   openImportDialog,
   onImportDialogOpenChange,
   isPublished = false,
@@ -67,7 +67,6 @@ export function SectionEditor({
   useEffect(() => {
     if (openImportDialog !== undefined) setShowImportDialog(openImportDialog);
   }, [openImportDialog]);
-  const [showNotesDialog, setShowNotesDialog] = useState(false);
   const section = BIOGRAPHY_SECTIONS.find((s) => s.key === sectionKey);
   const { t } = useTranslation();
 
@@ -150,8 +149,8 @@ export function SectionEditor({
                   variant="ghost"
                   size="sm"
                   className="h-7 w-7 p-0 shrink-0"
-                  onClick={() => setShowNotesDialog(true)}
-                  title={t.notesAndTodos.title}
+                  onClick={onToggleNotes}
+                  title={t.notesAndTodos.globalTitle}
                 >
                   <StickyNote className="h-3.5 w-3.5" />
                 </Button>
@@ -282,18 +281,6 @@ export function SectionEditor({
         onImportMultipleSections={onImportMultipleSections}
       />
 
-      {biographyId && (
-        <Dialog open={showNotesDialog} onOpenChange={setShowNotesDialog}>
-          <DialogContent className="max-w-3xl max-h-[80vh] overflow-hidden flex flex-col">
-            <DialogHeader>
-              <DialogTitle>{t.notesAndTodos.title} - {sectionTitle}</DialogTitle>
-            </DialogHeader>
-            <div className="flex-1 overflow-auto">
-              <SectionNotes biographyId={biographyId} sectionKey={sectionKey} />
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
     </div>
   );
 }

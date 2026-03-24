@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, Circle, Flag, ChevronRight, ListTodo, StickyNote, Images, Upload } from 'lucide-react';
+import { Check, Circle, Flag, ChevronRight, StickyNote, Images, Upload } from 'lucide-react';
 import {
   BIOGRAPHY_SECTIONS,
   type BiographyContent,
@@ -13,13 +13,11 @@ interface SectionSidebarProps {
   content: BiographyContent;
   activeSection: string;
   onSectionChange: (key: string) => void;
-  todoCount: number;
-  notesCount: number;
-  onToggleTodoPanel: () => void;
+  globalNotesCount: number;
+  globalTodosCount: number;
   onToggleNotesPanel: () => void;
   onTogglePhotosPanel: () => void;
   onToggleImportText: () => void;
-  showTodoPanel: boolean;
   showNotesPanel: boolean;
   showPhotosPanel: boolean;
   completedSections?: string[];
@@ -29,18 +27,18 @@ export function SectionSidebar({
   content,
   activeSection,
   onSectionChange,
-  todoCount,
-  notesCount,
-  onToggleTodoPanel,
+  globalNotesCount,
+  globalTodosCount,
   onToggleNotesPanel,
   onTogglePhotosPanel,
   onToggleImportText,
-  showTodoPanel,
   showNotesPanel,
   showPhotosPanel,
   completedSections = [],
 }: SectionSidebarProps) {
   const { t } = useTranslation();
+
+  const totalCount = globalNotesCount + globalTodosCount;
 
   return (
     <nav className="flex flex-col h-full overflow-hidden">
@@ -91,40 +89,23 @@ export function SectionSidebar({
       </div>
 
       <div className="border-t border-border/50 p-1.5 space-y-0.5 shrink-0">
-        {notesCount > 0 && (
-          <button
-            onClick={onToggleNotesPanel}
-            className={cn(
-              'w-full flex items-center gap-2 px-3 py-1 lg:py-2 rounded-lg text-sm transition-colors',
-              showNotesPanel
-                ? 'bg-primary/10 text-primary font-medium'
-                : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
-            )}
-          >
-            <StickyNote className="h-4 w-4 shrink-0" />
-            <span>{t.biography.notes}</span>
-            <span className="ml-auto text-xs font-medium bg-primary/20 text-foreground rounded-full px-2 py-0.5">
-              {notesCount}
+        <button
+          onClick={onToggleNotesPanel}
+          className={cn(
+            'w-full flex items-center gap-2 px-3 py-1 lg:py-2 rounded-lg text-sm transition-colors',
+            showNotesPanel
+              ? 'bg-primary/10 text-primary font-medium'
+              : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+          )}
+        >
+          <StickyNote className="h-4 w-4 shrink-0" />
+          <span className="truncate">{t.notesAndTodos.notesAndTodosMenuItem}</span>
+          {totalCount > 0 && (
+            <span className="ml-auto text-xs font-medium bg-primary/20 text-foreground rounded-full px-2 py-0.5 shrink-0">
+              {totalCount}
             </span>
-          </button>
-        )}
-        {todoCount > 0 && (
-          <button
-            onClick={onToggleTodoPanel}
-            className={cn(
-              'w-full flex items-center gap-2 px-3 py-1 lg:py-2 rounded-lg text-sm transition-colors',
-              showTodoPanel
-                ? 'bg-status-warning/30 text-text-primary dark:text-dark-text-primary font-medium'
-                : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
-            )}
-          >
-            <ListTodo className="h-4 w-4 shrink-0" />
-            <span>{t.biography.todos}</span>
-            <span className="ml-auto text-xs font-medium bg-status-warning/40 text-text-primary dark:text-dark-text-primary rounded-full px-2 py-0.5">
-              {todoCount}
-            </span>
-          </button>
-        )}
+          )}
+        </button>
         <button
           onClick={onTogglePhotosPanel}
           className={cn(

@@ -530,6 +530,8 @@ export interface Translations {
     sortByDate: string;
     sortByPriority: string;
     sortByDueDate: string;
+    globalTitle: string;
+    notesAndTodosMenuItem: string;
   };
   aiReview: {
     title: string;
@@ -1215,6 +1217,8 @@ export const translations: Record<Language, Translations> = {
       sortByDate: 'Date added',
       sortByPriority: 'Priority',
       sortByDueDate: 'Due date',
+      globalTitle: 'Notes & To-Do',
+      notesAndTodosMenuItem: 'Notes & To-Do',
     },
     aiReview: {
       title: 'AI Section Review',
@@ -1898,6 +1902,8 @@ export const translations: Record<Language, Translations> = {
       sortByDate: 'Data aggiunta',
       sortByPriority: 'Priorità',
       sortByDueDate: 'Scadenza',
+      globalTitle: 'Note e Promemoria',
+      notesAndTodosMenuItem: 'Note e Promemoria',
     },
     aiReview: {
       title: 'Revisione IA della Sezione',
@@ -2581,6 +2587,8 @@ export const translations: Record<Language, Translations> = {
       sortByDate: 'Date d\'ajout',
       sortByPriority: 'Priorité',
       sortByDueDate: 'Date d\'échéance',
+      globalTitle: 'Notes et Rappels',
+      notesAndTodosMenuItem: 'Notes et Rappels',
     },
     aiReview: {
       title: 'Révision IA de la Section',
@@ -3264,6 +3272,8 @@ export const translations: Record<Language, Translations> = {
       sortByDate: 'Hinzufügedatum',
       sortByPriority: 'Priorität',
       sortByDueDate: 'Fälligkeitsdatum',
+      globalTitle: 'Notizen & Erinnerungen',
+      notesAndTodosMenuItem: 'Notizen & Erinnerungen',
     },
     aiReview: {
       title: 'KI-Abschnittsüberprüfung',

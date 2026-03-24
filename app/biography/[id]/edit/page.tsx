@@ -7,8 +7,7 @@ import { supabase } from '@/lib/supabase';
 import { EditorTopBar } from '@/components/editor/editor-top-bar';
 import { SectionSidebar } from '@/components/editor/section-sidebar';
 import { SectionEditor } from '@/components/editor/section-editor';
-import { TodoPanel } from '@/components/editor/todo-panel';
-import { NotesOverviewPanel } from '@/components/editor/notes-overview-panel';
+import { GlobalNotesPanel } from '@/components/editor/GlobalNotesPanel';
 import { AiSuggestionsPanel } from '@/components/editor/ai-suggestions-panel';
 import { ShareLinkPanel } from '@/components/editor/share-link-panel';
 import { PhotoGalleryPanel } from '@/components/editor/PhotoGalleryPanel';
@@ -77,11 +76,11 @@ export default function BiographyEditorPage() {
   );
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('saved');
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
-  const [showTodoPanel, setShowTodoPanel] = useState(false);
-  const [showNotesPanel, setShowNotesPanel] = useState(false);
+  const [showGlobalNotesPanel, setShowGlobalNotesPanel] = useState(false);
   const [showPhotosPanel, setShowPhotosPanel] = useState(false);
   const [showSidebarImport, setShowSidebarImport] = useState(false);
-  const [notesCount, setNotesCount] = useState(0);
+  const [globalNotesCount, setGlobalNotesCount] = useState(0);
+  const [globalTodosCount, setGlobalTodosCount] = useState(0);
   const [editorMode, setEditorMode] = useState<'editor' | 'conversation'>('editor');
   const [editorFontSize, setEditorFontSize] = useState<number>(16);
 
@@ -176,14 +175,6 @@ export default function BiographyEditorPage() {
         }
       }
       setIsLoading(false);
-
-      const { data: notesData } = await supabase
-        .from('section_notes')
-        .select('id')
-        .eq('biography_id', id);
-      if (notesData) {
-        setNotesCount(notesData.length);
-      }
 
       const completed = await getCompletedSections(id);
       setCompletedSections(completed);
@@ -694,7 +685,6 @@ export default function BiographyEditorPage() {
     [activeSection, markDirty, session, language]
   );
 
-  const todoCount = Object.values(content).filter((d) => d.todo).length;
 
   const allSectionsKeys = BIOGRAPHY_SECTIONS.map(s => s.key);
   const allSectionsComplete = allSectionsKeys.every(key => completedSections.includes(key));
@@ -893,14 +883,12 @@ export default function BiographyEditorPage() {
             content={content}
             activeSection={activeSection}
             onSectionChange={handleSectionChange}
-            todoCount={todoCount}
-            notesCount={notesCount}
-            onToggleTodoPanel={() => setShowTodoPanel(!showTodoPanel)}
-            onToggleNotesPanel={() => setShowNotesPanel(!showNotesPanel)}
+            globalNotesCount={globalNotesCount}
+            globalTodosCount={globalTodosCount}
+            onToggleNotesPanel={() => setShowGlobalNotesPanel(!showGlobalNotesPanel)}
             onTogglePhotosPanel={() => setShowPhotosPanel(!showPhotosPanel)}
             onToggleImportText={() => setShowSidebarImport(true)}
-            showTodoPanel={showTodoPanel}
-            showNotesPanel={showNotesPanel}
+            showNotesPanel={showGlobalNotesPanel}
             showPhotosPanel={showPhotosPanel}
             completedSections={completedSections}
           />
@@ -972,6 +960,7 @@ export default function BiographyEditorPage() {
                   onMarkComplete={handleMarkSectionComplete}
                   isCompleted={completedSections.includes(activeSection)}
                   onTogglePhotos={() => setShowPhotosPanel((v) => !v)}
+                  onToggleNotes={() => setShowGlobalNotesPanel((v) => !v)}
                   openImportDialog={showSidebarImport}
                   onImportDialogOpenChange={(v) => { if (!v) setShowSidebarImport(false); }}
                   isPublished={(biographyStatus as string) === 'published' || isFrozen}
@@ -1108,35 +1097,15 @@ export default function BiographyEditorPage() {
         onApplyChanges={handleApplyReviewChanges}
       />
 
-      <Dialog open={showTodoPanel} onOpenChange={setShowTodoPanel}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>{t.biography.todos}</DialogTitle>
-          </DialogHeader>
-          <TodoPanel
-            content={content}
-            onSectionChange={(key) => {
-              handleSectionChange(key);
-              setShowTodoPanel(false);
-            }}
-          />
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={showNotesPanel} onOpenChange={setShowNotesPanel}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>{t.biography.notes}</DialogTitle>
-          </DialogHeader>
-          <NotesOverviewPanel
-            biographyId={id}
-            onSectionChange={(key) => {
-              handleSectionChange(key);
-              setShowNotesPanel(false);
-            }}
-          />
-        </DialogContent>
-      </Dialog>
+      <GlobalNotesPanel
+        biographyId={id}
+        open={showGlobalNotesPanel}
+        onOpenChange={setShowGlobalNotesPanel}
+        onCountsChange={(notes, todos) => {
+          setGlobalNotesCount(notes);
+          setGlobalTodosCount(todos);
+        }}
+      />
 
       <FinalReviewDialog
         open={showFinalReview}
