@@ -1,7 +1,7 @@
 {
   "name": "Biography Library",
   "short_name": "BioLib",
-  "description": "Preserve your life story forever",
+  "description": "Because every life deserves to be remembered",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ede9e0",

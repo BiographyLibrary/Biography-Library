@@ -715,6 +715,9 @@ export interface Translations {
     dismissButton: string;
     iosInstallText: string;
   };
+  meta: {
+    tagline: string;
+  };
 }
 
 export const translations: Record<Language, Translations> = {
@@ -1433,6 +1436,9 @@ export const translations: Record<Language, Translations> = {
       dismissButton: 'Dismiss',
       iosInstallText: "To install: tap the Share button (\u{1F4E4}) then 'Add to Home Screen'",
     },
+    meta: {
+      tagline: 'Because every life deserves to be remembered',
+    },
   },
   it: {
     common: {
@@ -2148,6 +2154,9 @@ export const translations: Record<Language, Translations> = {
       installButton: 'Installa',
       dismissButton: 'Chiudi',
       iosInstallText: "Per installare: tocca il pulsante Condividi (\u{1F4E4}) poi 'Aggiungi a schermata Home'",
+    },
+    meta: {
+      tagline: 'Perché ogni vita merita di essere ricordata',
     },
   },
   fr: {
@@ -2865,6 +2874,9 @@ export const translations: Record<Language, Translations> = {
       dismissButton: 'Fermer',
       iosInstallText: "Pour installer : appuyez sur Partager (\u{1F4E4}) puis 'Sur l\u2019écran d\u2019accueil'",
     },
+    meta: {
+      tagline: 'Parce que chaque vie mérite d\'être rappelée',
+    },
   },
   de: {
     common: {
@@ -3580,6 +3592,9 @@ export const translations: Record<Language, Translations> = {
       installButton: 'Installieren',
       dismissButton: 'Schließen',
       iosInstallText: "Zum Installieren: Teilen-Taste (\u{1F4E4}) antippen, dann 'Zum Home-Bildschirm'",
+    },
+    meta: {
+      tagline: 'Denn jedes Leben verdient es, in Erinnerung zu bleiben',
     },
   },
 };

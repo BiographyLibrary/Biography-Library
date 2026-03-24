@@ -7,7 +7,7 @@ import { PwaInstallPrompt } from '@/components/pwa-install-prompt';
 
 export const metadata: Metadata = {
   title: 'Biography Library - Preserving Stories in Switzerland',
-  description: 'Write and preserve life stories with Biography Library',
+  description: 'Because every life deserves to be remembered',
 };
 
 export default function RootLayout({
