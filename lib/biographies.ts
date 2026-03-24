@@ -16,6 +16,9 @@ export interface Biography {
   narrative_order?: string[];
   published_at?: string | null;
   is_locked?: boolean;
+  is_frozen?: boolean;
+  frozen_at?: string | null;
+  frozen_reason?: string | null;
 }
 
 export async function fetchBiographies(userId: string) {

@@ -610,6 +610,14 @@ export interface Translations {
     limitReached: string;
     deleteError: string;
   };
+  admin: {
+    freezeBiography: string;
+    freezeConfirmTitle: string;
+    freezeConfirmMessage: string;
+    freezing: string;
+    frozenBannerTitle: string;
+    frozenBannerMessage: string;
+  };
 }
 
 export const translations: Record<Language, Translations> = {
@@ -1223,6 +1231,14 @@ export const translations: Record<Language, Translations> = {
       limitReached: 'You have reached the maximum of 10 photos per biography.',
       deleteError: 'Failed to delete photo. Please try again.',
     },
+    admin: {
+      freezeBiography: 'Freeze biography',
+      freezeConfirmTitle: 'Freeze this biography?',
+      freezeConfirmMessage: 'This will make the biography fully read-only for the author. This action cannot be undone from the editor.',
+      freezing: 'Freezing...',
+      frozenBannerTitle: 'This biography has been frozen',
+      frozenBannerMessage: 'This biography is read-only and cannot be edited.',
+    },
   },
   it: {
     common: {
@@ -1833,6 +1849,14 @@ export const translations: Record<Language, Translations> = {
       uploadError: 'Caricamento foto fallito. Riprova.',
       limitReached: 'Hai raggiunto il massimo di 10 foto per biografia.',
       deleteError: 'Eliminazione foto fallita. Riprova.',
+    },
+    admin: {
+      freezeBiography: 'Congela biografia',
+      freezeConfirmTitle: 'Congelare questa biografia?',
+      freezeConfirmMessage: 'Questa azione renderà la biografia completamente di sola lettura per l\'autore. Non può essere annullata dall\'editor.',
+      freezing: 'Congelamento...',
+      frozenBannerTitle: 'Questa biografia è stata congelata',
+      frozenBannerMessage: 'Questa biografia è di sola lettura e non può essere modificata.',
     },
   },
   fr: {
@@ -2445,6 +2469,14 @@ export const translations: Record<Language, Translations> = {
       limitReached: 'Vous avez atteint le maximum de 10 photos par biographie.',
       deleteError: 'Échec de la suppression. Veuillez réessayer.',
     },
+    admin: {
+      freezeBiography: 'Geler la biographie',
+      freezeConfirmTitle: 'Geler cette biographie ?',
+      freezeConfirmMessage: 'Cette action rendra la biographie entièrement en lecture seule pour l\'auteur. Elle ne peut pas être annulée depuis l\'éditeur.',
+      freezing: 'Gel en cours...',
+      frozenBannerTitle: 'Cette biographie a été gelée',
+      frozenBannerMessage: 'Cette biographie est en lecture seule et ne peut pas être modifiée.',
+    },
   },
   de: {
     common: {
@@ -3055,6 +3087,14 @@ export const translations: Record<Language, Translations> = {
       uploadError: 'Foto konnte nicht hochgeladen werden. Bitte versuchen Sie es erneut.',
       limitReached: 'Sie haben das Maximum von 10 Fotos pro Biografie erreicht.',
       deleteError: 'Foto konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.',
+    },
+    admin: {
+      freezeBiography: 'Biografie einfrieren',
+      freezeConfirmTitle: 'Diese Biografie einfrieren?',
+      freezeConfirmMessage: 'Dadurch wird die Biografie für den Autor vollständig schreibgeschützt. Diese Aktion kann nicht über den Editor rückgängig gemacht werden.',
+      freezing: 'Einfrieren...',
+      frozenBannerTitle: 'Diese Biografie wurde eingefroren',
+      frozenBannerMessage: 'Diese Biografie ist schreibgeschützt und kann nicht bearbeitet werden.',
     },
   },
 };

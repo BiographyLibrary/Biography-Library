@@ -18,6 +18,7 @@ import { AISectionReview } from '@/components/editor/AISectionReview';
 import { FinalReviewDialog } from '@/components/editor/FinalReviewDialog';
 import { FinalVersionEditor } from '@/components/editor/FinalVersionEditor';
 import { PublishConfirmationDialog } from '@/components/editor/PublishConfirmationDialog';
+import { FreezeConfirmationDialog } from '@/components/editor/FreezeConfirmationDialog';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import {
   BIOGRAPHY_SECTIONS,
@@ -42,7 +43,7 @@ import type { Biography } from '@/lib/biographies';
 import { generateBiographyPDF } from '@/lib/pdf-export';
 import { AdvancedExportDialog } from '@/components/export/AdvancedExportDialog';
 import { useTranslation } from '@/lib/i18n/i18n-context';
-import { Loader as Loader2, Menu, X, Sparkles } from 'lucide-react';
+import { Loader as Loader2, Menu, X, Sparkles, Snowflake as SnowflakeIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import {
@@ -102,26 +103,30 @@ export default function BiographyEditorPage() {
   const [showPublishDialog, setShowPublishDialog] = useState(false);
   const [aiLimitError, setAiLimitError] = useState<AiLimitError | null>(null);
   const [aiUsageRefresh, setAiUsageRefresh] = useState(0);
+  const [isFrozen, setIsFrozen] = useState(false);
+  const [userRole, setUserRole] = useState<string>('user');
+  const [showFreezeDialog, setShowFreezeDialog] = useState(false);
 
   const editorContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const loadAiPreference = async () => {
+    const loadProfilePreferences = async () => {
       if (!user) return;
 
       const { data } = await supabase
         .from('profiles')
-        .select('ai_features_enabled')
+        .select('ai_features_enabled, role')
         .eq('id', user.id)
         .maybeSingle();
 
       if (data) {
         setAiEnabled(data.ai_features_enabled);
         localStorage.setItem(AI_ENABLED_KEY, String(data.ai_features_enabled));
+        setUserRole(data.role || 'user');
       }
     };
 
-    loadAiPreference();
+    loadProfilePreferences();
   }, [user]);
 
   const dirtyRef = useRef(false);
@@ -160,6 +165,7 @@ export default function BiographyEditorPage() {
         setStatus(data.status || 'draft');
         setBiographyStatus(data.status || 'draft');
         setIsLocked(data.is_locked || false);
+        setIsFrozen(data.is_frozen || false);
         setShareToken(data.share_token || null);
         setEditorFontSize(data.editor_font_size || 16);
         setFinalVersion(data.final_version || '');
@@ -768,6 +774,25 @@ export default function BiographyEditorPage() {
     }
   }, [id]);
 
+  const handleFreeze = useCallback(async () => {
+    const { error } = await supabase
+      .from('biographies')
+      .update({
+        is_frozen: true,
+        frozen_at: new Date().toISOString(),
+        frozen_reason: 'admin_action',
+      })
+      .eq('id', id);
+
+    if (!error) {
+      setIsFrozen(true);
+      setShowFreezeDialog(false);
+    }
+  }, [id]);
+
+  const isAdminOrSuperAdmin = userRole === 'admin' || userRole === 'super_admin';
+  const effectivelyLocked = isLocked || isFrozen;
+
   if (authLoading || !user || isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#ECE9E4] dark:bg-[#1F2121]">
@@ -799,6 +824,38 @@ export default function BiographyEditorPage() {
         onPrivacyChange={handlePrivacyChange}
         onExportPDF={handleExportPDF}
       />
+
+      {isFrozen && (
+        <div className="shrink-0 bg-blue-50 dark:bg-blue-950/40 border-b border-blue-200 dark:border-blue-800 px-4 py-3 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <SnowflakeIcon className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0" />
+            <div>
+              <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">
+                {t.admin.frozenBannerTitle}
+              </p>
+              {!isAdminOrSuperAdmin && (
+                <p className="text-xs text-blue-700 dark:text-blue-300">
+                  {t.admin.frozenBannerMessage}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {!isFrozen && isAdminOrSuperAdmin && (
+        <div className="shrink-0 bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-800 px-4 py-2 flex items-center justify-end gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 text-xs border-amber-300 text-amber-800 dark:border-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 gap-1.5"
+            onClick={() => setShowFreezeDialog(true)}
+          >
+            <SnowflakeIcon className="h-3.5 w-3.5" />
+            {t.admin.freezeBiography}
+          </Button>
+        </div>
+      )}
 
       <div className="flex-1 flex min-h-0 relative">
         <div className="lg:hidden fixed bottom-4 left-4 z-40">
@@ -851,7 +908,7 @@ export default function BiographyEditorPage() {
 
         <div className="flex-1 flex min-w-0">
           <div className="flex-1 flex flex-col min-w-0">
-            {biographyStatus !== 'final_version' && biographyStatus !== 'published' && (
+            {biographyStatus !== 'final_version' && biographyStatus !== 'published' && !isFrozen && (
               <div className="border-b border-border/50 px-4 py-2 bg-card/30 flex items-center gap-2 shrink-0">
                 <Button
                   variant={editorMode === 'editor' ? 'default' : 'ghost'}
@@ -883,11 +940,11 @@ export default function BiographyEditorPage() {
                   content={finalVersion}
                   onContentChange={handleFinalVersionChange}
                   biographyId={id}
-                  isLocked={isLocked}
+                  isLocked={effectivelyLocked}
                   onPublish={() => setShowPublishDialog(true)}
                   editorFontSize={editorFontSize}
                 />
-              ) : editorMode === 'conversation' ? (
+              ) : editorMode === 'conversation' && !isFrozen ? (
                 <ConversationMode
                   sectionKey={activeSection}
                   onBackToEditor={() => setEditorMode('editor')}
@@ -917,7 +974,7 @@ export default function BiographyEditorPage() {
                   onTogglePhotos={() => setShowPhotosPanel((v) => !v)}
                   openImportDialog={showSidebarImport}
                   onImportDialogOpenChange={(v) => { if (!v) setShowSidebarImport(false); }}
-                  isPublished={(biographyStatus as string) === 'published'}
+                  isPublished={(biographyStatus as string) === 'published' || isFrozen}
                 />
               )}
 
@@ -1093,6 +1150,12 @@ export default function BiographyEditorPage() {
         open={showPublishDialog}
         onOpenChange={setShowPublishDialog}
         onConfirm={handlePublish}
+      />
+
+      <FreezeConfirmationDialog
+        open={showFreezeDialog}
+        onOpenChange={setShowFreezeDialog}
+        onConfirm={handleFreeze}
       />
 
       <Dialog open={!!aiLimitError} onOpenChange={(open) => { if (!open) setAiLimitError(null); }}>
