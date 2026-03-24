@@ -758,6 +758,7 @@ export default function BiographyEditorPage() {
         .eq('id', id);
 
       if (!error) {
+        await supabase.rpc('increment_biography_chapters', { biography_id: id });
         setBiographyStatus('published');
         setIsLocked(true);
         setShowPublishDialog(false);
