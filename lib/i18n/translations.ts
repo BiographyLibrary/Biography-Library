@@ -20,6 +20,12 @@ export interface Translations {
     biography: string;
     settings: string;
     logout: string;
+    admin: string;
+    notifications: string;
+    darkMode: string;
+    decreaseFontSize: string;
+    increaseFontSize: string;
+    signOut: string;
   };
   auth: {
     login: string;
@@ -690,6 +696,12 @@ export const translations: Record<Language, Translations> = {
       biography: 'Biography',
       settings: 'Settings',
       logout: 'Logout',
+      admin: 'Admin',
+      notifications: 'Notifications',
+      darkMode: 'Dark mode',
+      decreaseFontSize: 'Decrease font size',
+      increaseFontSize: 'Increase font size',
+      signOut: 'Sign out',
     },
     auth: {
       login: 'Login',
@@ -1358,6 +1370,12 @@ export const translations: Record<Language, Translations> = {
       biography: 'Biografia',
       settings: 'Impostazioni',
       logout: 'Esci',
+      admin: 'Admin',
+      notifications: 'Notifiche',
+      darkMode: 'Modalità scura',
+      decreaseFontSize: 'Riduci dimensione testo',
+      increaseFontSize: 'Aumenta dimensione testo',
+      signOut: 'Esci',
     },
     auth: {
       login: 'Accedi',
@@ -2026,6 +2044,12 @@ export const translations: Record<Language, Translations> = {
       biography: 'Biographie',
       settings: 'Param\u00e8tres',
       logout: 'D\u00e9connexion',
+      admin: 'Admin',
+      notifications: 'Notifications',
+      darkMode: 'Mode sombre',
+      decreaseFontSize: 'R\u00e9duire la taille du texte',
+      increaseFontSize: 'Augmenter la taille du texte',
+      signOut: 'Se d\u00e9connecter',
     },
     auth: {
       login: 'Connexion',
@@ -2694,6 +2718,12 @@ export const translations: Record<Language, Translations> = {
       biography: 'Biografie',
       settings: 'Einstellungen',
       logout: 'Abmelden',
+      admin: 'Admin',
+      notifications: 'Benachrichtigungen',
+      darkMode: 'Dunkelmodus',
+      decreaseFontSize: 'Schriftgr\u00f6\u00dfe verringern',
+      increaseFontSize: 'Schriftgr\u00f6\u00dfe vergr\u00f6\u00dfern',
+      signOut: 'Abmelden',
     },
     auth: {
       login: 'Anmelden',

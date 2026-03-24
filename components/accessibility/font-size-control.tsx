@@ -1,14 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Type } from 'lucide-react';
+import { Minus, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/lib/i18n/i18n-context';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
@@ -21,6 +15,8 @@ interface FontSizeControlProps {
   userId: string;
 }
 
+const fontSizeSteps: FontSize[] = ['small', 'normal', 'large', 'extra-large'];
+
 const fontSizeMap: Record<FontSize, string> = {
   'small': '90%',
   'normal': '100%',
@@ -32,43 +28,54 @@ export function FontSizeControl({ currentSize, onSizeChange, userId }: FontSizeC
   const { t } = useTranslation();
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const handleSizeChange = async (size: FontSize) => {
+  const currentIndex = fontSizeSteps.indexOf(currentSize);
+  const canDecrease = currentIndex > 0;
+  const canIncrease = currentIndex < fontSizeSteps.length - 1;
+
+  const handleChange = async (newSize: FontSize) => {
+    if (isUpdating) return;
     setIsUpdating(true);
 
     const { error } = await supabase
       .from('profiles')
-      .update({ ui_font_size: size })
+      .update({ ui_font_size: newSize })
       .eq('id', userId);
 
     if (error) {
       toast.error(t.toast.error);
       console.error('Error updating font size:', error);
     } else {
-      onSizeChange(size);
-      document.documentElement.style.fontSize = fontSizeMap[size];
+      onSizeChange(newSize);
+      document.documentElement.style.fontSize = fontSizeMap[newSize];
     }
 
     setIsUpdating(false);
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <Type className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-      <Select
-        value={currentSize}
-        onValueChange={handleSizeChange}
-        disabled={isUpdating}
+    <div className="flex items-center gap-0.5">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 text-muted-foreground hover:text-foreground"
+        onClick={() => canDecrease && handleChange(fontSizeSteps[currentIndex - 1])}
+        disabled={!canDecrease || isUpdating}
+        title={t.nav.decreaseFontSize}
       >
-        <SelectTrigger className="w-[80px] h-9">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="small">{t.accessibility.small}</SelectItem>
-          <SelectItem value="normal">{t.accessibility.normal}</SelectItem>
-          <SelectItem value="large">{t.accessibility.large}</SelectItem>
-          <SelectItem value="extra-large">{t.accessibility.extraLarge}</SelectItem>
-        </SelectContent>
-      </Select>
+        <Minus className="h-3.5 w-3.5" />
+        <span className="sr-only">{t.nav.decreaseFontSize}</span>
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 text-muted-foreground hover:text-foreground"
+        onClick={() => canIncrease && handleChange(fontSizeSteps[currentIndex + 1])}
+        disabled={!canIncrease || isUpdating}
+        title={t.nav.increaseFontSize}
+      >
+        <Plus className="h-3.5 w-3.5" />
+        <span className="sr-only">{t.nav.increaseFontSize}</span>
+      </Button>
     </div>
   );
 }
