@@ -299,6 +299,10 @@ export interface Translations {
     tokenMissing: string;
     notFoundOrDenied: string;
     biographyPrivate: string;
+    reviewBannerPrefix: string;
+    reviewBannerSuffix: string;
+    archivedBanner: string;
+    publishedOn: string;
   };
   footer: {
     hostedInSwitzerland: string;
@@ -941,6 +945,10 @@ export const translations: Record<Language, Translations> = {
       tokenMissing: 'Access token is missing',
       notFoundOrDenied: 'Biography not found or access denied',
       biographyPrivate: 'This biography is private',
+      reviewBannerPrefix: 'This biography is in review period until',
+      reviewBannerSuffix: '.',
+      archivedBanner: 'This biography has been archived.',
+      publishedOn: 'Published',
     },
     footer: {
       hostedInSwitzerland: 'Biography Library - Hosted in Switzerland',
@@ -1581,6 +1589,10 @@ export const translations: Record<Language, Translations> = {
       tokenMissing: 'Token di accesso mancante',
       notFoundOrDenied: 'Biografia non trovata o accesso negato',
       biographyPrivate: 'Questa biografia \u00e8 privata',
+      reviewBannerPrefix: 'Questa biografia \u00e8 in periodo di revisione fino al',
+      reviewBannerSuffix: '.',
+      archivedBanner: 'Questa biografia \u00e8 stata archiviata.',
+      publishedOn: 'Pubblicato',
     },
     footer: {
       hostedInSwitzerland: 'Biography Library - Ospitato in Svizzera',
@@ -2221,6 +2233,10 @@ export const translations: Record<Language, Translations> = {
       tokenMissing: 'Jeton d\'acc\u00e8s manquant',
       notFoundOrDenied: 'Biographie introuvable ou acc\u00e8s refus\u00e9',
       biographyPrivate: 'Cette biographie est priv\u00e9e',
+      reviewBannerPrefix: 'Cette biographie est en p\u00e9riode de r\u00e9vision jusqu\'au',
+      reviewBannerSuffix: '.',
+      archivedBanner: 'Cette biographie a \u00e9t\u00e9 archiv\u00e9e.',
+      publishedOn: 'Publi\u00e9',
     },
     footer: {
       hostedInSwitzerland: 'Biography Library - H\u00e9berg\u00e9 en Suisse',
@@ -2861,6 +2877,10 @@ export const translations: Record<Language, Translations> = {
       tokenMissing: 'Zugriffstoken fehlt',
       notFoundOrDenied: 'Biografie nicht gefunden oder Zugriff verweigert',
       biographyPrivate: 'Diese Biografie ist privat',
+      reviewBannerPrefix: 'Diese Biografie befindet sich bis zum',
+      reviewBannerSuffix: ' im Pr\u00fcfzeitraum.',
+      archivedBanner: 'Diese Biografie wurde archiviert.',
+      publishedOn: 'Ver\u00f6ffentlicht',
     },
     footer: {
       hostedInSwitzerland: 'Biography Library - Gehostet in der Schweiz',

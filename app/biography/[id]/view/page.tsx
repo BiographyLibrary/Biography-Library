@@ -3,12 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { BIOGRAPHY_SECTIONS, type BiographyContent } from '@/lib/editor-constants';
+import { type BiographyContent } from '@/lib/editor-constants';
 import { generateBiographyPDF } from '@/lib/pdf-export';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { FileDown, Loader as Loader2, Lock } from 'lucide-react';
+import { FileDown, Loader as Loader2, Lock, Info, Archive } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from '@/lib/i18n/i18n-context';
 
@@ -18,11 +18,43 @@ interface BiographyViewData {
   author_name: string;
   content: BiographyContent;
   privacy: string;
+  status: string;
   share_token: string | null;
   created_at: string;
+  published_at: string | null;
+  is_frozen: boolean | null;
+  frozen_at: string | null;
 }
 
-type ViewError = 'token-missing' | 'not-found' | 'private' | null;
+interface SectionWithDate {
+  key: string;
+  title: string;
+  text: string;
+  sectionCreatedAt: string | null;
+}
+
+type ViewError = 'not-found' | 'private' | null;
+
+function formatDate(dateStr: string, locale?: string): string {
+  return new Date(dateStr).toLocaleDateString(locale, {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+}
+
+function getReviewEndDate(publishedAt: string): Date {
+  const d = new Date(publishedAt);
+  d.setDate(d.getDate() + 30);
+  return d;
+}
+
+function isInReviewPeriod(biography: BiographyViewData): boolean {
+  if (biography.status === 'under_review') return true;
+  if (!biography.published_at) return false;
+  const reviewEnd = getReviewEndDate(biography.published_at);
+  return new Date() < reviewEnd;
+}
 
 export default function BiographyViewPage() {
   const params = useParams();
@@ -33,37 +65,86 @@ export default function BiographyViewPage() {
   const token = searchParams.get('token');
 
   const [biography, setBiography] = useState<BiographyViewData | null>(null);
+  const [orderedSections, setOrderedSections] = useState<SectionWithDate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<ViewError>(null);
 
   useEffect(() => {
     const load = async () => {
-      if (!token) {
-        setError('token-missing');
-        setIsLoading(false);
-        return;
-      }
+      setIsLoading(true);
 
-      const { data, error: fetchError } = await supabase
+      let data: BiographyViewData | null = null;
+
+      const publicQuery = await supabase
         .from('biographies')
-        .select('*')
+        .select('id, title, author_name, content, privacy, status, share_token, created_at, published_at, is_frozen, frozen_at')
         .eq('id', id)
-        .eq('share_token', token)
+        .eq('privacy', 'public')
+        .eq('status', 'published')
         .maybeSingle();
 
-      if (fetchError || !data) {
+      if (!publicQuery.error && publicQuery.data) {
+        data = publicQuery.data as BiographyViewData;
+      } else if (token) {
+        const tokenQuery = await supabase
+          .from('biographies')
+          .select('id, title, author_name, content, privacy, status, share_token, created_at, published_at, is_frozen, frozen_at')
+          .eq('id', id)
+          .eq('share_token', token)
+          .maybeSingle();
+
+        if (!tokenQuery.error && tokenQuery.data) {
+          if (tokenQuery.data.privacy === 'private') {
+            setError('private');
+            setIsLoading(false);
+            return;
+          }
+          data = tokenQuery.data as BiographyViewData;
+        }
+      }
+
+      if (!data) {
         setError('not-found');
         setIsLoading(false);
         return;
       }
 
-      if (data.privacy === 'private') {
-        setError('private');
-        setIsLoading(false);
-        return;
+      setBiography(data);
+
+      const sectionsQuery = await supabase
+        .from('biography_sections')
+        .select('section_name, created_at')
+        .eq('biography_id', id)
+        .order('created_at', { ascending: true });
+
+      const sectionTimestamps: Record<string, string> = {};
+      if (!sectionsQuery.error && sectionsQuery.data) {
+        for (const row of sectionsQuery.data) {
+          if (row.section_name && row.created_at) {
+            sectionTimestamps[row.section_name] = row.created_at;
+          }
+        }
       }
 
-      setBiography(data as BiographyViewData);
+      const content = data.content as BiographyContent;
+      const sections: SectionWithDate[] = Object.entries(content)
+        .filter(([, sectionData]) => sectionData?.text?.trim())
+        .map(([key, sectionData]) => ({
+          key,
+          title: key,
+          text: sectionData.text,
+          sectionCreatedAt: sectionTimestamps[key] ?? null,
+        }))
+        .sort((a, b) => {
+          if (a.sectionCreatedAt && b.sectionCreatedAt) {
+            return new Date(a.sectionCreatedAt).getTime() - new Date(b.sectionCreatedAt).getTime();
+          }
+          if (a.sectionCreatedAt) return -1;
+          if (b.sectionCreatedAt) return 1;
+          return 0;
+        });
+
+      setOrderedSections(sections);
       setIsLoading(false);
     };
 
@@ -72,7 +153,6 @@ export default function BiographyViewPage() {
 
   const getErrorMessage = (err: ViewError) => {
     switch (err) {
-      case 'token-missing': return t.view.tokenMissing;
       case 'not-found': return t.view.notFoundOrDenied;
       case 'private': return t.view.biographyPrivate;
       default: return t.view.notAvailable;
@@ -112,9 +192,10 @@ export default function BiographyViewPage() {
     );
   }
 
-  const visibleSections = BIOGRAPHY_SECTIONS.filter(
-    (section) => biography.content[section.key]?.text?.trim()
-  );
+  const inReview = isInReviewPeriod(biography);
+  const reviewEndDate = biography.published_at
+    ? getReviewEndDate(biography.published_at)
+    : null;
 
   return (
     <div className="min-h-screen bg-background">
@@ -141,7 +222,25 @@ export default function BiographyViewPage() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+        {biography.is_frozen && (
+          <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground bg-muted/40 border border-border/50 rounded-lg px-4 py-2.5">
+            <Archive className="h-4 w-4 shrink-0" />
+            <span>{t.view.archivedBanner}</span>
+          </div>
+        )}
+
+        {inReview && reviewEndDate && (
+          <div className="mb-6 flex items-start gap-2.5 text-sm bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200 rounded-lg px-4 py-3">
+            <Info className="h-4 w-4 shrink-0 mt-0.5" />
+            <span>
+              {t.view.reviewBannerPrefix}{' '}
+              <strong>{formatDate(reviewEndDate.toISOString())}</strong>
+              {t.view.reviewBannerSuffix}
+            </span>
+          </div>
+        )}
+
         <article className="prose prose-gray dark:prose-invert max-w-none">
           <div className="mb-12 pb-8 border-b border-border">
             <h1 className="text-4xl font-serif font-bold mb-2">
@@ -150,20 +249,31 @@ export default function BiographyViewPage() {
             <p className="text-xl text-muted-foreground">
               {t.view.by} {biography.author_name}
             </p>
+            {biography.published_at && (
+              <p className="text-sm text-muted-foreground mt-1">
+                {t.view.publishedOn} {formatDate(biography.published_at)}
+              </p>
+            )}
           </div>
 
-          {visibleSections.map((section) => {
-            const sectionData = biography.content[section.key];
-            if (!sectionData?.text?.trim()) return null;
-            const sectionTitle = t.sectionTitles[section.key as keyof typeof t.sectionTitles] || section.title;
+          {orderedSections.map((section) => {
+            const sectionTitle =
+              t.sectionTitles[section.key as keyof typeof t.sectionTitles] || section.key;
 
             return (
               <section key={section.key} className="mb-12">
-                <h2 className="text-2xl font-serif font-semibold text-primary mb-6">
-                  {sectionTitle}
-                </h2>
+                <div className="flex items-baseline justify-between gap-4 mb-6">
+                  <h2 className="text-2xl font-serif font-semibold text-primary">
+                    {sectionTitle}
+                  </h2>
+                  {section.sectionCreatedAt && (
+                    <span className="shrink-0 text-xs text-muted-foreground border border-border/60 rounded-full px-2.5 py-0.5 whitespace-nowrap">
+                      {t.view.publishedOn} {formatDate(section.sectionCreatedAt)}
+                    </span>
+                  )}
+                </div>
                 <div className="whitespace-pre-wrap leading-relaxed font-serif text-base">
-                  {sectionData.text.split('\n\n').map((paragraph, idx) => (
+                  {section.text.split('\n\n').map((paragraph, idx) => (
                     <p key={idx} className={cn('mb-4', !paragraph.trim() && 'hidden')}>
                       {paragraph}
                     </p>
