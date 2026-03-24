@@ -15,12 +15,13 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useTranslation } from '@/lib/i18n/i18n-context';
-import { Loader2 } from 'lucide-react';
+import { Loader as Loader2, TriangleAlert } from 'lucide-react';
 import type { Biography } from '@/lib/biographies';
 
 interface DeleteBiographyDialogProps {
   biography: Biography | null;
   isDeleting: boolean;
+  deleteError?: string | null;
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -28,6 +29,7 @@ interface DeleteBiographyDialogProps {
 export function DeleteBiographyDialog({
   biography,
   isDeleting,
+  deleteError,
   onConfirm,
   onCancel,
 }: DeleteBiographyDialogProps) {
@@ -125,6 +127,13 @@ export function DeleteBiographyDialog({
                     className="font-mono"
                   />
                 </div>
+
+                {deleteError && (
+                  <div className="flex items-center gap-2 rounded-md bg-destructive/10 border border-destructive/20 px-3 py-2 text-sm text-destructive">
+                    <TriangleAlert className="h-4 w-4 shrink-0" />
+                    <span>{deleteError}</span>
+                  </div>
+                )}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

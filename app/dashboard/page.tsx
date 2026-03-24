@@ -79,18 +79,22 @@ export default function DashboardPage() {
     }
   };
 
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
   const handleDelete = async () => {
-    if (!deleteTarget) return;
+    if (!deleteTarget || !user) return;
     setIsDeleting(true);
-    const { error } = await deleteBiography(deleteTarget.id);
+    setDeleteError(null);
+    const { error } = await deleteBiography(deleteTarget.id, user.id);
     if (!error) {
-      setBiographies((prev) =>
-        prev.filter((b) => b.id !== deleteTarget.id)
-      );
+      setIsDeleting(false);
+      setDeleteTarget(null);
       toast.success(t.deleteDialog.successToastBio);
+      router.push('/dashboard');
+    } else {
+      setDeleteError(t.deleteDialog.errorDeleteBio);
+      setIsDeleting(false);
     }
-    setIsDeleting(false);
-    setDeleteTarget(null);
   };
 
   const handleDeleteAccount = async () => {
@@ -277,8 +281,9 @@ export default function DashboardPage() {
       <DeleteBiographyDialog
         biography={deleteTarget}
         isDeleting={isDeleting}
+        deleteError={deleteError}
         onConfirm={handleDelete}
-        onCancel={() => setDeleteTarget(null)}
+        onCancel={() => { setDeleteTarget(null); setDeleteError(null); }}
       />
     </div>
   );

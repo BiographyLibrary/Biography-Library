@@ -575,6 +575,7 @@ export interface Translations {
     buttonDeleteBio: string;
     buttonDeleteAccount: string;
     successToastBio: string;
+    errorDeleteBio: string;
     successMessageAccount: string;
   };
   aiUsage: {
@@ -1195,7 +1196,8 @@ export const translations: Record<Language, Translations> = {
       buttonContinue: 'Continue',
       buttonDeleteBio: 'Permanently Delete',
       buttonDeleteAccount: 'Delete Account Permanently',
-      successToastBio: 'Biography deleted successfully',
+      successToastBio: 'Your biography has been deleted.',
+      errorDeleteBio: 'Failed to delete the biography. Please try again.',
       successMessageAccount: 'Your account has been deleted',
     },
     aiUsage: {
@@ -1814,7 +1816,8 @@ export const translations: Record<Language, Translations> = {
       buttonContinue: 'Continua',
       buttonDeleteBio: 'Elimina Permanentemente',
       buttonDeleteAccount: 'Elimina Account Permanentemente',
-      successToastBio: 'Biografia eliminata con successo',
+      successToastBio: 'La tua biografia è stata eliminata.',
+      errorDeleteBio: 'Impossibile eliminare la biografia. Riprova.',
       successMessageAccount: 'Il tuo account è stato eliminato',
     },
     aiUsage: {
@@ -2433,7 +2436,8 @@ export const translations: Record<Language, Translations> = {
       buttonContinue: 'Continuer',
       buttonDeleteBio: 'Supprimer Définitivement',
       buttonDeleteAccount: 'Supprimer le Compte Définitivement',
-      successToastBio: 'Biographie supprimée avec succès',
+      successToastBio: 'Votre biographie a été supprimée.',
+      errorDeleteBio: 'Échec de la suppression de la biographie. Veuillez réessayer.',
       successMessageAccount: 'Votre compte a été supprimé',
     },
     aiUsage: {
@@ -3052,7 +3056,8 @@ export const translations: Record<Language, Translations> = {
       buttonContinue: 'Fortfahren',
       buttonDeleteBio: 'Dauerhaft Löschen',
       buttonDeleteAccount: 'Konto Dauerhaft Löschen',
-      successToastBio: 'Biografie erfolgreich gelöscht',
+      successToastBio: 'Ihre Biografie wurde gelöscht.',
+      errorDeleteBio: 'Biografie konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.',
       successMessageAccount: 'Ihr Konto wurde gelöscht',
     },
     aiUsage: {

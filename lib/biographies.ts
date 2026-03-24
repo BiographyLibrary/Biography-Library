@@ -57,7 +57,17 @@ export async function createBiography(
   };
 }
 
-export async function deleteBiography(id: string) {
+export async function deleteBiography(id: string, userId: string) {
+  const storagePath = `${userId}/${id}`;
+  const { data: files } = await supabase.storage
+    .from('biography-photos')
+    .list(storagePath);
+
+  if (files && files.length > 0) {
+    const paths = files.map((f) => `${storagePath}/${f.name}`);
+    await supabase.storage.from('biography-photos').remove(paths);
+  }
+
   const { error } = await supabase
     .from('biographies')
     .delete()
