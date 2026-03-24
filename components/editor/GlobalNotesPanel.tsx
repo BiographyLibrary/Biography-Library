@@ -27,7 +27,6 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Card } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { StickyNote, SquareCheck as CheckSquare, Plus, CreditCard as Edit3, Trash2, Calendar as CalendarIcon, CircleAlert as AlertCircle, Filter, ArrowUpDown, X, Check } from 'lucide-react';
 import { format, isPast, isToday } from 'date-fns';
 import { it } from 'date-fns/locale';
@@ -255,7 +254,7 @@ export function GlobalNotesPanel({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-2xl w-[calc(100vw-2rem)] sm:w-full max-h-[85svh] flex flex-col p-0 gap-0">
+        <DialogContent className="max-w-2xl w-[calc(100vw-2rem)] sm:w-full p-0 gap-0 flex flex-col" style={{ maxHeight: '85svh' }}>
           <DialogHeader className="px-6 pt-6 pb-4 border-b border-border/50 shrink-0">
             <DialogTitle className="flex items-center gap-2 text-lg">
               <StickyNote className="h-5 w-5 text-primary" />
@@ -263,8 +262,8 @@ export function GlobalNotesPanel({
             </DialogTitle>
           </DialogHeader>
 
-          <div className="flex-1 min-h-0 overflow-hidden px-6 pb-6 pt-4">
-            <Tabs defaultValue="notes" className="flex flex-col h-full">
+          <div className="px-6 pb-6 pt-4 flex flex-col min-h-0 flex-1">
+            <Tabs defaultValue="notes" className="flex flex-col min-h-0 flex-1">
               <TabsList className="grid w-full grid-cols-2 shrink-0">
                 <TabsTrigger
                   value="notes"
@@ -293,7 +292,7 @@ export function GlobalNotesPanel({
               </TabsList>
 
               {/* NOTES */}
-              <TabsContent value="notes" className="flex-1 flex flex-col gap-4 mt-4 min-h-0 overflow-hidden">
+              <TabsContent value="notes" className="flex flex-col gap-4 mt-4 min-h-0 flex-1 overflow-hidden">
                 <div className="space-y-2 shrink-0">
                   <Textarea
                     placeholder={t.notesAndTodos.addNotePlaceholder}
@@ -311,7 +310,7 @@ export function GlobalNotesPanel({
                   </div>
                 </div>
 
-                <ScrollArea className="flex-1 min-h-0 pr-3">
+                <div className="flex-1 min-h-0 overflow-y-auto pr-1">
                   <div className="space-y-3 pb-1">
                     {notes.length === 0 ? (
                       <div className="text-center py-10 text-muted-foreground">
@@ -363,11 +362,11 @@ export function GlobalNotesPanel({
                       ))
                     )}
                   </div>
-                </ScrollArea>
+                </div>
               </TabsContent>
 
               {/* TODOS */}
-              <TabsContent value="todos" className="flex-1 flex flex-col gap-3 mt-4 min-h-0 overflow-hidden">
+              <TabsContent value="todos" className="flex flex-col gap-3 mt-4 min-h-0 flex-1 overflow-hidden">
                 <Card className="p-3 bg-muted/50 shrink-0">
                   <div className="space-y-3">
                     <Textarea
@@ -440,7 +439,7 @@ export function GlobalNotesPanel({
                   </Select>
                 </div>
 
-                <ScrollArea className="flex-1 min-h-0 pr-3">
+                <div className="flex-1 min-h-0 overflow-y-auto pr-1">
                   <div className="space-y-2 pb-1">
                     {filteredAndSortedTodos.length === 0 ? (
                       <div className="text-center py-10 text-muted-foreground">
@@ -539,7 +538,7 @@ export function GlobalNotesPanel({
                       ))
                     )}
                   </div>
-                </ScrollArea>
+                </div>
               </TabsContent>
             </Tabs>
           </div>
