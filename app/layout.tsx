@@ -1,7 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Providers } from './providers';
-import { Header } from '@/components/header';
+import { ConditionalHeader } from '@/components/conditional-header';
 import { Footer } from '@/components/footer';
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default function RootLayout({
       <body>
         <Providers>
           <div className="flex flex-col h-screen overflow-hidden">
-            <Header />
+            <ConditionalHeader />
             <main className="flex-1 overflow-auto min-h-0">
               {children}
             </main>
