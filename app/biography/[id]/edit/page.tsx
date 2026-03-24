@@ -916,6 +916,7 @@ export default function BiographyEditorPage() {
                   onTogglePhotos={() => setShowPhotosPanel((v) => !v)}
                   openImportDialog={showSidebarImport}
                   onImportDialogOpenChange={(v) => { if (!v) setShowSidebarImport(false); }}
+                  isPublished={(biographyStatus as string) === 'published'}
                 />
               )}
 

@@ -18,6 +18,7 @@ interface RichTextEditorProps {
   biographyId?: string;
   editorFontSize?: number;
   onEditorFontSizeChange?: (size: number) => void;
+  isPublished?: boolean;
 }
 
 export function RichTextEditor({
@@ -27,9 +28,11 @@ export function RichTextEditor({
   biographyId,
   editorFontSize = 16,
   onEditorFontSizeChange,
+  isPublished = false,
 }: RichTextEditorProps) {
   const editor = useEditor({
     immediatelyRender: false,
+    editable: !isPublished,
     extensions: [
       StarterKit.configure({
         heading: {
@@ -73,6 +76,12 @@ export function RichTextEditor({
   }, [content, editor]);
 
   useEffect(() => {
+    if (editor) {
+      editor.setEditable(!isPublished);
+    }
+  }, [editor, isPublished]);
+
+  useEffect(() => {
     if (editor && editorFontSize) {
       const editorElement = editor.view.dom;
       editorElement.style.fontSize = `${editorFontSize}px`;
@@ -81,13 +90,15 @@ export function RichTextEditor({
 
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
-      <RichTextToolbar
-        editor={editor}
-        biographyId={biographyId}
-        editorFontSize={editorFontSize}
-        onEditorFontSizeChange={onEditorFontSizeChange}
-      />
-      <div className="flex-1 overflow-y-auto">
+      {!isPublished && (
+        <RichTextToolbar
+          editor={editor}
+          biographyId={biographyId}
+          editorFontSize={editorFontSize}
+          onEditorFontSizeChange={onEditorFontSizeChange}
+        />
+      )}
+      <div className={`flex-1 overflow-y-auto${isPublished ? ' opacity-70 cursor-not-allowed select-none' : ''}`}>
         <EditorContent editor={editor} />
       </div>
     </div>

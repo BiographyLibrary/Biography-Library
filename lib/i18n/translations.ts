@@ -219,6 +219,7 @@ export interface Translations {
     failedSummary: string;
     editorMode: string;
     conversationMode: string;
+    publishedChapterNotice: string;
   };
   formatting: {
     bold: string;
@@ -831,6 +832,7 @@ export const translations: Record<Language, Translations> = {
       failedSummary: 'Failed to generate summary',
       editorMode: 'Editor Mode',
       conversationMode: 'Conversation Mode',
+      publishedChapterNotice: 'This chapter is published and cannot be edited.',
     },
     formatting: {
       bold: 'Bold',
@@ -1441,6 +1443,7 @@ export const translations: Record<Language, Translations> = {
       failedSummary: 'Impossibile generare il riassunto',
       editorMode: 'Modalità Editor',
       conversationMode: 'Modalità Conversazione',
+      publishedChapterNotice: 'Questo capitolo è pubblicato e non può essere modificato.',
     },
     formatting: {
       bold: 'Grassetto',
@@ -2051,6 +2054,7 @@ export const translations: Record<Language, Translations> = {
       failedSummary: 'Impossible de g\u00e9n\u00e9rer le r\u00e9sum\u00e9',
       editorMode: 'Mode Éditeur',
       conversationMode: 'Mode Conversation',
+      publishedChapterNotice: 'Ce chapitre est publié et ne peut pas être modifié.',
     },
     formatting: {
       bold: 'Gras',
@@ -2661,6 +2665,7 @@ export const translations: Record<Language, Translations> = {
       failedSummary: 'Zusammenfassung konnte nicht erstellt werden',
       editorMode: 'Editor-Modus',
       conversationMode: 'Konversationsmodus',
+      publishedChapterNotice: 'Dieses Kapitel ist veröffentlicht und kann nicht bearbeitet werden.',
     },
     formatting: {
       bold: 'Fett',

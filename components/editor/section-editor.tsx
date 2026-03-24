@@ -8,7 +8,7 @@ import { VoiceRecorder } from './voice-recorder';
 import { ImportTextDialog } from './import-text-dialog';
 import { SectionNotes } from './SectionNotes';
 import { useTranslation } from '@/lib/i18n/i18n-context';
-import { Sparkles, Flag, Mic, SpellCheck, MessageSquareText, FileText, Power, Upload, StickyNote, Wand as Wand2, CircleCheck as CheckCircle2, Images } from 'lucide-react';
+import { Sparkles, Flag, Mic, SpellCheck, MessageSquareText, FileText, Power, Upload, StickyNote, Wand as Wand2, CircleCheck as CheckCircle2, Images, Lock } from 'lucide-react';
 import { BIOGRAPHY_SECTIONS, type SectionData } from '@/lib/editor-constants';
 import { cn } from '@/lib/utils';
 
@@ -34,6 +34,7 @@ interface SectionEditorProps {
   onTogglePhotos?: () => void;
   openImportDialog?: boolean;
   onImportDialogOpenChange?: (open: boolean) => void;
+  isPublished?: boolean;
 }
 
 export function SectionEditor({
@@ -58,6 +59,7 @@ export function SectionEditor({
   onTogglePhotos,
   openImportDialog,
   onImportDialogOpenChange,
+  isPublished = false,
 }: SectionEditorProps) {
   const [showVoice, setShowVoice] = useState(false);
   const [showImportDialog, setShowImportDialog] = useState(false);
@@ -109,51 +111,55 @@ export function SectionEditor({
         <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-2">
           <div className="flex items-center gap-1.5 min-w-0">
             <h2 className="text-base sm:text-lg font-semibold truncate">{sectionTitle}</h2>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="h-7 w-7 p-0 shrink-0 rounded-full bg-[#A84B2F] hover:bg-[#6B2F1F] hover:text-[#FDFBF7] text-[#FDFBF7]"
-              onClick={() => setShowVoice(!showVoice)}
-              title={t.notesAndTodos.recordAudio}
-            >
-              <Mic className="h-3.5 w-3.5" />
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="h-7 w-7 p-0 shrink-0"
-              onClick={() => setShowImportDialog(true)}
-              title={t.notesAndTodos.importText}
-            >
-              <Upload className="h-3.5 w-3.5" />
-            </Button>
-            {onTogglePhotos && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="h-7 w-7 p-0 shrink-0"
-                onClick={onTogglePhotos}
-                title={t.photos.panelTitle}
-              >
-                <Images className="h-3.5 w-3.5" />
-              </Button>
+            {!isPublished && (
+              <>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0 shrink-0 rounded-full bg-[#A84B2F] hover:bg-[#6B2F1F] hover:text-[#FDFBF7] text-[#FDFBF7]"
+                  onClick={() => setShowVoice(!showVoice)}
+                  title={t.notesAndTodos.recordAudio}
+                >
+                  <Mic className="h-3.5 w-3.5" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0 shrink-0"
+                  onClick={() => setShowImportDialog(true)}
+                  title={t.notesAndTodos.importText}
+                >
+                  <Upload className="h-3.5 w-3.5" />
+                </Button>
+                {onTogglePhotos && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 w-7 p-0 shrink-0"
+                    onClick={onTogglePhotos}
+                    title={t.photos.panelTitle}
+                  >
+                    <Images className="h-3.5 w-3.5" />
+                  </Button>
+                )}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0 shrink-0"
+                  onClick={() => setShowNotesDialog(true)}
+                  title={t.notesAndTodos.title}
+                >
+                  <StickyNote className="h-3.5 w-3.5" />
+                </Button>
+              </>
             )}
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="h-7 w-7 p-0 shrink-0"
-              onClick={() => setShowNotesDialog(true)}
-              title={t.notesAndTodos.title}
-            >
-              <StickyNote className="h-3.5 w-3.5" />
-            </Button>
           </div>
           <div className="flex items-center gap-0.5 sm:gap-1 shrink-0 flex-wrap">
-          {aiEnabled && (
+          {!isPublished && aiEnabled && (
             <>
               <Button
                 variant="outline"
@@ -199,25 +205,27 @@ export function SectionEditor({
               )}
             </>
           )}
-          <Button
-            variant={aiEnabled ? 'default' : 'outline'}
-            size="sm"
-            className={cn(
-              'gap-1 text-xs h-7 px-2',
-              aiEnabled && 'bg-primary hover:bg-primary/90'
-            )}
-            onClick={onToggleAi}
-          >
-            {aiEnabled ? (
-              <Sparkles className="h-3.5 w-3.5" />
-            ) : (
-              <Power className="h-3.5 w-3.5" />
-            )}
-            <span className="hidden xl:inline">
-              {aiEnabled ? t.editor.aiOn : t.editor.aiOff}
-            </span>
-          </Button>
-          {onMarkComplete && (
+          {!isPublished && (
+            <Button
+              variant={aiEnabled ? 'default' : 'outline'}
+              size="sm"
+              className={cn(
+                'gap-1 text-xs h-7 px-2',
+                aiEnabled && 'bg-primary hover:bg-primary/90'
+              )}
+              onClick={onToggleAi}
+            >
+              {aiEnabled ? (
+                <Sparkles className="h-3.5 w-3.5" />
+              ) : (
+                <Power className="h-3.5 w-3.5" />
+              )}
+              <span className="hidden xl:inline">
+                {aiEnabled ? t.editor.aiOn : t.editor.aiOff}
+              </span>
+            </Button>
+          )}
+          {!isPublished && onMarkComplete && (
             <Button
               variant={isCompleted ? 'default' : 'outline'}
               size="sm"
@@ -237,7 +245,16 @@ export function SectionEditor({
         </div>
       </div>
 
-      {showVoice && (
+      {isPublished && (
+        <div className="px-4 sm:px-6 py-2.5 border-b border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-800 shrink-0 flex items-center gap-2">
+          <Lock className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+          <p className="text-xs text-amber-700 dark:text-amber-400 font-medium">
+            {t.editor.publishedChapterNotice}
+          </p>
+        </div>
+      )}
+
+      {!isPublished && showVoice && (
         <div className="px-4 sm:px-6 py-3 border-b border-border/30 bg-muted/20 shrink-0">
           <VoiceRecorder
             onTranscript={handleVoiceTranscript}
@@ -254,6 +271,7 @@ export function SectionEditor({
         biographyId={biographyId}
         editorFontSize={editorFontSize}
         onEditorFontSizeChange={onEditorFontSizeChange}
+        isPublished={isPublished}
       />
 
       <ImportTextDialog
