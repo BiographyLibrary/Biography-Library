@@ -548,17 +548,26 @@ Deno.serve(async (req: Request) => {
     }
 
     const authHeader = req.headers.get("Authorization");
+    console.log("[AI-EDGE] Authorization header present:", !!authHeader);
     if (!authHeader) {
       return errorResponse("Missing authorization header", 401);
     }
 
     const token = authHeader.replace("Bearer ", "");
+    console.log("[AI-EDGE] Token prefix (first 20 chars):", token.slice(0, 20));
+
+    const supabaseUrlPresent = !!Deno.env.get("SUPABASE_URL");
+    const serviceRoleKeyPresent = !!Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    console.log("[AI-EDGE] Env vars present - SUPABASE_URL:", supabaseUrlPresent, "SERVICE_ROLE_KEY:", serviceRoleKeyPresent);
+
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
     const {
       data: { user },
       error: authError,
     } = await supabase.auth.getUser(token);
+
+    console.log("[AI-EDGE] getUser result - user present:", !!user, "error:", authError?.message ?? "none", "error status:", authError?.status ?? "none");
 
     if (authError || !user) {
       console.error("Auth error:", authError?.message, "status:", authError?.status);

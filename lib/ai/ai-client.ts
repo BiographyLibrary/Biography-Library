@@ -34,19 +34,27 @@ async function getValidToken(): Promise<string> {
 
 export async function callAI(body: Record<string, unknown>): Promise<any> {
   let token = await getValidToken();
+  console.debug('[AI-CLIENT] token prefix sent:', token.slice(0, 20));
   let res = await doFetch(token, body);
+  console.debug('[AI-CLIENT] HTTP status from Edge Function:', res.status);
 
   if (res.status === 401) {
+    const errBody401 = await res.clone().json().catch(() => ({}));
+    console.debug('[AI-CLIENT] 401 response body (first attempt):', JSON.stringify(errBody401));
     await new Promise(r => setTimeout(r, 500));
     const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
+    console.debug('[AI-CLIENT] refreshSession after 401 - error:', refreshError?.message ?? 'none', 'has token:', !!refreshed?.session?.access_token);
     if (refreshError || !refreshed.session?.access_token) {
       throw new Error('SESSION_EXPIRED');
     }
     token = refreshed.session.access_token;
+    console.debug('[AI-CLIENT] retry token prefix:', token.slice(0, 20));
     res = await doFetch(token, body);
+    console.debug('[AI-CLIENT] HTTP status after 401 retry:', res.status);
 
     if (res.status === 401) {
       const errBody = await res.json().catch(() => ({}));
+      console.debug('[AI-CLIENT] 401 response body (retry):', JSON.stringify(errBody));
       if (errBody?.error === 'TOKEN_EXPIRED') {
         throw new Error('TOKEN_EXPIRED');
       }
@@ -73,6 +81,7 @@ export async function callAI(body: Record<string, unknown>): Promise<any> {
 
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
+    console.debug('[AI-CLIENT] non-200 response body:', JSON.stringify(data));
     throw new Error(data.error || `AI request failed with status ${res.status}`);
   }
 
