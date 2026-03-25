@@ -22,7 +22,11 @@ async function getValidToken(): Promise<string> {
     }
 
     const { data: { session: freshSession } } = await supabase.auth.getSession();
-    if (freshSession?.access_token) {
+    if (
+      freshSession?.access_token &&
+      freshSession.expires_at &&
+      freshSession.expires_at > Math.floor(Date.now() / 1000)
+    ) {
       return freshSession.access_token;
     }
 

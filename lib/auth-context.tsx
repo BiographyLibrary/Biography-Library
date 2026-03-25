@@ -84,7 +84,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return { error: error.message };
     if (data.user && !data.user.email_confirmed_at) {
-      await supabase.auth.signOut();
       return { error: null, emailNotConfirmed: true };
     }
     return { error: null };
