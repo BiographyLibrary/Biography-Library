@@ -125,7 +125,7 @@ export default function AdminUsersPage() {
     try {
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, full_name, role, created_at')
+        .select('id, name, email, role, created_at')
         .order('created_at', { ascending: false });
 
       if (profilesError) throw profilesError;
@@ -141,18 +141,10 @@ export default function AdminUsersPage() {
         countMap[b.user_id] = (countMap[b.user_id] ?? 0) + 1;
       }
 
-      const { data: { users: authUsers }, error: authError } = await supabase.auth.admin.listUsers();
-      const emailMap: Record<string, string> = {};
-      if (!authError && authUsers) {
-        for (const u of authUsers) {
-          emailMap[u.id] = u.email ?? '';
-        }
-      }
-
       const rows: UserRow[] = (profiles ?? []).map((p) => ({
         id: p.id,
-        full_name: p.full_name,
-        email: emailMap[p.id] ?? null,
+        full_name: p.name,
+        email: p.email ?? null,
         role: p.role as UserRole,
         created_at: p.created_at,
         biography_count: countMap[p.id] ?? 0,

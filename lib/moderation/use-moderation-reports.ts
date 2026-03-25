@@ -48,11 +48,10 @@ export function useModerationReports(filters: ModerationFilters): UseModerationR
             decided_at,
             created_at,
             updated_at,
-            biographies (
+            biographies!biography_id (
               title,
               status,
-              user_id,
-              profiles ( id, name )
+              user_id
             )
           `);
 
@@ -73,6 +72,18 @@ export function useModerationReports(filters: ModerationFilters): UseModerationR
         if (fetchError) {
           setError(fetchError.message);
           return;
+        }
+
+        const authorIds = Array.from(new Set((data ?? []).map((r: any) => r.biographies?.user_id).filter(Boolean)));
+        let authorMap: Record<string, string> = {};
+        if (authorIds.length > 0) {
+          const { data: profiles } = await supabase
+            .from('profiles')
+            .select('id, name')
+            .in('id', authorIds);
+          for (const p of profiles ?? []) {
+            authorMap[p.id] = p.name;
+          }
         }
 
         const mapped: ModerationReport[] = (data ?? []).map((row: any) => ({
@@ -96,7 +107,7 @@ export function useModerationReports(filters: ModerationFilters): UseModerationR
           created_at: row.created_at,
           updated_at: row.updated_at,
           biography_title: row.biographies?.title ?? null,
-          biography_author: row.biographies?.profiles?.name ?? null,
+          biography_author: row.biographies?.user_id ? (authorMap[row.biographies.user_id] ?? null) : null,
           biography_author_id: row.biographies?.user_id ?? null,
           biography_status: row.biographies?.status ?? null,
         }));
