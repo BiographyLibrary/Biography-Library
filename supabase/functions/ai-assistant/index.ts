@@ -523,6 +523,12 @@ async function checkAndIncrementUsage(
   return { allowed: true };
 }
 
+// CRITICAL: verifyJWT MUST remain false.
+// The function validates tokens internally via
+// supabase.auth.getUser(token) at line ~568.
+// Setting verifyJWT: true causes double-validation
+// that rejects valid tokens and breaks all AI calls.
+// DO NOT change this to true.
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
