@@ -1,144 +1,248 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useAuth, ADMIN_ROLES } from '@/lib/auth-context';
+import { Users, BookOpen, Shield, UserPlus, Activity, CircleCheck as CheckCircle, CircleAlert as AlertCircle, Clock, Circle as XCircle, ArrowRight, LayoutDashboard } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/i18n-context';
-import { Shield, ShieldOff, Users } from 'lucide-react';
-import { ModerationFilters as FiltersType, ModerationReport } from '@/lib/moderation/types';
-import { useModerationReports } from '@/lib/moderation/use-moderation-reports';
-import { ModerationFilters } from '@/components/admin/ModerationFilters';
-import { ModerationTable } from '@/components/admin/ModerationTable';
-import { ModerationDetailPanel } from '@/components/admin/ModerationDetailPanel';
+import { supabase } from '@/lib/supabase';
+import { AdminGuard } from '@/components/admin/AdminGuard';
+import { AdminNav } from '@/components/admin/AdminNav';
+import { StatCard } from '@/components/admin/StatCard';
+import { Button } from '@/components/ui/button';
 
-export default function AdminPage() {
-  const { user, role, loading } = useAuth();
+interface OverviewStats {
+  totalUsers: number | null;
+  newUsersThisWeek: number | null;
+  activeThisMonth: number | null;
+  totalBiographies: number | null;
+  publishedBiographies: number | null;
+  underReviewBiographies: number | null;
+  removedBiographies: number | null;
+  openReports: number | null;
+  inReviewReports: number | null;
+  resolvedThisWeek: number | null;
+}
+
+async function safeCount(query: any): Promise<number | null> {
+  try {
+    const result = await query;
+    return result.count ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function fetchStats(): Promise<OverviewStats> {
+  const now = new Date();
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+  const [
+    totalUsers,
+    newUsersThisWeek,
+    activeThisMonth,
+    totalBiographies,
+    publishedBiographies,
+    underReviewBiographies,
+    removedBiographies,
+    openReports,
+    inReviewReports,
+    resolvedThisWeek,
+  ] = await Promise.all([
+    safeCount(supabase.from('profiles').select('id', { count: 'exact', head: true })),
+    safeCount(supabase.from('profiles').select('id', { count: 'exact', head: true }).gte('created_at', sevenDaysAgo)),
+    safeCount(supabase.from('profiles').select('id', { count: 'exact', head: true }).gte('updated_at', thirtyDaysAgo)),
+    safeCount(supabase.from('biographies').select('id', { count: 'exact', head: true })),
+    safeCount(supabase.from('biographies').select('id', { count: 'exact', head: true }).eq('status', 'published')),
+    safeCount(supabase.from('biographies').select('id', { count: 'exact', head: true }).eq('status', 'under_review')),
+    safeCount(supabase.from('biographies').select('id', { count: 'exact', head: true }).eq('status', 'removed')),
+    safeCount(supabase.from('moderation_reports').select('id', { count: 'exact', head: true }).eq('status', 'unassigned')),
+    safeCount(supabase.from('moderation_reports').select('id', { count: 'exact', head: true }).eq('status', 'in_review')),
+    safeCount(
+      supabase
+        .from('moderation_reports')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'decided')
+        .gte('updated_at', sevenDaysAgo)
+    ),
+  ]);
+
+  return {
+    totalUsers,
+    newUsersThisWeek,
+    activeThisMonth,
+    totalBiographies,
+    publishedBiographies,
+    underReviewBiographies,
+    removedBiographies,
+    openReports,
+    inReviewReports,
+    resolvedThisWeek,
+  };
+}
+
+function OverviewContent() {
   const { t } = useTranslation();
-  const router = useRouter();
-  const [countdown, setCountdown] = useState(3);
-  const [selectedReport, setSelectedReport] = useState<ModerationReport | null>(null);
-
-  const [filters, setFilters] = useState<FiltersType>({
-    status: 'all',
-    type: 'all',
-    sort: 'newest',
+  const [stats, setStats] = useState<OverviewStats>({
+    totalUsers: null,
+    newUsersThisWeek: null,
+    activeThisMonth: null,
+    totalBiographies: null,
+    publishedBiographies: null,
+    underReviewBiographies: null,
+    removedBiographies: null,
+    openReports: null,
+    inReviewReports: null,
+    resolvedThisWeek: null,
   });
 
-  const isDenied = !loading && (!user || (role !== null && !ADMIN_ROLES.includes(role)));
-
-  const { reports, unassignedCount, loading: reportsLoading, error, refresh } = useModerationReports(filters);
-
   useEffect(() => {
-    if (loading) return;
-
-    if (!user) {
-      const timer = setInterval(() => {
-        setCountdown((c) => {
-          if (c <= 1) {
-            clearInterval(timer);
-            router.replace('/login');
-            return 0;
-          }
-          return c - 1;
-        });
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-
-    if (role !== null && !ADMIN_ROLES.includes(role)) {
-      const timer = setInterval(() => {
-        setCountdown((c) => {
-          if (c <= 1) {
-            clearInterval(timer);
-            router.replace('/dashboard');
-            return 0;
-          }
-          return c - 1;
-        });
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [loading, user, role, router]);
-
-  if (loading) return null;
-
-  if (isDenied) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center px-4">
-        <div className="text-center max-w-sm">
-          <div className="flex justify-center mb-5">
-            <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-950/30">
-              <ShieldOff className="h-8 w-8 text-red-500 dark:text-red-400" />
-            </div>
-          </div>
-          <h1 className="text-xl font-semibold text-foreground mb-2">Access Denied</h1>
-          <p className="text-sm text-muted-foreground mb-5">
-            You do not have permission to access this page.
-          </p>
-          <p className="text-xs text-muted-foreground">
-            Redirecting in{' '}
-            <span className="font-semibold tabular-nums text-foreground">{countdown}</span>{' '}
-            second{countdown !== 1 ? 's' : ''}…
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user || !role) return null;
-  if (!ADMIN_ROLES.includes(role)) return null;
+    fetchStats().then(setStats);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex items-center justify-between gap-4 mb-8 flex-wrap">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-sky-50 dark:bg-sky-950/30 shrink-0">
-              <Shield className="h-5 w-5 text-sky-600 dark:text-sky-400" />
-            </div>
-            <h1 className="text-2xl font-serif font-semibold tracking-tight text-foreground">
-              {t.admin.moderationTitle}
-              {unassignedCount > 0 && (
-                <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-300 font-sans">
-                  {unassignedCount} {t.admin.moderationUnassignedBadge}
-                </span>
-              )}
-            </h1>
+      <AdminNav />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="flex items-center gap-3 mb-10">
+          <div className="p-2.5 rounded-xl bg-sky-50 dark:bg-sky-950/30 shrink-0">
+            <LayoutDashboard className="h-5 w-5 text-sky-600 dark:text-sky-400" />
           </div>
-          {role === 'super_admin' && (
-            <Link
-              href="/admin/users"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-card hover:bg-muted/60 transition-colors text-sm font-medium text-foreground shadow-sm"
-            >
-              <Users className="h-4 w-4 text-sky-600 dark:text-sky-400" />
-              {t.admin.usersNavLink}
-            </Link>
-          )}
+          <div>
+            <h1 className="text-2xl font-serif font-semibold tracking-tight text-foreground">
+              {t.admin.overviewTitle}
+            </h1>
+            <p className="text-sm text-muted-foreground mt-0.5">{t.admin.overviewSubtitle}</p>
+          </div>
         </div>
 
-        <div className="flex flex-col gap-5">
-          <div className="flex items-center justify-between flex-wrap gap-3">
-            <ModerationFilters filters={filters} onChange={setFilters} />
-          </div>
+        <div className="space-y-10">
+          <section>
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">
+              {t.admin.sectionUsers}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <StatCard
+                icon={<Users className="h-5 w-5" />}
+                label={t.admin.statTotalUsers}
+                value={stats.totalUsers}
+                accent="sky"
+              />
+              <StatCard
+                icon={<UserPlus className="h-5 w-5" />}
+                label={t.admin.statNewThisWeek}
+                value={stats.newUsersThisWeek}
+                secondary="Last 7 days"
+                accent="emerald"
+              />
+              <StatCard
+                icon={<Activity className="h-5 w-5" />}
+                label={t.admin.statActiveThisMonth}
+                value={stats.activeThisMonth}
+                secondary="Last 30 days"
+                accent="neutral"
+              />
+            </div>
+          </section>
 
-          <ModerationTable
-            reports={reports}
-            loading={reportsLoading}
-            error={error}
-            onOpen={setSelectedReport}
-          />
+          <section>
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">
+              {t.admin.sectionBiographies}
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <StatCard
+                icon={<BookOpen className="h-5 w-5" />}
+                label={t.admin.statTotalBiographies}
+                value={stats.totalBiographies}
+                accent="sky"
+              />
+              <StatCard
+                icon={<CheckCircle className="h-5 w-5" />}
+                label={t.admin.statPublished}
+                value={stats.publishedBiographies}
+                accent="emerald"
+              />
+              <StatCard
+                icon={<Clock className="h-5 w-5" />}
+                label={t.admin.statUnderReview}
+                value={stats.underReviewBiographies}
+                accent="amber"
+              />
+              <StatCard
+                icon={<XCircle className="h-5 w-5" />}
+                label={t.admin.statRemoved}
+                value={stats.removedBiographies}
+                accent="red"
+              />
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">
+              {t.admin.sectionModeration}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <StatCard
+                icon={<AlertCircle className="h-5 w-5" />}
+                label={t.admin.statOpenReports}
+                value={stats.openReports}
+                accent="red"
+              />
+              <StatCard
+                icon={<Shield className="h-5 w-5" />}
+                label={t.admin.statInReview}
+                value={stats.inReviewReports}
+                accent="amber"
+              />
+              <StatCard
+                icon={<CheckCircle className="h-5 w-5" />}
+                label={t.admin.statResolvedThisWeek}
+                value={stats.resolvedThisWeek}
+                secondary="Last 7 days"
+                accent="emerald"
+              />
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">
+              {t.admin.sectionQuickActions}
+            </h2>
+            <div className="flex flex-wrap gap-3">
+              <Button asChild variant="outline" className="gap-2 h-10">
+                <Link href="/admin/moderation">
+                  <Shield className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+                  {t.admin.quickActionModeration}
+                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="gap-2 h-10">
+                <Link href="/admin/users">
+                  <Users className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+                  {t.admin.quickActionUsers}
+                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="gap-2 h-10">
+                <Link href="/admin/biographies">
+                  <BookOpen className="h-4 w-4 text-sky-600 dark:text-sky-400" />
+                  {t.admin.quickActionBiographies}
+                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
+                </Link>
+              </Button>
+            </div>
+          </section>
         </div>
       </div>
-
-      <ModerationDetailPanel
-        report={selectedReport}
-        onClose={() => setSelectedReport(null)}
-        onRefresh={() => {
-          refresh();
-          setSelectedReport(null);
-        }}
-      />
     </div>
+  );
+}
+
+export default function AdminPage() {
+  return (
+    <AdminGuard>
+      <OverviewContent />
+    </AdminGuard>
   );
 }

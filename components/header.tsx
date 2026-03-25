@@ -104,7 +104,7 @@ export function Header() {
               href="/admin"
               className={cn(
                 'hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
-                pathname === '/admin'
+                pathname?.startsWith('/admin')
                   ? 'bg-sky-100 text-sky-700 dark:bg-sky-950/50 dark:text-sky-300'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
               )}

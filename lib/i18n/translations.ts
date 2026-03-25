@@ -788,6 +788,30 @@ export interface Translations {
     usersAccessDeniedMessage: string;
     usersRedirectingIn: string;
     usersLoadError: string;
+    overviewTitle: string;
+    overviewSubtitle: string;
+    navOverview: string;
+    navModeration: string;
+    navBiographies: string;
+    navUsers: string;
+    navAiStats: string;
+    statTotalUsers: string;
+    statNewThisWeek: string;
+    statActiveThisMonth: string;
+    statTotalBiographies: string;
+    statPublished: string;
+    statUnderReview: string;
+    statRemoved: string;
+    statOpenReports: string;
+    statInReview: string;
+    statResolvedThisWeek: string;
+    sectionUsers: string;
+    sectionBiographies: string;
+    sectionModeration: string;
+    sectionQuickActions: string;
+    quickActionModeration: string;
+    quickActionUsers: string;
+    quickActionBiographies: string;
   };
   publicBiographies: {
     pageTitle: string;
@@ -1622,6 +1646,30 @@ export const translations: Record<Language, Translations> = {
       usersAccessDeniedMessage: 'This page is restricted to super administrators.',
       usersRedirectingIn: 'Redirecting in',
       usersLoadError: 'Failed to load users.',
+      overviewTitle: 'Admin Overview',
+      overviewSubtitle: 'Platform health and key statistics at a glance',
+      navOverview: 'Overview',
+      navModeration: 'Moderation',
+      navBiographies: 'Biographies',
+      navUsers: 'Users',
+      navAiStats: 'AI Stats',
+      statTotalUsers: 'Total Users',
+      statNewThisWeek: 'New this week',
+      statActiveThisMonth: 'Active this month',
+      statTotalBiographies: 'Total Biographies',
+      statPublished: 'Published',
+      statUnderReview: 'Under Review',
+      statRemoved: 'Removed',
+      statOpenReports: 'Open Reports',
+      statInReview: 'In Review',
+      statResolvedThisWeek: 'Resolved this week',
+      sectionUsers: 'Users',
+      sectionBiographies: 'Biographies',
+      sectionModeration: 'Moderation',
+      sectionQuickActions: 'Quick Actions',
+      quickActionModeration: 'Go to Moderation',
+      quickActionUsers: 'Manage Users',
+      quickActionBiographies: 'View Biographies',
     },
     publicBiographies: {
       pageTitle: 'Published Biographies',
@@ -2454,6 +2502,30 @@ export const translations: Record<Language, Translations> = {
       usersAccessDeniedMessage: 'Questa pagina è riservata ai super amministratori.',
       usersRedirectingIn: 'Reindirizzamento tra',
       usersLoadError: 'Impossibile caricare gli utenti.',
+      overviewTitle: 'Panoramica Admin',
+      overviewSubtitle: 'Stato della piattaforma e statistiche principali',
+      navOverview: 'Panoramica',
+      navModeration: 'Moderazione',
+      navBiographies: 'Biografie',
+      navUsers: 'Utenti',
+      navAiStats: 'Stat AI',
+      statTotalUsers: 'Utenti Totali',
+      statNewThisWeek: 'Nuovi questa settimana',
+      statActiveThisMonth: 'Attivi questo mese',
+      statTotalBiographies: 'Biografie Totali',
+      statPublished: 'Pubblicate',
+      statUnderReview: 'In revisione',
+      statRemoved: 'Rimosse',
+      statOpenReports: 'Segnalazioni aperte',
+      statInReview: 'In revisione',
+      statResolvedThisWeek: 'Risolte questa settimana',
+      sectionUsers: 'Utenti',
+      sectionBiographies: 'Biografie',
+      sectionModeration: 'Moderazione',
+      sectionQuickActions: 'Azioni Rapide',
+      quickActionModeration: 'Vai alla Moderazione',
+      quickActionUsers: 'Gestisci Utenti',
+      quickActionBiographies: 'Vedi Biografie',
     },
     publicBiographies: {
       pageTitle: 'Biografie Pubblicate',
@@ -3286,6 +3358,30 @@ export const translations: Record<Language, Translations> = {
       usersAccessDeniedMessage: 'Cette page est réservée aux super administrateurs.',
       usersRedirectingIn: 'Redirection dans',
       usersLoadError: 'Impossible de charger les utilisateurs.',
+      overviewTitle: 'Vue d\'ensemble Admin',
+      overviewSubtitle: 'Santé de la plateforme et statistiques clés en un coup d\'œil',
+      navOverview: 'Vue d\'ensemble',
+      navModeration: 'Modération',
+      navBiographies: 'Biographies',
+      navUsers: 'Utilisateurs',
+      navAiStats: 'Stats IA',
+      statTotalUsers: 'Utilisateurs Totaux',
+      statNewThisWeek: 'Nouveaux cette semaine',
+      statActiveThisMonth: 'Actifs ce mois',
+      statTotalBiographies: 'Biographies Totales',
+      statPublished: 'Publiées',
+      statUnderReview: 'En révision',
+      statRemoved: 'Supprimées',
+      statOpenReports: 'Signalements ouverts',
+      statInReview: 'En révision',
+      statResolvedThisWeek: 'Résolus cette semaine',
+      sectionUsers: 'Utilisateurs',
+      sectionBiographies: 'Biographies',
+      sectionModeration: 'Modération',
+      sectionQuickActions: 'Actions Rapides',
+      quickActionModeration: 'Aller à la Modération',
+      quickActionUsers: 'Gérer les Utilisateurs',
+      quickActionBiographies: 'Voir les Biographies',
     },
     publicBiographies: {
       pageTitle: 'Biographies Publiées',
@@ -4118,6 +4214,30 @@ export const translations: Record<Language, Translations> = {
       usersAccessDeniedMessage: 'Diese Seite ist nur für Super-Administratoren zugänglich.',
       usersRedirectingIn: 'Weiterleitung in',
       usersLoadError: 'Benutzer konnten nicht geladen werden.',
+      overviewTitle: 'Admin-Übersicht',
+      overviewSubtitle: 'Plattformzustand und wichtige Statistiken auf einen Blick',
+      navOverview: 'Übersicht',
+      navModeration: 'Moderation',
+      navBiographies: 'Biografien',
+      navUsers: 'Benutzer',
+      navAiStats: 'KI-Statistiken',
+      statTotalUsers: 'Gesamtbenutzer',
+      statNewThisWeek: 'Neu diese Woche',
+      statActiveThisMonth: 'Aktiv diesen Monat',
+      statTotalBiographies: 'Biografien Gesamt',
+      statPublished: 'Veröffentlicht',
+      statUnderReview: 'In Prüfung',
+      statRemoved: 'Entfernt',
+      statOpenReports: 'Offene Meldungen',
+      statInReview: 'In Prüfung',
+      statResolvedThisWeek: 'Diese Woche gelöst',
+      sectionUsers: 'Benutzer',
+      sectionBiographies: 'Biografien',
+      sectionModeration: 'Moderation',
+      sectionQuickActions: 'Schnellaktionen',
+      quickActionModeration: 'Zur Moderation',
+      quickActionUsers: 'Benutzer verwalten',
+      quickActionBiographies: 'Biografien ansehen',
     },
     publicBiographies: {
       pageTitle: 'Veröffentlichte Biografien',

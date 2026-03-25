@@ -6,7 +6,8 @@ import { useAuth } from '@/lib/auth-context';
 import { useTranslation } from '@/lib/i18n/i18n-context';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
-import { Users, ShieldOff, Search, ChevronLeft, ChevronRight, Shield } from 'lucide-react';
+import { Users, ShieldOff, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { AdminNav } from '@/components/admin/AdminNav';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -271,7 +272,8 @@ export default function AdminUsersPage() {
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <AdminNav />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2.5 rounded-xl bg-sky-50 dark:bg-sky-950/30 shrink-0">

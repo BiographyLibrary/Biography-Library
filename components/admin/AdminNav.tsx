@@ -1,0 +1,65 @@
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useTranslation } from '@/lib/i18n/i18n-context';
+import { useAuth } from '@/lib/auth-context';
+import { LayoutDashboard, Shield, BookOpen, Users, ChartBar as BarChart3 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+interface NavItem {
+  label: string;
+  href: string;
+  icon: React.ReactNode;
+  superAdminOnly?: boolean;
+}
+
+export function AdminNav() {
+  const pathname = usePathname();
+  const { t } = useTranslation();
+  const { role } = useAuth();
+
+  const items: NavItem[] = [
+    { label: t.admin.navOverview, href: '/admin', icon: <LayoutDashboard className="h-4 w-4" /> },
+    { label: t.admin.navModeration, href: '/admin/moderation', icon: <Shield className="h-4 w-4" /> },
+    { label: t.admin.navBiographies, href: '/admin/biographies', icon: <BookOpen className="h-4 w-4" /> },
+    { label: t.admin.navUsers, href: '/admin/users', icon: <Users className="h-4 w-4" />, superAdminOnly: true },
+    { label: t.admin.navAiStats, href: '/admin/ai-stats', icon: <BarChart3 className="h-4 w-4" /> },
+  ];
+
+  const visible = items.filter((item) => {
+    if (item.superAdminOnly && role !== 'super_admin') return false;
+    return true;
+  });
+
+  return (
+    <nav className="border-b border-border bg-card/60 backdrop-blur-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-1 overflow-x-auto scrollbar-none">
+          {visible.map((item) => {
+            const isActive =
+              item.href === '/admin'
+                ? pathname === '/admin'
+                : pathname?.startsWith(item.href);
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  'flex items-center gap-2 px-3 py-3.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors',
+                  isActive
+                    ? 'border-sky-600 text-sky-700 dark:border-sky-400 dark:text-sky-300'
+                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                )}
+              >
+                {item.icon}
+                {item.label}
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    </nav>
+  );
+}
