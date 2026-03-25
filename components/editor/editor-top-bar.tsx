@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTranslation } from '@/lib/i18n/i18n-context';
-import { ArrowLeft, Check, CloudOff, Loader as Loader2, Lock, Users, Globe, BookOpen } from 'lucide-react';
+import { ArrowLeft, Check, CloudOff, Loader as Loader2, Lock, Users, Globe, BookOpen, Snowflake } from 'lucide-react';
 
 type SaveStatus = 'saved' | 'saving' | 'unsaved' | 'error';
 type Privacy = 'private' | 'family' | 'public';
@@ -16,6 +16,9 @@ interface EditorTopBarProps {
   saveStatus: SaveStatus;
   onTitleChange: (title: string) => void;
   onPrivacyChange: (privacy: Privacy) => void;
+  isFrozen?: boolean;
+  isAdminOrSuperAdmin?: boolean;
+  onFreeze?: () => void;
 }
 
 const privacyIcons = {
@@ -32,6 +35,9 @@ export function EditorTopBar({
   saveStatus,
   onTitleChange,
   onPrivacyChange,
+  isFrozen = false,
+  isAdminOrSuperAdmin = false,
+  onFreeze,
 }: EditorTopBarProps) {
   const router = useRouter();
   const { t } = useTranslation();
@@ -152,6 +158,25 @@ export function EditorTopBar({
             <CurrentPrivacyIcon className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">{privacyLabels[privacy]}</span>
           </Button>
+
+          {isAdminOrSuperAdmin && !isFrozen && onFreeze && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1.5 text-xs h-8 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 hover:text-amber-700 dark:hover:text-amber-300"
+              onClick={onFreeze}
+            >
+              <Snowflake className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{t.admin.freezeBiography}</span>
+            </Button>
+          )}
+
+          {isFrozen && (
+            <div className="flex items-center gap-1.5 px-2 text-xs text-blue-600 dark:text-blue-400">
+              <Snowflake className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{t.admin.frozenBannerTitle}</span>
+            </div>
+          )}
 
         </div>
       </div>

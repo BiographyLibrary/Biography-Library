@@ -874,37 +874,17 @@ export default function BiographyEditorPage() {
         saveStatus={saveStatus}
         onTitleChange={handleTitleChange}
         onPrivacyChange={handlePrivacyChange}
+        isFrozen={isFrozen}
+        isAdminOrSuperAdmin={isAdminOrSuperAdmin}
+        onFreeze={() => setShowFreezeDialog(true)}
       />
 
-      {isFrozen && (
-        <div className="shrink-0 bg-blue-50 dark:bg-blue-950/40 border-b border-blue-200 dark:border-blue-800 px-4 py-3 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <SnowflakeIcon className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0" />
-            <div>
-              <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">
-                {t.admin.frozenBannerTitle}
-              </p>
-              {!isAdminOrSuperAdmin && (
-                <p className="text-xs text-blue-700 dark:text-blue-300">
-                  {t.admin.frozenBannerMessage}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {!isFrozen && isAdminOrSuperAdmin && (
-        <div className="shrink-0 bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-800 px-4 py-2 flex items-center justify-end gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-8 text-xs border-amber-300 text-amber-800 dark:border-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 gap-1.5"
-            onClick={() => setShowFreezeDialog(true)}
-          >
-            <SnowflakeIcon className="h-3.5 w-3.5" />
-            {t.admin.freezeBiography}
-          </Button>
+      {isFrozen && !isAdminOrSuperAdmin && (
+        <div className="shrink-0 bg-blue-50 dark:bg-blue-950/40 border-b border-blue-200 dark:border-blue-800 px-4 py-2 flex items-center gap-3">
+          <SnowflakeIcon className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
+          <p className="text-xs text-blue-700 dark:text-blue-300">
+            {t.admin.frozenBannerMessage}
+          </p>
         </div>
       )}
 
