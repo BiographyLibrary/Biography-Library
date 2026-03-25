@@ -12,6 +12,7 @@ interface NavItem {
   href: string;
   icon: React.ReactNode;
   superAdminOnly?: boolean;
+  adminOnly?: boolean;
 }
 
 export function AdminNav() {
@@ -24,11 +25,12 @@ export function AdminNav() {
     { label: t.admin.navModeration, href: '/admin/moderation', icon: <Shield className="h-4 w-4" /> },
     { label: t.admin.navBiographies, href: '/admin/biographies', icon: <BookOpen className="h-4 w-4" /> },
     { label: t.admin.navUsers, href: '/admin/users', icon: <Users className="h-4 w-4" />, superAdminOnly: true },
-    { label: t.admin.navAiStats, href: '/admin/ai-stats', icon: <BarChart3 className="h-4 w-4" /> },
+    { label: t.admin.navAiStats, href: '/admin/ai-stats', icon: <BarChart3 className="h-4 w-4" />, adminOnly: true },
   ];
 
   const visible = items.filter((item) => {
     if (item.superAdminOnly && role !== 'super_admin') return false;
+    if (item.adminOnly && role !== 'admin' && role !== 'super_admin') return false;
     return true;
   });
 

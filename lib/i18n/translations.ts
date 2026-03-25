@@ -795,6 +795,32 @@ export interface Translations {
     navBiographies: string;
     navUsers: string;
     navAiStats: string;
+    aiStatsPageTitle: string;
+    aiStatsPageSubtitle: string;
+    aiStatsDataNote: string;
+    aiStatsFilterToday: string;
+    aiStatsFilterLast7: string;
+    aiStatsFilterLast30: string;
+    aiStatsFilterAllTime: string;
+    aiStatsTotalRequests: string;
+    aiStatsUniqueUsers: string;
+    aiStatsMostUsedAction: string;
+    aiStatsAvgPerUser: string;
+    aiStatsSection1: string;
+    aiStatsSection2: string;
+    aiStatsSection3: string;
+    aiStatsSection4: string;
+    aiStatsColAction: string;
+    aiStatsColCount: string;
+    aiStatsColName: string;
+    aiStatsColEmail: string;
+    aiStatsColTotalRequests: string;
+    aiStatsColLastUsed: string;
+    aiStatsColDate: string;
+    aiStatsColUniqueUsers: string;
+    aiStatsNoData: string;
+    aiStatsLoadError: string;
+    aiStatsNever: string;
     statTotalUsers: string;
     statNewThisWeek: string;
     statActiveThisMonth: string;
@@ -1720,6 +1746,32 @@ export const translations: Record<Language, Translations> = {
       navBiographies: 'Biographies',
       navUsers: 'Users',
       navAiStats: 'AI Stats',
+      aiStatsPageTitle: 'AI Usage Statistics',
+      aiStatsPageSubtitle: 'Monitor AI feature usage across all users',
+      aiStatsDataNote: 'Note: usage data is retained for 30 days.',
+      aiStatsFilterToday: 'Today',
+      aiStatsFilterLast7: 'Last 7 days',
+      aiStatsFilterLast30: 'Last 30 days',
+      aiStatsFilterAllTime: 'All time',
+      aiStatsTotalRequests: 'Total AI requests',
+      aiStatsUniqueUsers: 'Unique users',
+      aiStatsMostUsedAction: 'Most used action',
+      aiStatsAvgPerUser: 'Avg requests / user',
+      aiStatsSection1: 'Summary',
+      aiStatsSection2: 'Usage by action type',
+      aiStatsSection3: 'Top users by AI usage',
+      aiStatsSection4: 'Daily usage (last 14 days)',
+      aiStatsColAction: 'Action',
+      aiStatsColCount: 'Requests',
+      aiStatsColName: 'Name',
+      aiStatsColEmail: 'Email',
+      aiStatsColTotalRequests: 'Total requests',
+      aiStatsColLastUsed: 'Last used',
+      aiStatsColDate: 'Date',
+      aiStatsColUniqueUsers: 'Unique users',
+      aiStatsNoData: 'No data for this period.',
+      aiStatsLoadError: 'Failed to load AI statistics.',
+      aiStatsNever: 'Never',
       statTotalUsers: 'Total Users',
       statNewThisWeek: 'New this week',
       statActiveThisMonth: 'Active this month',
@@ -2643,6 +2695,32 @@ export const translations: Record<Language, Translations> = {
       navBiographies: 'Biografie',
       navUsers: 'Utenti',
       navAiStats: 'Stat AI',
+      aiStatsPageTitle: 'Statistiche Utilizzo AI',
+      aiStatsPageSubtitle: 'Monitora l\'utilizzo delle funzioni AI da parte di tutti gli utenti',
+      aiStatsDataNote: 'Nota: i dati di utilizzo vengono conservati per 30 giorni.',
+      aiStatsFilterToday: 'Oggi',
+      aiStatsFilterLast7: 'Ultimi 7 giorni',
+      aiStatsFilterLast30: 'Ultimi 30 giorni',
+      aiStatsFilterAllTime: 'Tutto il tempo',
+      aiStatsTotalRequests: 'Richieste AI totali',
+      aiStatsUniqueUsers: 'Utenti unici',
+      aiStatsMostUsedAction: 'Azione più usata',
+      aiStatsAvgPerUser: 'Media richieste / utente',
+      aiStatsSection1: 'Riepilogo',
+      aiStatsSection2: 'Utilizzo per tipo di azione',
+      aiStatsSection3: 'Utenti principali per utilizzo AI',
+      aiStatsSection4: 'Utilizzo giornaliero (ultimi 14 giorni)',
+      aiStatsColAction: 'Azione',
+      aiStatsColCount: 'Richieste',
+      aiStatsColName: 'Nome',
+      aiStatsColEmail: 'Email',
+      aiStatsColTotalRequests: 'Richieste totali',
+      aiStatsColLastUsed: 'Ultimo utilizzo',
+      aiStatsColDate: 'Data',
+      aiStatsColUniqueUsers: 'Utenti unici',
+      aiStatsNoData: 'Nessun dato per questo periodo.',
+      aiStatsLoadError: 'Impossibile caricare le statistiche AI.',
+      aiStatsNever: 'Mai',
       statTotalUsers: 'Utenti Totali',
       statNewThisWeek: 'Nuovi questa settimana',
       statActiveThisMonth: 'Attivi questo mese',
@@ -3566,6 +3644,32 @@ export const translations: Record<Language, Translations> = {
       navBiographies: 'Biographies',
       navUsers: 'Utilisateurs',
       navAiStats: 'Stats IA',
+      aiStatsPageTitle: 'Statistiques d\'utilisation de l\'IA',
+      aiStatsPageSubtitle: 'Surveiller l\'utilisation des fonctions IA par tous les utilisateurs',
+      aiStatsDataNote: 'Note : les données d\'utilisation sont conservées pendant 30 jours.',
+      aiStatsFilterToday: 'Aujourd\'hui',
+      aiStatsFilterLast7: '7 derniers jours',
+      aiStatsFilterLast30: '30 derniers jours',
+      aiStatsFilterAllTime: 'Tout le temps',
+      aiStatsTotalRequests: 'Requêtes IA totales',
+      aiStatsUniqueUsers: 'Utilisateurs uniques',
+      aiStatsMostUsedAction: 'Action la plus utilisée',
+      aiStatsAvgPerUser: 'Moy. requêtes / utilisateur',
+      aiStatsSection1: 'Résumé',
+      aiStatsSection2: 'Utilisation par type d\'action',
+      aiStatsSection3: 'Principaux utilisateurs IA',
+      aiStatsSection4: 'Utilisation quotidienne (14 derniers jours)',
+      aiStatsColAction: 'Action',
+      aiStatsColCount: 'Requêtes',
+      aiStatsColName: 'Nom',
+      aiStatsColEmail: 'Email',
+      aiStatsColTotalRequests: 'Requêtes totales',
+      aiStatsColLastUsed: 'Dernière utilisation',
+      aiStatsColDate: 'Date',
+      aiStatsColUniqueUsers: 'Utilisateurs uniques',
+      aiStatsNoData: 'Aucune donnée pour cette période.',
+      aiStatsLoadError: 'Impossible de charger les statistiques IA.',
+      aiStatsNever: 'Jamais',
       statTotalUsers: 'Utilisateurs Totaux',
       statNewThisWeek: 'Nouveaux cette semaine',
       statActiveThisMonth: 'Actifs ce mois',
@@ -4489,6 +4593,32 @@ export const translations: Record<Language, Translations> = {
       navBiographies: 'Biografien',
       navUsers: 'Benutzer',
       navAiStats: 'KI-Statistiken',
+      aiStatsPageTitle: 'KI-Nutzungsstatistiken',
+      aiStatsPageSubtitle: 'KI-Funktionsnutzung aller Benutzer überwachen',
+      aiStatsDataNote: 'Hinweis: Nutzungsdaten werden 30 Tage lang aufbewahrt.',
+      aiStatsFilterToday: 'Heute',
+      aiStatsFilterLast7: 'Letzte 7 Tage',
+      aiStatsFilterLast30: 'Letzte 30 Tage',
+      aiStatsFilterAllTime: 'Gesamte Zeit',
+      aiStatsTotalRequests: 'Gesamt KI-Anfragen',
+      aiStatsUniqueUsers: 'Eindeutige Benutzer',
+      aiStatsMostUsedAction: 'Meistgenutzte Aktion',
+      aiStatsAvgPerUser: 'Ø Anfragen / Benutzer',
+      aiStatsSection1: 'Zusammenfassung',
+      aiStatsSection2: 'Nutzung nach Aktionstyp',
+      aiStatsSection3: 'Top-Nutzer nach KI-Nutzung',
+      aiStatsSection4: 'Tägliche Nutzung (letzte 14 Tage)',
+      aiStatsColAction: 'Aktion',
+      aiStatsColCount: 'Anfragen',
+      aiStatsColName: 'Name',
+      aiStatsColEmail: 'E-Mail',
+      aiStatsColTotalRequests: 'Gesamtanfragen',
+      aiStatsColLastUsed: 'Zuletzt verwendet',
+      aiStatsColDate: 'Datum',
+      aiStatsColUniqueUsers: 'Eindeutige Benutzer',
+      aiStatsNoData: 'Keine Daten für diesen Zeitraum.',
+      aiStatsLoadError: 'KI-Statistiken konnten nicht geladen werden.',
+      aiStatsNever: 'Nie',
       statTotalUsers: 'Gesamtbenutzer',
       statNewThisWeek: 'Neu diese Woche',
       statActiveThisMonth: 'Aktiv diesen Monat',
