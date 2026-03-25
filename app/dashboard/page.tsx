@@ -131,7 +131,7 @@ export default function DashboardPage() {
 
   if (!mounted || authLoading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#ECE9E4] dark:bg-[#121212]">
+      <div className="min-h-screen flex items-center justify-center bg-[#ECE9E4] dark:bg-[#1F2121]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -139,7 +139,7 @@ export default function DashboardPage() {
 
   if (!user.email_confirmed_at) {
     return (
-      <div className="min-h-screen bg-[#ECE9E4] dark:bg-[#121212] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#ECE9E4] dark:bg-[#1F2121] flex items-center justify-center px-4">
         <div className="w-full max-w-[400px] animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="flex flex-col items-center gap-4 p-6 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 text-center">
             <div className="w-14 h-14 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
@@ -189,7 +189,7 @@ export default function DashboardPage() {
     user.user_metadata?.name || user.email?.split('@')[0] || 'there';
 
   return (
-    <div className="min-h-screen bg-[#ECE9E4] dark:bg-[#121212] flex items-center justify-center">
+    <div className="min-h-screen bg-[#ECE9E4] dark:bg-[#1F2121] flex items-center justify-center">
       <WelcomeLanguageModal />
 
       <main className="w-full max-w-2xl px-4 sm:px-6 py-8">

@@ -1,29 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600&family=Noto+Serif:wght@400;600;700&display=swap');
 
-* { font-weight: 400 !important; }
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 253 251 247;
+    --background: 40 18% 91%;
     --foreground: 0 0% 7%;
-    --card: 253 251 247;
+    --card: 40 60% 98%;
     --card-foreground: 0 0% 7%;
     --popover: 40 60% 98%;
     --popover-foreground: 0 0% 7%;
-    --primary: 200 223 190;
-    --primary-foreground: 18 18 18;
-    --secondary: 196 218 235;
-    --secondary-foreground: 18 18 18;
-    --muted: 236 233 228;
-    --muted-foreground: 18 18 18;
-    --accent: 200 223 190;
-    --accent-foreground: 18 18 18;
-    --destructive: 109 50 62;
-    --destructive-foreground: 255 255 255;
+    --primary: 0 0% 7%;
+    --primary-foreground: 40 60% 98%;
+    --secondary: 0 0% 38%;
+    --secondary-foreground: 0 0% 7%;
+    --muted: 40 18% 91%;
+    --muted-foreground: 0 0% 38%;
+    --accent: 96 30% 82%;
+    --accent-foreground: 0 0% 7%;
+    --destructive: 352 38% 42%;
+    --destructive-foreground: 0 0% 98%;
     --border: 0 0% 38%;
     --input: 0 0% 38%;
     --ring: 0 0% 7%;
@@ -49,22 +47,22 @@
   }
 
   .dark {
-    --background: 28 26 23;
+    --background: 180 4% 13%;
     --foreground: 40 60% 98%;
-    --card: 28 26 23;
+    --card: 0 0% 40%;
     --card-foreground: 40 60% 98%;
     --popover: 0 0% 40%;
     --popover-foreground: 40 60% 98%;
-    --primary: 200 223 190;
-    --primary-foreground: 18 18 18;
-    --secondary: 196 218 235;
-    --secondary-foreground: 18 18 18;
-    --muted: 42 40 37;
-    --muted-foreground: 253 251 247;
-    --accent: 200 223 190;
-    --accent-foreground: 18 18 18;
-    --destructive: 109 50 62;
-    --destructive-foreground: 255 255 255;
+    --primary: 40 60% 98%;
+    --primary-foreground: 180 4% 13%;
+    --secondary: 180 2% 66%;
+    --secondary-foreground: 40 60% 98%;
+    --muted: 0 0% 40%;
+    --muted-foreground: 0 0% 66%;
+    --accent: 96 30% 82%;
+    --accent-foreground: 180 4% 13%;
+    --destructive: 352 38% 42%;
+    --destructive-foreground: 0 0% 98%;
     --border: 40 60% 93%;
     --input: 40 60% 93%;
     --ring: 40 60% 98%;
@@ -117,18 +115,15 @@
 }
 
 .ProseMirror h1 {
-  @apply text-3xl font-serif mb-4 mt-6;
-  font-weight: 400;
+  @apply text-3xl font-bold font-serif mb-4 mt-6;
 }
 
 .ProseMirror h2 {
-  @apply text-2xl font-serif mb-3 mt-5;
-  font-weight: 400;
+  @apply text-2xl font-semibold font-serif mb-3 mt-5;
 }
 
 .ProseMirror h3 {
-  @apply text-xl font-serif mb-2 mt-4;
-  font-weight: 400;
+  @apply text-xl font-semibold font-serif mb-2 mt-4;
 }
 
 .ProseMirror p {
@@ -160,7 +155,7 @@
 }
 
 .ProseMirror strong {
-  font-weight: 400;
+  @apply font-semibold;
 }
 
 .ProseMirror em {

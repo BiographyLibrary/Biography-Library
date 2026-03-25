@@ -12,11 +12,11 @@ interface StatCardProps {
 }
 
 const accentMap = {
-  sky: 'bg-[#C4DAEB] text-[#121212] dark:bg-[#C4DAEB]/20 dark:text-[#C4DAEB]',
-  emerald: 'bg-[#C8DFBE] text-[#121212] dark:bg-[#C8DFBE]/20 dark:text-[#C8DFBE]',
-  amber: 'bg-[#944454]/15 text-[#944454] dark:bg-[#944454]/20 dark:text-[#944454]',
-  red: 'bg-[#6D323E]/15 text-[#6D323E] dark:bg-[#6D323E]/20 dark:text-[#FDFBF7]',
-  neutral: 'bg-[#ECE9E4] text-[#121212] dark:bg-[#2A2825] dark:text-[#FDFBF7]',
+  sky: 'bg-sky-50 dark:bg-sky-950/30 text-sky-600 dark:text-sky-400',
+  emerald: 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400',
+  amber: 'bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400',
+  red: 'bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400',
+  neutral: 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400',
 };
 
 export function StatCard({ icon, label, value, secondary, accent = 'sky' }: StatCardProps) {

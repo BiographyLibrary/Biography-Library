@@ -211,7 +211,7 @@ export function AdvancedExportDialog({
         <ScrollArea className="flex-1 pr-4">
           <div className="space-y-6 py-4">
             {!isPublished && (
-              <div className="flex items-start gap-3 rounded-lg bg-[#C8DFBE] dark:bg-[#C8DFBE]/20 border border-[#C8DFBE] dark:border-[#C8DFBE]/30 px-4 py-3">
+              <div className="flex items-start gap-3 rounded-lg bg-[#C8DFBE] dark:bg-[#C8DFBE]/20 border border-[#a8c99a] dark:border-[#C8DFBE]/30 px-4 py-3">
                 <Info className="h-4 w-4 mt-0.5 shrink-0 text-[#3a6b30] dark:text-[#C8DFBE]" />
                 <p className="text-sm text-[#2a4f27] dark:text-[#C8DFBE] leading-relaxed">
                   {t.exportDialog.pdfNotice}

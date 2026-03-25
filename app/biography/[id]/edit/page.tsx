@@ -927,7 +927,7 @@ const [isPublishing, setIsPublishing] = useState(false);
 
   if (authLoading || !user || isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#ECE9E4] dark:bg-[#121212]">
+      <div className="min-h-screen flex items-center justify-center bg-[#ECE9E4] dark:bg-[#1F2121]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -935,7 +935,7 @@ const [isPublishing, setIsPublishing] = useState(false);
 
   if (!biography) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#ECE9E4] dark:bg-[#121212] gap-4">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#ECE9E4] dark:bg-[#1F2121] gap-4">
         <p className="text-muted-foreground">{t.biography.notFound}</p>
         <Button variant="outline" onClick={() => router.push('/dashboard')}>
           {t.biography.returnToDashboard}
@@ -947,7 +947,7 @@ const [isPublishing, setIsPublishing] = useState(false);
   const activeSectionData = getSectionData(content, activeSection);
 
   return (
-    <div className="h-full flex flex-col bg-[#ECE9E4] dark:bg-[#121212] overflow-hidden">
+    <div className="h-full flex flex-col bg-[#ECE9E4] dark:bg-[#1F2121] overflow-hidden">
       <EditorTopBar
         title={title}
         privacy={privacy}

@@ -8,15 +8,15 @@ interface ReportTypeBadgeProps {
 }
 
 const TYPE_STYLES: Record<string, string> = {
-  level1_content: 'bg-[#6D323E] text-white dark:bg-[#6D323E] dark:text-white',
-  level2_content: 'bg-[#944454] text-white dark:bg-[#944454] dark:text-white',
-  level3_content: 'bg-[#C4DAEB] text-[#121212] dark:bg-[#C4DAEB] dark:text-[#121212]',
-  user_report: 'bg-[#944454] text-white dark:bg-[#944454] dark:text-white',
-  living_person: 'bg-[#944454] text-white dark:bg-[#944454] dark:text-white',
-  right_to_oblivion: 'bg-[#944454] text-white dark:bg-[#944454] dark:text-white',
-  impersonation: 'bg-[#944454] text-white dark:bg-[#944454] dark:text-white',
-  copyright: 'bg-[#944454] text-white dark:bg-[#944454] dark:text-white',
-  other: 'bg-[#ECE9E4] text-[#121212] dark:bg-[#2A2825] dark:text-[#FDFBF7]',
+  level1_content: 'bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-300',
+  level2_content: 'bg-orange-100 text-orange-700 dark:bg-orange-950/50 dark:text-orange-300',
+  level3_content: 'bg-blue-100 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300',
+  user_report: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-950/50 dark:text-yellow-300',
+  living_person: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-950/50 dark:text-yellow-300',
+  right_to_oblivion: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-950/50 dark:text-yellow-300',
+  impersonation: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-950/50 dark:text-yellow-300',
+  copyright: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-950/50 dark:text-yellow-300',
+  other: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300',
 };
 
 function getTypeLabel(type: ReportType, t: ReturnType<typeof useTranslation>['t']): string {

@@ -115,7 +115,7 @@ export function SectionEditor({
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="h-7 w-7 p-0 shrink-0 rounded-full bg-[#6D323E] hover:bg-[#6D323E]/80 hover:text-[#FDFBF7] text-[#FDFBF7]"
+                className="h-7 w-7 p-0 shrink-0 rounded-full bg-[#A84B2F] hover:bg-[#6B2F1F] hover:text-[#FDFBF7] text-[#FDFBF7]"
                 onClick={() => setShowVoice(!showVoice)}
                 title={t.notesAndTodos.recordAudio}
               >
