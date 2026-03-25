@@ -102,7 +102,10 @@ export default function RegisterPage() {
                   {t.auth.verifyEmailTitle}
                 </h2>
                 <p className="text-sm text-blue-800 dark:text-blue-200">
-                  {t.auth.verifyEmailSubtitle}
+                  {t.auth.verifySentTo}{' '}
+                  <span className="font-semibold break-all">{email}</span>.
+                  <br />
+                  {t.auth.verifyEmailLinkSent}
                 </p>
                 <p className="text-xs text-blue-700 dark:text-blue-300 mt-2">
                   {t.auth.verifyEmailDetail}

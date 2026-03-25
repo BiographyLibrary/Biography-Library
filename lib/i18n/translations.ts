@@ -78,6 +78,7 @@ export interface Translations {
     atLeastEightChars: string;
     verifyEmailTitle: string;
     verifyEmailSubtitle: string;
+    verifySentTo: string;
     verifyEmailDetail: string;
     verifyEmailLinkSent: string;
     verifyEmailAutoUpdate: string;
@@ -1035,6 +1036,7 @@ export const translations: Record<Language, Translations> = {
       atLeastEightChars: 'At least 8 characters',
       verifyEmailTitle: 'Verify your email',
       verifyEmailSubtitle: 'We\'ve sent a verification email to your address. Please check your inbox and click the link to activate your account.',
+      verifySentTo: 'We sent a confirmation link to',
       verifyEmailDetail: 'Didn\'t receive the email? Check your spam folder or resend it below.',
       verifyEmailLinkSent: 'We\'ve sent you a confirmation link. Click the link in the email to activate your account.',
       verifyEmailAutoUpdate: 'This page will update automatically once confirmed.',
@@ -1990,6 +1992,7 @@ export const translations: Record<Language, Translations> = {
       atLeastEightChars: 'Almeno 8 caratteri',
       verifyEmailTitle: 'Verifica la tua email',
       verifyEmailSubtitle: 'Abbiamo inviato un\'email di verifica al tuo indirizzo. Controlla la tua casella di posta e clicca sul link per attivare il tuo account.',
+      verifySentTo: 'Abbiamo inviato un link di conferma a',
       verifyEmailDetail: 'Non hai ricevuto l\'email? Controlla la cartella spam o reinviala qui sotto.',
       verifyEmailLinkSent: 'Ti abbiamo inviato un link di conferma. Clicca sul link nell\'email per attivare il tuo account.',
       verifyEmailAutoUpdate: 'Questa pagina si aggiornerà automaticamente dopo la conferma.',
@@ -2945,6 +2948,7 @@ export const translations: Record<Language, Translations> = {
       atLeastEightChars: 'Au moins 8 caract\u00e8res',
       verifyEmailTitle: 'V\u00e9rifiez votre email',
       verifyEmailSubtitle: 'Nous avons envoy\u00e9 un email de v\u00e9rification \u00e0 votre adresse. Veuillez v\u00e9rifier votre bo\u00eete de r\u00e9ception et cliquer sur le lien pour activer votre compte.',
+      verifySentTo: 'Nous avons envoy\u00e9 un lien de confirmation \u00e0',
       verifyEmailDetail: 'Vous n\'avez pas re\u00e7u l\'email\u00a0? V\u00e9rifiez votre dossier spam ou renvoyez-le ci-dessous.',
       verifyEmailLinkSent: 'Nous vous avons envoy\u00e9 un lien de confirmation. Cliquez sur le lien dans l\'email pour activer votre compte.',
       verifyEmailAutoUpdate: 'Cette page se mettra \u00e0 jour automatiquement apr\u00e8s confirmation.',
@@ -3900,6 +3904,7 @@ export const translations: Record<Language, Translations> = {
       atLeastEightChars: 'Mindestens 8 Zeichen',
       verifyEmailTitle: 'E-Mail best\u00e4tigen',
       verifyEmailSubtitle: 'Wir haben eine Best\u00e4tigungs-E-Mail an Ihre Adresse gesendet. Bitte \u00fcberpr\u00fcfen Sie Ihren Posteingang und klicken Sie auf den Link, um Ihr Konto zu aktivieren.',
+      verifySentTo: 'Wir haben einen Best\u00e4tigungslink gesendet an',
       verifyEmailDetail: 'Keine E-Mail erhalten? \u00dcberpr\u00fcfen Sie Ihren Spam-Ordner oder senden Sie sie erneut.',
       verifyEmailLinkSent: 'Wir haben Ihnen einen Best\u00e4tigungslink gesendet. Klicken Sie auf den Link in der E-Mail, um Ihr Konto zu aktivieren.',
       verifyEmailAutoUpdate: 'Diese Seite wird nach der Best\u00e4tigung automatisch aktualisiert.',
