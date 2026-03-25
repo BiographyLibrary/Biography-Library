@@ -708,7 +708,7 @@ export function ConversationMode({
                 variant="ghost"
                 onClick={() => setShowVoice(!showVoice)}
                 disabled={isGenerating || isAnalyzing}
-                className="h-10 w-10 rounded-full bg-[#A84B2F] hover:bg-[#6B2F1F] hover:text-[#FDFBF7] text-[#FDFBF7]"
+                className="h-10 w-10 rounded-full bg-[#6D323E] hover:bg-[#6D323E]/80 hover:text-[#FDFBF7] text-[#FDFBF7]"
               >
                 <Mic className="h-4 w-4" />
               </Button>
@@ -725,7 +725,7 @@ export function ConversationMode({
                   size="icon"
                   onClick={handleFinishSection}
                   disabled={isGenerating || isAnalyzing}
-                  className="h-10 w-10 text-[#2F4F2F] hover:opacity-90"
+                  className="h-10 w-10 text-[#121212] hover:opacity-90"
                   style={{ backgroundColor: '#C8DFBE' }}
                   title={language === 'it' ? 'Rivedi Risposte' :
                          language === 'fr' ? 'Réviser les Réponses' :

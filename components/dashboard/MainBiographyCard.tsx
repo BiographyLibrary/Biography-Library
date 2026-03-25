@@ -142,20 +142,20 @@ export function MainBiographyCard({ biography, userName, userId, onDeleteClick, 
           text: status === 'completed' ? t.dashboard.completed :
                 status === 'approved' ? t.dashboard.statusApproved :
                 t.dashboard.statusPublished,
-          className: 'bg-[#C8DFBE] text-[#121212]'
+          className: 'bg-[#C8DFBE] text-[#121212] dark:bg-[#C8DFBE] dark:text-[#121212]'
         };
       case 'published':
-        return { text: t.dashboard.statusPublished, className: 'bg-[#D3F1FF] text-[#121212]' };
+        return { text: t.dashboard.statusPublished, className: 'bg-[#C4DAEB] text-[#121212] dark:bg-[#C4DAEB] dark:text-[#121212]' };
       case 'under_review':
-        return { text: t.dashboard.statusUnderReview, className: 'bg-[#FFE4C0] text-[#7C3A00]' };
+        return { text: t.dashboard.statusUnderReview, className: 'bg-[#944454] text-white dark:bg-[#944454] dark:text-white' };
       case 'draft_1':
-        return { text: t.dashboard.statusDraft1, className: 'bg-[#FBDEC1] text-[#121212]' };
+        return { text: t.dashboard.statusDraft1, className: 'bg-[#ECE9E4] text-[#121212] dark:bg-[#2A2825] dark:text-[#FDFBF7]' };
       case 'draft_2':
-        return { text: t.dashboard.statusDraft2, className: 'bg-[#FBDEC1] text-[#121212]' };
+        return { text: t.dashboard.statusDraft2, className: 'bg-[#ECE9E4] text-[#121212] dark:bg-[#2A2825] dark:text-[#FDFBF7]' };
       case 'draft_3':
-        return { text: t.dashboard.statusDraft3, className: 'bg-[#FBDEC1] text-[#121212]' };
+        return { text: t.dashboard.statusDraft3, className: 'bg-[#ECE9E4] text-[#121212] dark:bg-[#2A2825] dark:text-[#FDFBF7]' };
       default:
-        return { text: t.dashboard.draft, className: 'bg-[#FBDEC1] text-[#121212]' };
+        return { text: t.dashboard.draft, className: 'bg-[#ECE9E4] text-[#121212] dark:bg-[#2A2825] dark:text-[#FDFBF7]' };
     }
   };
 
@@ -328,7 +328,7 @@ export function MainBiographyCard({ biography, userName, userId, onDeleteClick, 
                 <span className="text-sm text-muted-foreground">{t.dashboard.progress}:</span>
                 <span className="text-sm font-semibold text-foreground">{progress}%</span>
               </div>
-              <div className="h-2 w-full bg-[#E5E1DA] dark:bg-white/10 rounded-full overflow-hidden">
+              <div className="h-2 w-full bg-[#ECE9E4] dark:bg-white/10 rounded-full overflow-hidden">
                 <div
                   className="h-full transition-all duration-300 ease-in-out"
                   style={{ width: `${progress}%`, backgroundColor: getProgressColor(progress) }}
@@ -393,7 +393,7 @@ export function MainBiographyCard({ biography, userName, userId, onDeleteClick, 
 
           <div className="space-y-2 pl-4 sm:pl-7">
             {globalNotes.length > 0 && (
-              <Card className="p-3 border-0 bg-[#F8F6F2] dark:bg-white/5">
+              <Card className="p-3 border-0 bg-[#FDFBF7] dark:bg-white/5">
                 <div className="flex items-start gap-2">
                   <StickyNote className="h-4 w-4 shrink-0 mt-0.5 text-muted-foreground" />
                   <p className="text-sm line-clamp-2 flex-1">{globalNotes[0].content}</p>
@@ -406,7 +406,7 @@ export function MainBiographyCard({ biography, userName, userId, onDeleteClick, 
 
             {globalTodos.length > 0 && (
               <Card className={cn(
-                'p-3 border-0 bg-[#F8F6F2] dark:bg-white/5',
+                'p-3 border-0 bg-[#FDFBF7] dark:bg-white/5',
                 isDueDateOverdue(globalTodos[0].due_date) && 'border border-red-300 bg-red-50/50 dark:bg-red-950/20'
               )}>
                 <div className="flex items-start gap-2">
@@ -456,7 +456,7 @@ export function MainBiographyCard({ biography, userName, userId, onDeleteClick, 
         <Separator />
 
         <div>
-          <div className="rounded-lg p-4 sm:p-5 border-0 bg-[#F8F6F2] dark:bg-white/5">
+          <div className="rounded-lg p-4 sm:p-5 border-0 bg-[#FDFBF7] dark:bg-white/5">
             <p className="text-sm mb-4 text-center sm:text-left">
               {suggestion.message}
             </p>

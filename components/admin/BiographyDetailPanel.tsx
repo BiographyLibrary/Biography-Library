@@ -60,10 +60,10 @@ interface BiographyDetailPanelProps {
 function StatusBadge({ status }: { status: string }) {
   const { t } = useTranslation();
   const map: Record<string, { label: string; className: string }> = {
-    draft: { label: t.admin.bioStatusDraft, className: 'bg-neutral-100 text-neutral-700 border-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:border-neutral-700' },
-    published: { label: t.admin.bioStatusPublished, className: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-800' },
-    under_review: { label: t.admin.bioStatusUnderReview, className: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-300 dark:border-amber-800' },
-    removed: { label: t.admin.bioStatusRemoved, className: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/30 dark:text-red-300 dark:border-red-800' },
+    draft: { label: t.admin.bioStatusDraft, className: 'bg-[#ECE9E4] text-[#121212] border-[#ECE9E4] dark:bg-[#2A2825] dark:text-[#FDFBF7] dark:border-[#2A2825]' },
+    published: { label: t.admin.bioStatusPublished, className: 'bg-[#C8DFBE] text-[#121212] border-[#C8DFBE] dark:bg-[#C8DFBE]/20 dark:text-[#C8DFBE] dark:border-[#C8DFBE]/30' },
+    under_review: { label: t.admin.bioStatusUnderReview, className: 'bg-[#944454] text-white border-[#944454] dark:bg-[#944454] dark:text-white dark:border-[#944454]' },
+    removed: { label: t.admin.bioStatusRemoved, className: 'bg-[#6D323E] text-white border-[#6D323E] dark:bg-[#6D323E] dark:text-white dark:border-[#6D323E]' },
   };
   const cfg = map[status] ?? map['draft'];
   return (
