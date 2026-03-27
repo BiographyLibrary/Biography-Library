@@ -326,7 +326,7 @@ export function MainBiographyCard({ biography, userName, userId, onDeleteClick, 
                 <span className="text-sm text-muted-foreground">{t.dashboard.progress}:</span>
                 <span className="text-sm font-semibold text-foreground">{progress}%</span>
               </div>
-              <div className="h-2 w-full bg-[#E5E1DA] dark:bg-white/10 rounded-full overflow-hidden">
+              <div className="h-2 w-full bg-white dark:bg-white/10 rounded-full overflow-hidden">
                 <div
                   className="h-full transition-all duration-300 ease-in-out"
                   style={{ width: `${progress}%`, backgroundColor: getProgressColor(progress) }}
