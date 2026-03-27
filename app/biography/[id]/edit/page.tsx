@@ -107,6 +107,8 @@ export default function BiographyEditorPage() {
   const [aiLimitError, setAiLimitError] = useState<AiLimitError | null>(null);
   const [aiUsageRefresh, setAiUsageRefresh] = useState(0);
   const [isFrozen, setIsFrozen] = useState(false);
+  const [biographyMode, setBiographyMode] = useState<'sections' | 'freeflow'>('sections');
+  const [contentFreeflow, setContentFreeflow] = useState<string>('');
 const [isPublishing, setIsPublishing] = useState(false);
 
   const editorContainerRef = useRef<HTMLDivElement>(null);
@@ -134,6 +136,8 @@ const [isPublishing, setIsPublishing] = useState(false);
   const contentRef = useRef(content);
   const titleRef = useRef(title);
   const privacyRef = useRef(privacy);
+  const biographyModeRef = useRef(biographyMode);
+  const contentFreeflowRef = useRef(contentFreeflow);
 
   useEffect(() => {
     contentRef.current = content;
@@ -144,6 +148,12 @@ const [isPublishing, setIsPublishing] = useState(false);
   useEffect(() => {
     privacyRef.current = privacy;
   }, [privacy]);
+  useEffect(() => {
+    biographyModeRef.current = biographyMode;
+  }, [biographyMode]);
+  useEffect(() => {
+    contentFreeflowRef.current = contentFreeflow;
+  }, [contentFreeflow]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -171,6 +181,8 @@ const [isPublishing, setIsPublishing] = useState(false);
         setEditorFontSize(data.editor_font_size || 16);
         setFinalVersion(data.final_version || '');
         setNarrativeOrder((data.narrative_order as string[]) || []);
+        setBiographyMode((data.biography_mode as 'sections' | 'freeflow') || 'sections');
+        setContentFreeflow(data.content_freeflow || '');
         const loaded = data.content as BiographyContent | null;
         if (loaded && typeof loaded === 'object') {
           setContent({ ...getEmptyContent(), ...loaded });
@@ -194,6 +206,8 @@ const [isPublishing, setIsPublishing] = useState(false);
         title: titleRef.current,
         privacy: privacyRef.current,
         content: contentRef.current,
+        biography_mode: biographyModeRef.current,
+        content_freeflow: contentFreeflowRef.current,
       })
       .eq('id', id);
     if (error) {
@@ -244,6 +258,22 @@ const [isPublishing, setIsPublishing] = useState(false);
   const handlePrivacyChange = useCallback(
     (newPrivacy: 'private' | 'family' | 'public') => {
       setPrivacy(newPrivacy);
+      markDirty();
+    },
+    [markDirty]
+  );
+
+  const handleModeChange = useCallback(
+    (mode: 'sections' | 'freeflow') => {
+      setBiographyMode(mode);
+      markDirty();
+    },
+    [markDirty]
+  );
+
+  const handleFreeflowChange = useCallback(
+    (value: string) => {
+      setContentFreeflow(value);
       markDirty();
     },
     [markDirty]
@@ -1011,6 +1041,10 @@ const [isPublishing, setIsPublishing] = useState(false);
             showNotesPanel={showGlobalNotesPanel}
             showPhotosPanel={showPhotosPanel}
             completedSections={completedSections}
+            biographyMode={biographyMode}
+            contentFreeflow={contentFreeflow}
+            onModeChange={handleModeChange}
+            onFreeflowChange={handleFreeflowChange}
           />
         </aside>
 

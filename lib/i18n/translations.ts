@@ -259,6 +259,9 @@ export interface Translations {
     editorMode: string;
     conversationMode: string;
     publishedChapterNotice: string;
+    freeFlowTab: string;
+    sectionsTab: string;
+    freeFlowReadOnly: string;
   };
   formatting: {
     bold: string;
@@ -1239,6 +1242,9 @@ export const translations: Record<Language, Translations> = {
       editorMode: 'Editor Mode',
       conversationMode: 'Conversation Mode',
       publishedChapterNotice: 'This chapter is published and cannot be edited.',
+      freeFlowTab: 'Free Flow',
+      sectionsTab: 'Sections',
+      freeFlowReadOnly: 'Free Flow text (read only)',
     },
     formatting: {
       bold: 'Bold',
@@ -2217,6 +2223,9 @@ export const translations: Record<Language, Translations> = {
       editorMode: 'Modalità Editor',
       conversationMode: 'Modalità Conversazione',
       publishedChapterNotice: 'Questo capitolo è pubblicato e non può essere modificato.',
+      freeFlowTab: 'Testo libero',
+      sectionsTab: 'Sezioni',
+      freeFlowReadOnly: 'Testo libero (sola lettura)',
     },
     formatting: {
       bold: 'Grassetto',
@@ -3195,6 +3204,9 @@ export const translations: Record<Language, Translations> = {
       editorMode: 'Mode Éditeur',
       conversationMode: 'Mode Conversation',
       publishedChapterNotice: 'Ce chapitre est publié et ne peut pas être modifié.',
+      freeFlowTab: 'Texte libre',
+      sectionsTab: 'Sections',
+      freeFlowReadOnly: 'Texte libre (lecture seule)',
     },
     formatting: {
       bold: 'Gras',
@@ -4173,6 +4185,9 @@ export const translations: Record<Language, Translations> = {
       editorMode: 'Editor-Modus',
       conversationMode: 'Konversationsmodus',
       publishedChapterNotice: 'Dieses Kapitel ist veröffentlicht und kann nicht bearbeitet werden.',
+      freeFlowTab: 'Freier Text',
+      sectionsTab: 'Abschnitte',
+      freeFlowReadOnly: 'Freier Text (nur lesen)',
     },
     formatting: {
       bold: 'Fett',
