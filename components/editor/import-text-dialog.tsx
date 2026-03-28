@@ -64,19 +64,21 @@ export function ImportTextDialog({
   const [parsedContent, setParsedContent] = useState<ParsedText | null>(null);
   const [destination, setDestination] = useState<string>(currentSectionKey);
   const [inputMode, setInputMode] = useState<'input' | 'preview'>('input');
-  const [showConflict, setShowConflict] = useState(false);
+  const [freeflowImportMode, setFreeflowImportMode] = useState<ConflictAction>('replace');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const getCurrentDestinationContent = useCallback(() => {
-    if (destination === 'freeflow') return currentFreeflowContent;
     if (destination === currentSectionKey) return currentSectionContent;
     return '';
-  }, [destination, currentFreeflowContent, currentSectionContent, currentSectionKey]);
+  }, [destination, currentSectionContent, currentSectionKey]);
 
   const destinationHasContent = useCallback(() => {
+    if (biographyMode === 'freeflow') {
+      return currentFreeflowContent && currentFreeflowContent.trim().length > 0;
+    }
     const content = getCurrentDestinationContent();
     return content && content.trim().length > 0;
-  }, [getCurrentDestinationContent]);
+  }, [biographyMode, currentFreeflowContent, getCurrentDestinationContent]);
 
   const resetDialog = useCallback(() => {
     setError(null);
@@ -85,8 +87,8 @@ export function ImportTextDialog({
     setInputMode('input');
     setLoading(false);
     setDragActive(false);
-    setShowConflict(false);
     setSaving(false);
+    setFreeflowImportMode('replace');
   }, []);
 
   const handleFileSelect = useCallback(async (file: File) => {
@@ -138,7 +140,7 @@ export function ImportTextDialog({
     [handleFileSelect]
   );
 
-  const handlePasteAnalyze = useCallback(() => {
+  const handlePasteImport = useCallback(() => {
     if (!pastedText.trim()) {
       setError(t.importDialog.pasteTextFirst);
       return;
@@ -164,7 +166,7 @@ export function ImportTextDialog({
     try {
       const incomingText = parsedContent.content;
 
-      if (destination === 'freeflow') {
+      if (biographyMode === 'freeflow') {
         let newValue: string;
         if (action === 'replace') {
           newValue = incomingText;
@@ -206,6 +208,7 @@ export function ImportTextDialog({
     }
   }, [
     parsedContent,
+    biographyMode,
     destination,
     biographyId,
     currentFreeflowContent,
@@ -220,12 +223,14 @@ export function ImportTextDialog({
 
   const handleImportConfirm = useCallback(() => {
     if (!parsedContent) return;
-    if (destinationHasContent()) {
-      setShowConflict(true);
+    if (biographyMode === 'freeflow') {
+      doSave(freeflowImportMode);
+    } else if (destinationHasContent()) {
+      doSave('replace');
     } else {
       doSave('replace');
     }
-  }, [parsedContent, destinationHasContent, doSave]);
+  }, [parsedContent, biographyMode, freeflowImportMode, destinationHasContent, doSave]);
 
   const handleOpenChange = useCallback(
     (newOpen: boolean) => {
@@ -234,6 +239,8 @@ export function ImportTextDialog({
     },
     [onOpenChange, resetDialog]
   );
+
+  const hasInputContent = pastedText.trim().length > 0 || parsedContent !== null;
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -251,22 +258,23 @@ export function ImportTextDialog({
             </p>
           </div>
 
-          <div className="space-y-1.5">
-            <Label>{t.editor.importSaveTo}</Label>
-            <Select value={destination} onValueChange={setDestination}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="freeflow">{t.editor.importDestinationFreeFlow}</SelectItem>
-                {BIOGRAPHY_SECTIONS.map((s) => (
-                  <SelectItem key={s.key} value={s.key}>
-                    {t.sectionTitles[s.key as keyof typeof t.sectionTitles] || s.title}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {biographyMode === 'sections' && (
+            <div className="space-y-1.5">
+              <Label>{t.editor.importSaveTo}</Label>
+              <Select value={destination} onValueChange={setDestination}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {BIOGRAPHY_SECTIONS.map((s) => (
+                    <SelectItem key={s.key} value={s.key}>
+                      {t.sectionTitles[s.key as keyof typeof t.sectionTitles] || s.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           {inputMode === 'input' && (
             <div className="space-y-4">
@@ -320,16 +328,41 @@ export function ImportTextDialog({
                   onChange={(e) => setPastedText(e.target.value)}
                   className="min-h-[120px] font-mono text-sm"
                 />
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={handlePasteAnalyze}
-                  disabled={!pastedText.trim() || loading}
-                  className="w-full"
-                >
-                  {t.importDialog.analyzeText}
-                </Button>
               </div>
+
+              {biographyMode === 'freeflow' && hasInputContent && (
+                <div className="space-y-2">
+                  <Label>{t.editor.importSaveTo}</Label>
+                  <div className="flex flex-col gap-2">
+                    <label className="flex items-center gap-3 cursor-pointer group">
+                      <input
+                        type="radio"
+                        name="freeflow-import-mode"
+                        value="replace"
+                        checked={freeflowImportMode === 'replace'}
+                        onChange={() => setFreeflowImportMode('replace')}
+                        className="accent-foreground h-4 w-4 shrink-0"
+                      />
+                      <span className="text-sm group-hover:text-foreground transition-colors">
+                        {t.editor.importFreeFlowReplace}
+                      </span>
+                    </label>
+                    <label className="flex items-center gap-3 cursor-pointer group">
+                      <input
+                        type="radio"
+                        name="freeflow-import-mode"
+                        value="append"
+                        checked={freeflowImportMode === 'append'}
+                        onChange={() => setFreeflowImportMode('append')}
+                        className="accent-foreground h-4 w-4 shrink-0"
+                      />
+                      <span className="text-sm group-hover:text-foreground transition-colors">
+                        {t.editor.importFreeFlowAppend}
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -343,6 +376,40 @@ export function ImportTextDialog({
                 />
               </div>
 
+              {biographyMode === 'freeflow' && (
+                <div className="space-y-2">
+                  <Label>{t.editor.importSaveTo}</Label>
+                  <div className="flex flex-col gap-2">
+                    <label className="flex items-center gap-3 cursor-pointer group">
+                      <input
+                        type="radio"
+                        name="freeflow-import-mode"
+                        value="replace"
+                        checked={freeflowImportMode === 'replace'}
+                        onChange={() => setFreeflowImportMode('replace')}
+                        className="accent-foreground h-4 w-4 shrink-0"
+                      />
+                      <span className="text-sm group-hover:text-foreground transition-colors">
+                        {t.editor.importFreeFlowReplace}
+                      </span>
+                    </label>
+                    <label className="flex items-center gap-3 cursor-pointer group">
+                      <input
+                        type="radio"
+                        name="freeflow-import-mode"
+                        value="append"
+                        checked={freeflowImportMode === 'append'}
+                        onChange={() => setFreeflowImportMode('append')}
+                        className="accent-foreground h-4 w-4 shrink-0"
+                      />
+                      <span className="text-sm group-hover:text-foreground transition-colors">
+                        {t.editor.importFreeFlowAppend}
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              )}
+
               <Button
                 type="button"
                 variant="ghost"
@@ -350,54 +417,11 @@ export function ImportTextDialog({
                 onClick={() => {
                   setParsedContent(null);
                   setInputMode('input');
-                  setShowConflict(false);
                 }}
               >
                 {t.importDialog.back}
               </Button>
             </div>
-          )}
-
-          {showConflict && (
-            <Alert className="border-amber-500/50 bg-amber-50 dark:bg-amber-950/20">
-              <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-              <AlertDescription className="space-y-3">
-                <p className="text-sm font-medium text-amber-900 dark:text-amber-200">{t.editor.importFieldNotEmpty}</p>
-                <div className="flex gap-2 flex-wrap">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    disabled={saving}
-                    onClick={() => doSave('replace')}
-                    className="border-amber-400 text-amber-900 dark:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-900/30"
-                  >
-                    {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : null}
-                    {t.editor.importReplace}
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    disabled={saving}
-                    onClick={() => doSave('append')}
-                    className="border-amber-400 text-amber-900 dark:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-900/30"
-                  >
-                    {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : null}
-                    {t.editor.importAddAtEnd}
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="ghost"
-                    disabled={saving}
-                    onClick={() => setShowConflict(false)}
-                  >
-                    {t.common.cancel}
-                  </Button>
-                </div>
-              </AlertDescription>
-            </Alert>
           )}
 
           {error && (
@@ -412,7 +436,17 @@ export function ImportTextDialog({
           <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
             {t.common.cancel}
           </Button>
-          {inputMode === 'preview' && !showConflict && (
+          {inputMode === 'input' && pastedText.trim() && (
+            <Button
+              type="button"
+              onClick={handlePasteImport}
+              disabled={loading}
+            >
+              {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              {t.importDialog.import}
+            </Button>
+          )}
+          {inputMode === 'preview' && (
             <Button
               type="button"
               onClick={handleImportConfirm}
