@@ -1081,6 +1081,20 @@ const [isPublishing, setIsPublishing] = useState(false);
                     <AiUsageIndicator refreshTrigger={aiUsageRefresh} />
                   </div>
                 )}
+                {biographyMode === 'freeflow' && biographyStatus !== 'final_version' && (
+                  <Button
+                    size="sm"
+                    onClick={() => setShowSubmitForReviewDialog(true)}
+                    disabled={!contentFreeflow.trim() || biographyStatus === 'under_review'}
+                    className="h-8 text-xs text-white disabled:opacity-50"
+                    style={{ backgroundColor: '#944454', borderColor: '#944454' }}
+                  >
+                    {language === 'it' ? 'Invia per la Revisione' :
+                     language === 'fr' ? 'Soumettre pour Révision' :
+                     language === 'de' ? 'Zur Überprüfung Einreichen' :
+                     'Submit for Review'}
+                  </Button>
+                )}
               </div>
             )}
 
