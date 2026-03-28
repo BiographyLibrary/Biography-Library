@@ -1091,7 +1091,7 @@ const [isPublishing, setIsPublishing] = useState(false);
                     )}
                   </>
                 )}
-                {aiEnabled && (
+                {aiEnabled && biographyMode !== 'freeflow' && (
                   <div className={biographyStatus !== 'final_version' ? 'sm:ml-auto' : ''}>
                     <AiUsageIndicator refreshTrigger={aiUsageRefresh} />
                   </div>

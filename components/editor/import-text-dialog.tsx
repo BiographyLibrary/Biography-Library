@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
-import { Upload, CircleAlert as AlertCircle, Loader as Loader2, Info } from 'lucide-react';
+import { Upload, CircleAlert as AlertCircle, Loader as Loader2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -235,8 +235,6 @@ export function ImportTextDialog({
     [onOpenChange, resetDialog]
   );
 
-  const hintLines = t.editor.importFreeFlowHint.split('\n');
-
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col gap-0 p-0">
@@ -245,23 +243,13 @@ export function ImportTextDialog({
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-5">
-          <div className="flex items-start gap-2.5 rounded-md bg-muted/50 border border-border/50 px-3 py-2.5">
-            <Info className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
-            <p className="text-xs text-muted-foreground leading-relaxed">
+          <div className="rounded-md px-4 py-3.5" style={{ backgroundColor: '#C4DAEB' }}>
+            <p className="text-sm leading-snug text-foreground">
               {biographyMode === 'freeflow'
                 ? t.editor.importNoticeFreeflowMode
                 : t.editor.importNoticeSectionsMode}
             </p>
           </div>
-
-          <Alert className="bg-muted/60 border-border/60">
-            <AlertCircle className="h-4 w-4 text-muted-foreground" />
-            <AlertDescription className="text-sm text-muted-foreground space-y-1">
-              {hintLines.map((line, i) => (
-                <p key={i}>{line}</p>
-              ))}
-            </AlertDescription>
-          </Alert>
 
           <div className="space-y-1.5">
             <Label>{t.editor.importSaveTo}</Label>

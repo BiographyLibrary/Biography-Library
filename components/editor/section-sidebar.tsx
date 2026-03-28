@@ -109,6 +109,13 @@ export function SectionSidebar({
                       ? 'bg-primary/10 text-primary font-medium'
                       : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                   )}
+                  style={!isFreeflow ? {
+                    fontFamily: "'Noto Serif', Georgia, serif",
+                    fontWeight: 400,
+                    fontSize: '1.0625rem',
+                    lineHeight: '1.2',
+                    fontSynthesis: 'none',
+                  } : undefined}
                 >
                   <span className="shrink-0">
                     {isTodo ? (
