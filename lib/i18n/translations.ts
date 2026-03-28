@@ -186,10 +186,14 @@ export interface Translations {
     noSectionsError: string;
     exportError: string;
     pdfFormat: string;
+    pdfB5Standard: string;
+    pdfB5PrintReady: string;
     txtFormat: string;
     rtfFormat: string;
     docxFormat: string;
     emptySection: string;
+    createdWith: string;
+    allRightsReserved: string;
   };
   sectionTitles: {
     childhood: string;
@@ -1177,10 +1181,14 @@ export const translations: Record<Language, Translations> = {
       noSectionsError: 'No sections to export.',
       exportError: 'Export error. Please try again.',
       pdfFormat: 'PDF - Complete formatted document',
+      pdfB5Standard: 'PDF B5 — standard (176×250mm)',
+      pdfB5PrintReady: 'PDF B5 — print-ready with bleed (182×256mm)',
       txtFormat: 'TXT - Plain text without formatting',
       rtfFormat: 'RTF - Text with basic formatting',
       docxFormat: 'DOCX - Word document',
       emptySection: '(empty)',
+      createdWith: 'Created with Biography Library',
+      allRightsReserved: '© {year} all rights reserved',
     },
     sectionTitles: {
       childhood: 'Childhood & Early Years',
@@ -2166,10 +2174,14 @@ export const translations: Record<Language, Translations> = {
       noSectionsError: 'Nessuna sezione da esportare.',
       exportError: 'Errore durante l\'esportazione. Riprova.',
       pdfFormat: 'PDF - Documento completo formattato',
+      pdfB5Standard: 'PDF B5 — standard (176×250mm)',
+      pdfB5PrintReady: 'PDF B5 — stampa con abbondanza (182×256mm)',
       txtFormat: 'TXT - Testo semplice senza formattazione',
       rtfFormat: 'RTF - Testo con formattazione base',
       docxFormat: 'DOCX - Documento Word',
       emptySection: '(vuota)',
+      createdWith: 'Creato con Biography Library',
+      allRightsReserved: '© {year} tutti i diritti riservati',
     },
     sectionTitles: {
       childhood: 'Infanzia e Primi Anni',
@@ -3155,10 +3167,14 @@ export const translations: Record<Language, Translations> = {
       noSectionsError: 'Aucune section à exporter.',
       exportError: "Erreur lors de l'exportation. Réessayez.",
       pdfFormat: 'PDF - Document complet formaté',
+      pdfB5Standard: 'PDF B5 — standard (176×250mm)',
+      pdfB5PrintReady: 'PDF B5 — prêt à imprimer avec fond perdu (182×256mm)',
       txtFormat: 'TXT - Texte brut sans mise en forme',
       rtfFormat: 'RTF - Texte avec mise en forme de base',
       docxFormat: 'DOCX - Document Word',
       emptySection: '(vide)',
+      createdWith: 'Créé avec Biography Library',
+      allRightsReserved: '© {year} tous droits réservés',
     },
     sectionTitles: {
       childhood: 'Enfance et Premières Années',
@@ -4144,10 +4160,14 @@ export const translations: Record<Language, Translations> = {
       noSectionsError: 'Keine Abschnitte zum Exportieren.',
       exportError: 'Fehler beim Exportieren. Bitte erneut versuchen.',
       pdfFormat: 'PDF - Vollständiges formatiertes Dokument',
+      pdfB5Standard: 'PDF B5 — standard (176×250mm)',
+      pdfB5PrintReady: 'PDF B5 — druckfertig mit Beschnitt (182×256mm)',
       txtFormat: 'TXT - Einfacher Text ohne Formatierung',
       rtfFormat: 'RTF - Text mit einfacher Formatierung',
       docxFormat: 'DOCX - Word-Dokument',
       emptySection: '(leer)',
+      createdWith: 'Erstellt mit Biography Library',
+      allRightsReserved: '© {year} alle Rechte vorbehalten',
     },
     sectionTitles: {
       childhood: 'Kindheit und Frühe Jahre',

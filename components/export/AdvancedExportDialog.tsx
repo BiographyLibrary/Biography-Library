@@ -17,7 +17,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Download, Loader as Loader2, Info } from 'lucide-react';
 import { BIOGRAPHY_SECTIONS } from '@/lib/editor-constants';
-import { generateBiographyPDF } from '@/lib/pdf-export';
+import { generateBiographyPDF, PdfVariant } from '@/lib/pdf-export';
 import { exportAsPlainText, exportAsRTF, exportAsDOCX } from '@/lib/export-utils';
 import { useTranslation } from '@/lib/i18n/i18n-context';
 import { supabase } from '@/lib/supabase';
@@ -41,7 +41,7 @@ interface AdvancedExportDialogProps {
   isPublished?: boolean;
 }
 
-type ExportFormat = 'pdf' | 'txt' | 'rtf' | 'docx';
+type ExportFormat = 'pdf-b5-standard' | 'pdf-b5-print' | 'txt' | 'rtf' | 'docx';
 type ContentSelection = 'all' | 'completed' | 'custom';
 
 export function AdvancedExportDialog({
@@ -51,13 +51,15 @@ export function AdvancedExportDialog({
   isPublished = false,
 }: AdvancedExportDialogProps) {
   const { t } = useTranslation();
-  const [format, setFormat] = useState<ExportFormat>(isPublished ? 'pdf' : 'txt');
+  const [format, setFormat] = useState<ExportFormat>(isPublished ? 'pdf-b5-standard' : 'txt');
   const [contentSelection, setContentSelection] = useState<ContentSelection>('all');
   const [selectedSections, setSelectedSections] = useState<string[]>([]);
   const [includeMetadata, setIncludeMetadata] = useState(false);
   const [includeNotesAndTodos, setIncludeNotesAndTodos] = useState(false);
   const [separateFiles, setSeparateFiles] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+
+  const isPdfFormat = format === 'pdf-b5-standard' || format === 'pdf-b5-print';
 
   const toggleSection = (sectionKey: string) => {
     setSelectedSections((prev) =>
@@ -139,19 +141,18 @@ export function AdvancedExportDialog({
       const isFreeFlow = biography.biography_mode === 'freeflow';
 
       if (isFreeFlow) {
-        switch (format) {
-          case 'pdf':
-            generateBiographyPDF(biography);
-            break;
-          case 'txt':
-            await exportAsPlainText(biography, [], false);
-            break;
-          case 'rtf':
-            await exportAsRTF(biography, [], false);
-            break;
-          case 'docx':
-            await exportAsDOCX(biography, [], false);
-            break;
+        if (isPdfFormat) {
+          const variant: PdfVariant = format === 'pdf-b5-print' ? 'b5-print' : 'b5-standard';
+          await generateBiographyPDF(biography, variant, {
+            createdWith: t.exportDialog.createdWith,
+            allRightsReserved: t.exportDialog.allRightsReserved,
+          });
+        } else if (format === 'txt') {
+          await exportAsPlainText(biography, [], false);
+        } else if (format === 'rtf') {
+          await exportAsRTF(biography, [], false);
+        } else if (format === 'docx') {
+          await exportAsDOCX(biography, [], false);
         }
         onOpenChange(false);
         return;
@@ -184,25 +185,24 @@ export function AdvancedExportDialog({
         })
       );
 
-      switch (format) {
-        case 'pdf':
-          const filteredBiography = {
-            ...biography,
-            content: Object.fromEntries(
-              sections.map((s) => [s.key, { text: s.content }])
-            ),
-          };
-          generateBiographyPDF(filteredBiography);
-          break;
-        case 'txt':
-          await exportAsPlainText(biography, sections, separateFiles);
-          break;
-        case 'rtf':
-          await exportAsRTF(biography, sections, separateFiles);
-          break;
-        case 'docx':
-          await exportAsDOCX(biography, sections, separateFiles);
-          break;
+      if (isPdfFormat) {
+        const filteredBiography = {
+          ...biography,
+          content: Object.fromEntries(
+            sections.map((s) => [s.key, { text: s.content }])
+          ),
+        };
+        const variant: PdfVariant = format === 'pdf-b5-print' ? 'b5-print' : 'b5-standard';
+        await generateBiographyPDF(filteredBiography, variant, {
+          createdWith: t.exportDialog.createdWith,
+          allRightsReserved: t.exportDialog.allRightsReserved,
+        });
+      } else if (format === 'txt') {
+        await exportAsPlainText(biography, sections, separateFiles);
+      } else if (format === 'rtf') {
+        await exportAsRTF(biography, sections, separateFiles);
+      } else if (format === 'docx') {
+        await exportAsDOCX(biography, sections, separateFiles);
       }
 
       onOpenChange(false);
@@ -214,12 +214,15 @@ export function AdvancedExportDialog({
     }
   };
 
-  const formatLabels: Record<ExportFormat, string> = {
-    pdf: t.exportDialog.pdfFormat,
-    txt: t.exportDialog.txtFormat,
-    rtf: t.exportDialog.rtfFormat,
-    docx: t.exportDialog.docxFormat,
-  };
+  const allFormats: { value: ExportFormat; label: string; pdfOnly?: boolean }[] = [
+    { value: 'pdf-b5-standard', label: t.exportDialog.pdfB5Standard, pdfOnly: true },
+    { value: 'pdf-b5-print', label: t.exportDialog.pdfB5PrintReady, pdfOnly: true },
+    { value: 'txt', label: t.exportDialog.txtFormat },
+    { value: 'rtf', label: t.exportDialog.rtfFormat },
+    { value: 'docx', label: t.exportDialog.docxFormat },
+  ];
+
+  const visibleFormats = allFormats.filter((f) => isPublished || !f.pdfOnly);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -245,16 +248,14 @@ export function AdvancedExportDialog({
             <div className="space-y-3">
               <Label className="text-base font-semibold">{t.exportDialog.formatLabel}</Label>
               <RadioGroup value={format} onValueChange={(v) => setFormat(v as ExportFormat)}>
-                {(['pdf', 'txt', 'rtf', 'docx'] as ExportFormat[])
-                  .filter(fmt => isPublished || fmt !== 'pdf')
-                  .map((fmt) => (
-                    <div key={fmt} className="flex items-center space-x-2">
-                      <RadioGroupItem value={fmt} id={`format-${fmt}`} />
-                      <Label htmlFor={`format-${fmt}`} className="font-normal cursor-pointer">
-                        {formatLabels[fmt]}
-                      </Label>
-                    </div>
-                  ))}
+                {visibleFormats.map((fmt) => (
+                  <div key={fmt.value} className="flex items-center space-x-2">
+                    <RadioGroupItem value={fmt.value} id={`format-${fmt.value}`} />
+                    <Label htmlFor={`format-${fmt.value}`} className="font-normal cursor-pointer">
+                      {fmt.label}
+                    </Label>
+                  </div>
+                ))}
               </RadioGroup>
             </div>
 
@@ -323,7 +324,7 @@ export function AdvancedExportDialog({
             <div className="space-y-3">
               <Label className="text-base font-semibold">{t.exportDialog.additionalOptions}</Label>
 
-              {format !== 'pdf' && (
+              {!isPdfFormat && (
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="separate-files"
