@@ -197,18 +197,14 @@ export function Header() {
 
                 <DropdownMenuSeparator />
 
-                <DropdownMenuItem asChild>
-                  <Link href="/dashboard" className="flex items-center gap-2 cursor-pointer">
-                    <LayoutDashboard className="h-4 w-4" />
-                    <span>{t.nav.workspace}</span>
-                  </Link>
+                <DropdownMenuItem onClick={() => router.push('/dashboard')} className="flex items-center gap-2 cursor-pointer">
+                  <LayoutDashboard className="h-4 w-4" />
+                  <span>{t.nav.workspace}</span>
                 </DropdownMenuItem>
 
-                <DropdownMenuItem asChild>
-                  <Link href="/dashboard" className="flex items-center gap-2 cursor-pointer">
-                    <LayoutDashboard className="h-4 w-4" />
-                    <span>{t.nav.dashboard}</span>
-                  </Link>
+                <DropdownMenuItem onClick={() => router.push('/dashboard')} className="flex items-center gap-2 cursor-pointer">
+                  <LayoutDashboard className="h-4 w-4" />
+                  <span>{t.nav.dashboard}</span>
                 </DropdownMenuItem>
 
                 <DropdownMenuItem asChild>
