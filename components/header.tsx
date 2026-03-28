@@ -200,6 +200,13 @@ export function Header() {
                 <DropdownMenuItem asChild>
                   <Link href="/dashboard" className="flex items-center gap-2 cursor-pointer">
                     <LayoutDashboard className="h-4 w-4" />
+                    <span>{t.nav.workspace}</span>
+                  </Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard" className="flex items-center gap-2 cursor-pointer">
+                    <LayoutDashboard className="h-4 w-4" />
                     <span>{t.nav.dashboard}</span>
                   </Link>
                 </DropdownMenuItem>

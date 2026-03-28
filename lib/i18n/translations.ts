@@ -16,6 +16,7 @@ export interface Translations {
     signOut: string;
   };
   nav: {
+    workspace: string;
     dashboard: string;
     biography: string;
     settings: string;
@@ -1044,6 +1045,7 @@ export const translations: Record<Language, Translations> = {
       signOut: 'Sign out',
     },
     nav: {
+      workspace: 'Workspace',
       dashboard: 'Dashboard',
       biography: 'Biography',
       settings: 'Settings',
@@ -1484,7 +1486,7 @@ export const translations: Record<Language, Translations> = {
       wantToFinish: 'Want to finish it?',
       readyToStart: 'Ready to start? I\'ll guide you through your first story.',
       guideFirstStory: 'I\'ll guide you through your first story.',
-      conversationPending: 'You have a conversation in progress on {section}. Continue?',
+      conversationPending: 'You have a session in progress. Continue?',
       continueConversation: 'Continue',
       continueWriting: 'Continue where you left off',
       startNewSection: 'Start new section',
@@ -2070,6 +2072,7 @@ export const translations: Record<Language, Translations> = {
       signOut: 'Esci',
     },
     nav: {
+      workspace: 'Workspace',
       dashboard: 'Dashboard',
       biography: 'Biografia',
       settings: 'Impostazioni',
@@ -2510,7 +2513,7 @@ export const translations: Record<Language, Translations> = {
       wantToFinish: 'Vuoi completarla?',
       readyToStart: 'Pronto per iniziare? Ti guiderò nella tua prima storia.',
       guideFirstStory: 'Ti guiderò nella tua prima storia.',
-      conversationPending: 'Hai una conversazione in sospeso su {section}. Continua?',
+      conversationPending: 'Hai una sessione in corso. Vuoi continuare?',
       continueConversation: 'Continua',
       continueWriting: 'Continua dove avevi lasciato',
       startNewSection: 'Inizia nuova sezione',
@@ -3096,6 +3099,7 @@ export const translations: Record<Language, Translations> = {
       signOut: 'Se d\u00e9connecter',
     },
     nav: {
+      workspace: 'Workspace',
       dashboard: 'Tableau de bord',
       biography: 'Biographie',
       settings: 'Param\u00e8tres',
@@ -3209,7 +3213,7 @@ export const translations: Record<Language, Translations> = {
       statusUnderReview: 'En cours d\'examen',
       underReviewMessage: 'Notre équipe examine votre biographie. Vous serez informé du résultat.',
       untitledBiography: 'Biographie sans titre',
-      goToWorkspace: 'Aller à l\'Espace',
+      goToWorkspace: 'Aller au Workspace',
       continueLastSection: 'Continuer Dernière Section',
       updateAvailabilityMessage: 'Une fois votre biographie publiée, vous pouvez ajouter une nouvelle mise à jour annuelle pour présenter vos activités de la dernière année.',
     },
@@ -3536,7 +3540,7 @@ export const translations: Record<Language, Translations> = {
       wantToFinish: 'Voulez-vous la finir?',
       readyToStart: 'Prêt à commencer? Je vais vous guider dans votre première histoire.',
       guideFirstStory: 'Je vais vous guider dans votre première histoire.',
-      conversationPending: 'Vous avez une conversation en cours sur {section}. Continuer?',
+      conversationPending: 'Vous avez une session en cours. Continuer?',
       continueConversation: 'Continuer',
       continueWriting: 'Continuez où vous vous êtes arrêté',
       startNewSection: 'Commencer une nouvelle section',
@@ -4122,6 +4126,7 @@ export const translations: Record<Language, Translations> = {
       signOut: 'Abmelden',
     },
     nav: {
+      workspace: 'Workspace',
       dashboard: 'Dashboard',
       biography: 'Biografie',
       settings: 'Einstellungen',
@@ -4562,7 +4567,7 @@ export const translations: Record<Language, Translations> = {
       wantToFinish: 'Möchten Sie es beenden?',
       readyToStart: 'Bereit zu beginnen? Ich führe Sie durch Ihre erste Geschichte.',
       guideFirstStory: 'Ich führe Sie durch Ihre erste Geschichte.',
-      conversationPending: 'Sie haben ein laufendes Gespräch über {section}. Fortfahren?',
+      conversationPending: 'Sie haben eine laufende Sitzung. Fortfahren?',
       continueConversation: 'Fortfahren',
       continueWriting: 'Dort weitermachen, wo Sie aufgehört haben',
       startNewSection: 'Neuen Abschnitt beginnen',

@@ -11,7 +11,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { Lock, Users, Globe, Clock, CircleAlert as AlertCircle, Calendar as CalendarIcon, Play, Trophy, Star, PartyPopper, BookOpen, Trash2, StickyNote, SquareCheck as CheckSquare, ChevronRight } from 'lucide-react';
+import { Lock, Users, Globe, Clock, CircleAlert as AlertCircle, Calendar as CalendarIcon, Trophy, Star, PartyPopper, BookOpen, Trash2, StickyNote, SquareCheck as CheckSquare, ChevronRight } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { useTranslation } from '@/lib/i18n/i18n-context';
 import { useRouter } from 'next/navigation';
@@ -198,9 +198,8 @@ export function MainBiographyCard({ biography, userName, userId, onDeleteClick, 
     if (totalWords === 0) return { message: t.coach.readyToStart, type: 'new-user' as const };
 
     if (pendingConversation && !isLoading) {
-      const sectionTitle = getSectionTitle(pendingConversation.section, language);
       return {
-        message: (t.coach.conversationPending || 'You have a conversation in progress on {section}. Continue?').replace('{section}', sectionTitle),
+        message: t.coach.conversationPending,
         type: 'pending-conversation' as const,
         section: pendingConversation.section,
       };
@@ -237,11 +236,6 @@ export function MainBiographyCard({ biography, userName, userId, onDeleteClick, 
       high: 'bg-[#6D323E] text-white dark:bg-[#6D323E] dark:text-white',
     };
     return map[priority] || map.medium;
-  };
-
-  const handleContinue = (section?: string) => {
-    if (!biography) return;
-    router.push(section ? `/biography/${biography.id}/edit?section=${section}` : `/biography/${biography.id}/edit`);
   };
 
   const greeting = getTimeBasedGreeting();
@@ -461,18 +455,10 @@ export function MainBiographyCard({ biography, userName, userId, onDeleteClick, 
             <div className="flex flex-col sm:flex-row gap-2">
               <Button
                 onClick={() => router.push(`/biography/${biography.id}/edit`)}
-                variant="outline"
                 className="gap-2 flex-1 w-full sm:w-auto min-h-[44px]"
               >
                 <BookOpen className="h-4 w-4" />
                 <span className="truncate">{t.dashboard.goToWorkspace}</span>
-              </Button>
-              <Button
-                onClick={() => handleContinue(suggestion.type === 'pending-conversation' || suggestion.type === 'almost-done' ? (suggestion as { section?: string }).section : undefined)}
-                className="gap-2 flex-1 w-full sm:w-auto min-h-[44px]"
-              >
-                <Play className="h-4 w-4" />
-                <span className="truncate">{t.dashboard.continueLastSection}</span>
               </Button>
             </div>
           </div>

@@ -21,6 +21,7 @@ export interface Biography {
   frozen_reason?: string | null;
   content_language?: string;
   chapters_count?: number;
+  biography_mode?: 'sections' | 'freeflow';
 }
 
 export interface PublishedBiography {
