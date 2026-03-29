@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { type BiographyContent } from '@/lib/editor-constants';
@@ -74,6 +74,8 @@ export default function BiographyViewPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<ViewError>(null);
   const [reportOpen, setReportOpen] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const reportAutoOpenedRef = useRef(false);
 
   useEffect(() => {
     const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -177,6 +179,25 @@ export default function BiographyViewPage() {
     load();
   }, [id, token]);
 
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setCurrentUserId(data.session?.user?.id ?? null);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (
+      !isLoading &&
+      biography &&
+      searchParams.get('action') === 'report' &&
+      currentUserId &&
+      !reportAutoOpenedRef.current
+    ) {
+      reportAutoOpenedRef.current = true;
+      setReportOpen(true);
+    }
+  }, [isLoading, biography, searchParams, currentUserId]);
+
   const getErrorMessage = (err: ViewError) => {
     switch (err) {
       case 'not-found': return t.view.notFoundOrDenied;
@@ -214,6 +235,27 @@ export default function BiographyViewPage() {
   const handleExportTXT = async () => {
     if (!biography) return;
     await exportAsPlainText(getBiographyExportData(), getSectionsForExport(), false);
+  };
+
+  const handleReportClick = () => {
+    if (currentUserId) {
+      setReportOpen(true);
+    } else {
+      const returnTo = `/biography/${id}/view?action=report`;
+      router.push(`/login?returnTo=${encodeURIComponent(returnTo)}`);
+    }
+  };
+
+  const handleReportOpenChange = (open: boolean) => {
+    setReportOpen(open);
+    if (!open && searchParams.get('action') === 'report') {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete('action');
+      const newUrl = params.toString()
+        ? `/biography/${id}/view?${params.toString()}`
+        : `/biography/${id}/view`;
+      router.replace(newUrl);
+    }
   };
 
   if (isLoading) {
@@ -285,7 +327,7 @@ export default function BiographyViewPage() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setReportOpen(true)}
+              onClick={handleReportClick}
               className="gap-1.5 text-muted-foreground hover:text-foreground"
             >
               <Flag className="h-4 w-4" />
@@ -366,7 +408,7 @@ export default function BiographyViewPage() {
       <ReportBiographyModal
         biographyId={biography.id}
         open={reportOpen}
-        onOpenChange={setReportOpen}
+        onOpenChange={handleReportOpenChange}
         onSuccess={() =>
           toast({ title: t.view.reportSuccess })
         }

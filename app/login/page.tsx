@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import { useTranslation } from '@/lib/i18n/i18n-context';
@@ -19,13 +19,15 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { signIn, user, loading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get('returnTo');
   const { t } = useTranslation();
 
   useEffect(() => {
     if (!loading && user) {
-      router.push('/dashboard');
+      router.push(returnTo || '/dashboard');
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, returnTo]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +43,7 @@ export default function LoginPage() {
       setError(error);
       setIsLoading(false);
     } else {
-      router.push('/dashboard');
+      router.push(returnTo || '/dashboard');
     }
   };
 

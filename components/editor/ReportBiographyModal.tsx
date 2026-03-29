@@ -72,7 +72,13 @@ export function ReportBiographyModal({ biographyId, open, onOpenChange, onSucces
     setInlineError('');
 
     const { data: sessionData } = await supabase.auth.getSession();
-    const userId = sessionData?.session?.user?.id ?? null;
+    const userId = sessionData?.session?.user?.id;
+
+    if (!userId) {
+      setInlineError(t.view.reportError);
+      setSubmitting(false);
+      return;
+    }
 
     const { error } = await supabase.from('moderation_reports').insert({
       biography_id: biographyId,
