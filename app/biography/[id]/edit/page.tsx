@@ -45,7 +45,7 @@ import type { Biography } from '@/lib/biographies';
 import { generateBiographyPDF } from '@/lib/pdf-export';
 import { AdvancedExportDialog } from '@/components/export/AdvancedExportDialog';
 import { useTranslation } from '@/lib/i18n/i18n-context';
-import { Loader as Loader2, Menu, X, Sparkles, Snowflake as SnowflakeIcon, Send as SendIcon } from 'lucide-react';
+import { Loader as Loader2, Menu, X, Sparkles, Snowflake as SnowflakeIcon, Send as SendIcon, TriangleAlert, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import {
@@ -113,6 +113,9 @@ export default function BiographyEditorPage() {
   const [biographyType, setBiographyType] = useState<'autobiography' | 'memorial'>('autobiography');
   const [slug, setSlug] = useState<string | null>(null);
 const [isPublishing, setIsPublishing] = useState(false);
+  const [revisionPassages, setRevisionPassages] = useState<Array<{ section_key: string; ai_reason: string }>>([]);
+  const [revisionNote, setRevisionNote] = useState<string | null>(null);
+  const [revisionBannerDismissed, setRevisionBannerDismissed] = useState(false);
 
   const editorContainerRef = useRef<HTMLDivElement>(null);
 
@@ -202,6 +205,29 @@ const [isPublishing, setIsPublishing] = useState(false);
 
       const completed = await getCompletedSections(id);
       setCompletedSections(completed);
+
+      if (data && data.status === 'draft') {
+        const { data: report } = await supabase
+          .from('moderation_reports')
+          .select('moderator_notes')
+          .eq('biography_id', id)
+          .eq('status', 'decided')
+          .eq('decision', 'request_edit')
+          .order('decided_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (report?.moderator_notes) {
+          try {
+            const parsed = JSON.parse(report.moderator_notes as string);
+            if (Array.isArray(parsed.rejectedPassages) && parsed.rejectedPassages.length > 0) {
+              setRevisionPassages(parsed.rejectedPassages);
+              setRevisionNote(typeof parsed.note === 'string' ? parsed.note : null);
+            }
+          } catch {
+          }
+        }
+      }
     };
     load();
   }, [user, id]);
@@ -976,6 +1002,9 @@ const [isPublishing, setIsPublishing] = useState(false);
       if (!error) {
         setBiographyStatus('under_review');
         setShowSubmitForReviewDialog(false);
+        setRevisionPassages([]);
+        setRevisionNote(null);
+        setRevisionBannerDismissed(false);
         fetch('/api/review/submit', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -990,6 +1019,10 @@ const [isPublishing, setIsPublishing] = useState(false);
   }, [id, user]);
 
   const effectivelyLocked = isLocked || isFrozen;
+
+  const isRevisionMode = revisionPassages.length > 0 && !revisionBannerDismissed && biographyStatus === 'draft';
+  const editableSectionKeys = new Set(revisionPassages.map((p) => p.section_key));
+  const isActiveSectionRevisionLocked = isRevisionMode && !editableSectionKeys.has(activeSection);
 
   if (authLoading || !user || isLoading) {
     return (
@@ -1029,6 +1062,45 @@ const [isPublishing, setIsPublishing] = useState(false);
           <p className="text-xs text-blue-700 dark:text-blue-300">
             {t.admin.frozenBannerMessage}
           </p>
+        </div>
+      )}
+
+      {isRevisionMode && (
+        <div className="shrink-0 border-b border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 px-4 py-3">
+          <div className="max-w-5xl mx-auto">
+            <div className="flex items-start gap-3">
+              <TriangleAlert className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-amber-800 dark:text-amber-300 mb-2">
+                  {t.editor.revisionRequired}
+                </p>
+                <ul className="space-y-1 mb-2">
+                  {revisionPassages.map((p, i) => (
+                    <li key={i} className="flex items-start gap-2 text-xs text-amber-700 dark:text-amber-400">
+                      <Lock className="h-3 w-3 shrink-0 mt-0.5" />
+                      <span>
+                        <span className="font-medium">{p.section_key}</span>
+                        {': '}
+                        {p.ai_reason}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                {revisionNote && (
+                  <p className="text-xs text-amber-700 dark:text-amber-400">
+                    <span className="font-medium">{t.editor.revisionReviewerNote}:</span>{' '}
+                    {revisionNote}
+                  </p>
+                )}
+              </div>
+              <button
+                onClick={() => setRevisionBannerDismissed(true)}
+                className="shrink-0 text-xs text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 transition-colors underline"
+              >
+                {t.editor.revisionDismiss}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -1083,6 +1155,7 @@ const [isPublishing, setIsPublishing] = useState(false);
             onFreeflowChange={handleFreeflowChange}
             biographyId={id}
             userId={user.id}
+            lockedSectionKeys={isRevisionMode ? editableSectionKeys : undefined}
           />
         </aside>
 
@@ -1206,7 +1279,7 @@ const [isPublishing, setIsPublishing] = useState(false);
                   onToggleNotes={() => setShowGlobalNotesPanel((v) => !v)}
                   openImportDialog={showSidebarImport}
                   onImportDialogOpenChange={(v) => { if (!v) setShowSidebarImport(false); }}
-                  isPublished={(biographyStatus as string) === 'published' || isFrozen}
+                  isPublished={(biographyStatus as string) === 'published' || isFrozen || isActiveSectionRevisionLocked}
                   contentFreeflow={contentFreeflow}
                   biographyMode="sections"
                   onImportedToSection={(sectionKey, newContent) => {

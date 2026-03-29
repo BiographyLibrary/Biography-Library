@@ -314,6 +314,10 @@ export interface Translations {
     bookStructureImportReplace: string;
     bookStructureImportCancel: string;
     noChaptersWarning: string;
+    revisionRequired: string;
+    revisionFlaggedPassages: string;
+    revisionReviewerNote: string;
+    revisionDismiss: string;
   };
   formatting: {
     bold: string;
@@ -1060,6 +1064,7 @@ export interface Translations {
     justNow: string;
     biographyApproved: string;
     biographyRejected: string;
+    biographyRejectedWithPassages: string;
     biographyAutoPublished: string;
     reviewAssigned: string;
   };
@@ -1407,6 +1412,10 @@ export const translations: Record<Language, Translations> = {
       bookStructureImportReplace: 'Yes, replace',
       bookStructureImportCancel: 'Cancel',
       noChaptersWarning: 'No chapters defined. The book will be a continuous text without chapter breaks. To add chapters, switch to Sections mode.',
+      revisionRequired: 'Revision required. The reviewer flagged the following:',
+      revisionFlaggedPassages: 'Flagged passages',
+      revisionReviewerNote: 'Reviewer note',
+      revisionDismiss: 'Dismiss',
     },
     formatting: {
       bold: 'Bold',
@@ -2153,6 +2162,7 @@ export const translations: Record<Language, Translations> = {
       justNow: 'Just now',
       biographyApproved: 'Your biography has been approved and published.',
       biographyRejected: 'Your biography was returned for revision: ',
+      biographyRejectedWithPassages: 'Your biography needs revision. Passages flagged:\n{passages}\nReviewer note: {note}',
       biographyAutoPublished: 'Your biography has been reviewed and published automatically.',
       reviewAssigned: 'A biography has been assigned to you for review.',
     },
@@ -2498,6 +2508,10 @@ export const translations: Record<Language, Translations> = {
       bookStructureImportReplace: 'Sì, sostituisci',
       bookStructureImportCancel: 'Annulla',
       noChaptersWarning: 'Nessun capitolo definito. Il libro sarà un testo continuo senza interruzioni di capitolo. Per aggiungere capitoli, passa alla modalità Sezioni.',
+      revisionRequired: 'Revisione richiesta. Il revisore ha segnalato quanto segue:',
+      revisionFlaggedPassages: 'Passaggi segnalati',
+      revisionReviewerNote: 'Nota del revisore',
+      revisionDismiss: 'Chiudi',
     },
     formatting: {
       bold: 'Grassetto',
@@ -3244,6 +3258,7 @@ export const translations: Record<Language, Translations> = {
       justNow: 'Adesso',
       biographyApproved: 'La tua biografia è stata approvata e pubblicata.',
       biographyRejected: 'La tua biografia è stata restituita per revisione: ',
+      biographyRejectedWithPassages: 'La tua biografia richiede revisione. Passaggi segnalati:\n{passages}\nNota revisore: {note}',
       biographyAutoPublished: 'La tua biografia è stata revisionata e pubblicata automaticamente.',
       reviewAssigned: 'Una biografia ti è stata assegnata per la revisione.',
     },
@@ -3589,6 +3604,10 @@ export const translations: Record<Language, Translations> = {
       bookStructureImportReplace: 'Oui, remplacer',
       bookStructureImportCancel: 'Annuler',
       noChaptersWarning: 'Aucun chapitre défini. Le livre sera un texte continu sans coupure de chapitre. Pour ajouter des chapitres, passez en mode Sections.',
+      revisionRequired: 'Révision requise. Le réviseur a signalé ce qui suit :',
+      revisionFlaggedPassages: 'Passages signalés',
+      revisionReviewerNote: 'Note du réviseur',
+      revisionDismiss: 'Fermer',
     },
     formatting: {
       bold: 'Gras',
@@ -4335,6 +4354,7 @@ export const translations: Record<Language, Translations> = {
       justNow: 'À l\'instant',
       biographyApproved: 'Votre biographie a été approuvée et publiée.',
       biographyRejected: 'Votre biographie a été retournée pour révision : ',
+      biographyRejectedWithPassages: 'Votre biographie nécessite une révision. Passages signalés:\n{passages}\nNote du réviseur: {note}',
       biographyAutoPublished: 'Votre biographie a été révisée et publiée automatiquement.',
       reviewAssigned: 'Une biographie vous a été assignée pour révision.',
     },
@@ -4680,6 +4700,10 @@ export const translations: Record<Language, Translations> = {
       bookStructureImportReplace: 'Ja, ersetzen',
       bookStructureImportCancel: 'Abbrechen',
       noChaptersWarning: 'Keine Kapitel definiert. Das Buch wird ein fortlaufender Text ohne Kapitelunterbrechungen sein. Um Kapitel hinzuzufügen, wechseln Sie in den Abschnitte-Modus.',
+      revisionRequired: 'Überarbeitung erforderlich. Der Prüfer hat Folgendes markiert:',
+      revisionFlaggedPassages: 'Markierte Passagen',
+      revisionReviewerNote: 'Hinweis des Prüfers',
+      revisionDismiss: 'Schließen',
     },
     formatting: {
       bold: 'Fett',
@@ -5426,6 +5450,7 @@ export const translations: Record<Language, Translations> = {
       justNow: 'Gerade eben',
       biographyApproved: 'Ihre Biografie wurde genehmigt und veröffentlicht.',
       biographyRejected: 'Ihre Biografie wurde zur Überarbeitung zurückgesandt: ',
+      biographyRejectedWithPassages: 'Ihre Biografie muss überarbeitet werden. Markierte Passagen:\n{passages}\nHinweis des Prüfers: {note}',
       biographyAutoPublished: 'Ihre Biografie wurde automatisch geprüft und veröffentlicht.',
       reviewAssigned: 'Eine Biografie wurde Ihnen zur Überprüfung zugewiesen.',
     },

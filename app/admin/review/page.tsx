@@ -222,13 +222,10 @@ function ReviewQueueContent() {
     setReasonError('');
   };
 
-  const buildRejectedPassagesSuffix = (bio: ReviewBiography): string => {
+  const getRejectedPassages = (bio: ReviewBiography) => {
     const passages = getFlaggedPassages(bio);
     const decisions = getPassageDecisionsForBio(bio.id);
-    const rejected = passages.filter((_, idx) => decisions[idx] === 'rejected');
-    if (rejected.length === 0) return '';
-    const lines = rejected.map((p) => `- [${p.section_key}] ${p.reason}`).join('\n');
-    return `\n\nFlagged passages:\n${lines}`;
+    return passages.filter((_, idx) => decisions[idx] === 'rejected');
   };
 
   const handleConfirmReject = async (bio: ReviewBiography) => {
@@ -249,18 +246,37 @@ function ReviewQueueContent() {
       return;
     }
 
+    const note = rejectReason.trim();
+    const rejectedPassages = getRejectedPassages(bio).map((p) => ({
+      section_key: p.section_key,
+      ai_reason: p.reason,
+    }));
+
     if (bio.report?.id) {
       await supabase
         .from('moderation_reports')
-        .update({ status: 'decided', decision: 'request_edit', decided_at: new Date().toISOString() })
+        .update({
+          status: 'decided',
+          decision: 'request_edit',
+          decided_at: new Date().toISOString(),
+          moderator_notes: JSON.stringify({ rejectedPassages, note }),
+        })
         .eq('id', bio.report.id);
     }
 
-    const suffix = buildRejectedPassagesSuffix(bio);
-    await createNotification(
-      bio.author_id,
-      t.notifications.biographyRejected + rejectReason.trim() + suffix
-    );
+    let notificationMessage: string;
+    if (rejectedPassages.length > 0) {
+      const passageLines = rejectedPassages
+        .map((p) => `- [${p.section_key}] ${p.ai_reason}`)
+        .join('\n');
+      notificationMessage = t.notifications.biographyRejectedWithPassages
+        .replace('{passages}', passageLines)
+        .replace('{note}', note);
+    } else {
+      notificationMessage = t.notifications.biographyRejected + note;
+    }
+
+    await createNotification(bio.author_id, notificationMessage);
 
     setItems((prev) => prev.filter((b) => b.id !== bio.id));
     setRejectOpenId(null);

@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, Circle, Flag, ChevronRight, StickyNote, Images, Upload, Download } from 'lucide-react';
+import { Check, Circle, Flag, ChevronRight, StickyNote, Images, Upload, Download, Lock } from 'lucide-react';
 import {
   BIOGRAPHY_SECTIONS,
   type BiographyContent,
@@ -30,6 +30,7 @@ interface SectionSidebarProps {
   onFreeflowChange: (value: string) => void;
   biographyId?: string;
   userId?: string;
+  lockedSectionKeys?: Set<string>;
 }
 
 export function SectionSidebar({
@@ -51,6 +52,7 @@ export function SectionSidebar({
   onFreeflowChange,
   biographyId,
   userId,
+  lockedSectionKeys,
 }: SectionSidebarProps) {
   const { t } = useTranslation();
 
@@ -95,6 +97,7 @@ export function SectionSidebar({
               const hasContent = data.text.trim().length > 0;
               const isTodo = data.todo;
               const isCompleted = completedSections.includes(section.key);
+              const isLockedByRevision = lockedSectionKeys?.has(section.key) === false && (lockedSectionKeys?.size ?? 0) > 0;
               const sectionTitle = t.sectionTitles[section.key as keyof typeof t.sectionTitles] || section.title;
 
               return (
@@ -107,7 +110,8 @@ export function SectionSidebar({
                       ? 'bg-[#C4DAEB] dark:bg-[#C4DAEB]/20 text-[#121212] dark:text-[#121212]'
                       : isActive
                       ? 'bg-primary/10 text-primary font-medium'
-                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                      : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground',
+                    isLockedByRevision && 'opacity-50'
                   )}
                   style={!isFreeflow ? {
                     fontFamily: "'Noto Serif', Georgia, serif",
@@ -118,7 +122,9 @@ export function SectionSidebar({
                   } : undefined}
                 >
                   <span className="shrink-0">
-                    {isTodo ? (
+                    {isLockedByRevision ? (
+                      <Lock className="h-3.5 w-3.5 text-muted-foreground" />
+                    ) : isTodo ? (
                       <Flag className="h-3.5 w-3.5 text-text-primary dark:text-dark-text-primary" />
                     ) : hasContent ? (
                       <Check className="h-3.5 w-3.5 text-text-primary dark:text-dark-text-primary" />
