@@ -10,7 +10,6 @@ import { SectionEditor } from '@/components/editor/section-editor';
 import { GlobalNotesPanel } from '@/components/editor/GlobalNotesPanel';
 import { AiSuggestionsPanel } from '@/components/editor/ai-suggestions-panel';
 import { ShareLinkPanel } from '@/components/editor/share-link-panel';
-import { BiographySettingsPanel } from '@/components/editor/BiographySettingsPanel';
 import { PhotoGalleryPanel } from '@/components/editor/PhotoGalleryPanel';
 import { ConversationMode } from '@/components/editor/conversation-mode';
 import { NextSectionPrompt } from '@/components/editor/next-section-prompt';
@@ -195,7 +194,23 @@ const [isPublishing, setIsPublishing] = useState(false);
         setBiographyMode((data.biography_mode as 'sections' | 'freeflow') || 'sections');
         setContentFreeflow(data.content_freeflow || '');
         setBiographyType((data.biography_type as 'autobiography' | 'memorial') || 'autobiography');
-        setSlug(data.slug || null);
+        if (data.slug) {
+          setSlug(data.slug);
+        } else {
+          const authorPart = data.author_name ?? '';
+          const combined = [authorPart, data.title].filter(Boolean).join(' ');
+          const autoSlug = combined
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '')
+            .replace(/-{2,}/g, '-');
+          if (autoSlug) {
+            await supabase.from('biographies').update({ slug: autoSlug }).eq('id', id);
+            setSlug(autoSlug);
+          }
+        }
         const loaded = data.content as BiographyContent | null;
         if (loaded && typeof loaded === 'object') {
           setContent({ ...getEmptyContent(), ...loaded });
@@ -297,7 +312,9 @@ const [isPublishing, setIsPublishing] = useState(false);
       setTitle(newTitle);
       markDirty();
       if (!slugRef.current) {
-        const newSlug = generateSlugFromTitle(newTitle);
+        const authorPart = biography?.author_name ?? '';
+        const combined = [authorPart, newTitle].filter(Boolean).join(' ');
+        const newSlug = generateSlugFromTitle(combined);
         if (newSlug) {
           const { error } = await supabase
             .from('biographies')
@@ -309,7 +326,7 @@ const [isPublishing, setIsPublishing] = useState(false);
         }
       }
     },
-    [id, markDirty]
+    [id, markDirty, biography]
   );
 
   const handlePrivacyChange = useCallback(
@@ -1372,16 +1389,6 @@ const [isPublishing, setIsPublishing] = useState(false);
                     visibility={privacy}
                     currentShareToken={shareToken}
                     onTokenGenerated={setShareToken}
-                  />
-                  <BiographySettingsPanel
-                    biographyId={id}
-                    biographyType={biographyType}
-                    slug={slug}
-                    onBiographyTypeChange={setBiographyType}
-                    onSlugChange={setSlug}
-                    biographyTitle={title}
-                    authorName={biography.author_name ?? ''}
-                    onNavigateToPhotos={() => setShowPhotosPanel(true)}
                   />
                 </div>
               )}
