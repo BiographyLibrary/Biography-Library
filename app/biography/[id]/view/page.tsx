@@ -5,6 +5,7 @@ import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { type BiographyContent } from '@/lib/editor-constants';
 import { generateBiographyPDF } from '@/lib/pdf-export';
+import { exportAsRTF, exportAsPlainText } from '@/lib/export-utils';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -184,14 +185,35 @@ export default function BiographyViewPage() {
     }
   };
 
+  const getBiographyExportData = () => ({
+    title: biography!.title,
+    author_name: biography!.author_name,
+    content: biography!.content,
+    created_at: biography!.created_at,
+  });
+
+  const getSectionsForExport = () =>
+    Object.entries(biography!.content)
+      .filter(([, sectionData]) => sectionData?.text?.trim())
+      .map(([key, sectionData]) => ({
+        key,
+        title: t.sectionTitles[key as keyof typeof t.sectionTitles] || key,
+        content: sectionData.text,
+      }));
+
   const handleExportPDF = () => {
     if (!biography) return;
-    generateBiographyPDF({
-      title: biography.title,
-      author_name: biography.author_name,
-      content: biography.content,
-      created_at: biography.created_at,
-    });
+    generateBiographyPDF(getBiographyExportData());
+  };
+
+  const handleExportRTF = async () => {
+    if (!biography) return;
+    await exportAsRTF(getBiographyExportData(), getSectionsForExport(), false);
+  };
+
+  const handleExportTXT = async () => {
+    if (!biography) return;
+    await exportAsPlainText(getBiographyExportData(), getSectionsForExport(), false);
   };
 
   if (isLoading) {
@@ -241,6 +263,24 @@ export default function BiographyViewPage() {
             >
               <FileDown className="h-4 w-4" />
               <span className="hidden sm:inline">{t.view.downloadPdf}</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportRTF}
+              className="gap-2"
+            >
+              <FileDown className="h-4 w-4" />
+              <span className="hidden sm:inline">{t.view.downloadRtf}</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportTXT}
+              className="gap-2"
+            >
+              <FileDown className="h-4 w-4" />
+              <span className="hidden sm:inline">{t.view.downloadTxt}</span>
             </Button>
             <Button
               variant="ghost"

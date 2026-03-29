@@ -395,6 +395,8 @@ export interface Translations {
     notAvailable: string;
     returnHome: string;
     downloadPdf: string;
+    downloadRtf: string;
+    downloadTxt: string;
     by: string;
     preservingStories: string;
     tokenMissing: string;
@@ -1454,6 +1456,8 @@ export const translations: Record<Language, Translations> = {
       notAvailable: 'This biography is not available for viewing.',
       returnHome: 'Return Home',
       downloadPdf: 'Download PDF',
+      downloadRtf: 'Download RTF',
+      downloadTxt: 'Download TXT',
       by: 'By',
       preservingStories: 'Biography Library - Preserving Stories in Switzerland',
       tokenMissing: 'Access token is missing',
@@ -2511,6 +2515,8 @@ export const translations: Record<Language, Translations> = {
       notAvailable: 'Questa biografia non \u00e8 disponibile per la visualizzazione.',
       returnHome: 'Torna alla Home',
       downloadPdf: 'Scarica PDF',
+      downloadRtf: 'Scarica RTF',
+      downloadTxt: 'Scarica TXT',
       by: 'Di',
       preservingStories: 'Biography Library - Preservare Storie in Svizzera',
       tokenMissing: 'Token di accesso mancante',
@@ -3568,6 +3574,8 @@ export const translations: Record<Language, Translations> = {
       notAvailable: 'Cette biographie n\'est pas disponible pour la consultation.',
       returnHome: 'Retour \u00e0 l\'Accueil',
       downloadPdf: 'T\u00e9l\u00e9charger le PDF',
+      downloadRtf: 'T\u00e9l\u00e9charger RTF',
+      downloadTxt: 'T\u00e9l\u00e9charger TXT',
       by: 'Par',
       preservingStories: 'Biography Library - Pr\u00e9server des Histoires en Suisse',
       tokenMissing: 'Jeton d\'acc\u00e8s manquant',
@@ -4625,6 +4633,8 @@ export const translations: Record<Language, Translations> = {
       notAvailable: 'Diese Biografie ist nicht zur Ansicht verf\u00fcgbar.',
       returnHome: 'Zur Startseite',
       downloadPdf: 'PDF Herunterladen',
+      downloadRtf: 'RTF herunterladen',
+      downloadTxt: 'TXT herunterladen',
       by: 'Von',
       preservingStories: 'Biography Library - Geschichten Bewahren in der Schweiz',
       tokenMissing: 'Zugriffstoken fehlt',
