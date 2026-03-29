@@ -25,15 +25,56 @@ const REVIEW_ASSIGNED_MESSAGES: Record<string, string> = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyClient = SupabaseClient<any, any, any>;
 
+interface RejectedPassage {
+  section_key: string;
+  ai_reason: string;
+}
+
+interface PreviousRejectionReport {
+  id: string;
+  rejectedPassages: RejectedPassage[];
+}
+
 function buildServiceClient(): AnyClient {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
   return createClient(url, serviceKey, { auth: { persistSession: false } }) as AnyClient;
 }
 
-async function fetchBiographyContent(
+async function fetchPreviousRejectionReport(
   supabase: AnyClient,
   biographyId: string
+): Promise<PreviousRejectionReport | null> {
+  const { data: report } = await supabase
+    .from('moderation_reports')
+    .select('id, moderator_notes')
+    .eq('biography_id', biographyId)
+    .eq('status', 'decided')
+    .eq('decision', 'request_edit')
+    .order('decided_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (!report?.moderator_notes) return null;
+
+  try {
+    const parsed = JSON.parse(report.moderator_notes as string);
+    if (Array.isArray(parsed.rejectedPassages) && parsed.rejectedPassages.length > 0) {
+      return {
+        id: report.id as string,
+        rejectedPassages: parsed.rejectedPassages as RejectedPassage[],
+      };
+    }
+  } catch {
+  }
+
+  return null;
+}
+
+async function fetchBiographyContent(
+  supabase: AnyClient,
+  biographyId: string,
+  targetSectionKeys?: string[]
 ): Promise<{ text: string; authorId: string; contentLanguage: string }> {
   const { data: bio } = await supabase
     .from('biographies')
@@ -44,12 +85,18 @@ async function fetchBiographyContent(
   const authorId: string = (bio as any)?.user_id ?? '';
   const contentLanguage: string = (bio as any)?.content_language ?? 'en';
 
-  const { data: sections } = await supabase
+  let query = supabase
     .from('biography_sections')
     .select('section_key, content')
     .eq('biography_id', biographyId)
     .not('content', 'is', null)
     .order('section_key', { ascending: true });
+
+  if (targetSectionKeys && targetSectionKeys.length > 0) {
+    query = query.in('section_key', targetSectionKeys);
+  }
+
+  const { data: sections } = await query;
 
   const parts: string[] = [];
 
@@ -59,7 +106,10 @@ async function fetchBiographyContent(
     }
   }
 
-  if ((bio as any)?.freeflow_content?.trim()) {
+  const isTargeted = targetSectionKeys && targetSectionKeys.length > 0;
+  const includeFreeflow = !isTargeted || targetSectionKeys?.includes('freeflow');
+
+  if (includeFreeflow && (bio as any)?.freeflow_content?.trim()) {
     parts.push(`[SECTION: freeflow]\n${(bio as any).freeflow_content.trim()}`);
   }
 
@@ -214,7 +264,18 @@ export async function POST(req: NextRequest) {
 
     const supabase = buildServiceClient();
 
-    const { text, authorId, contentLanguage } = await fetchBiographyContent(supabase, biographyId);
+    const previousRejection = await fetchPreviousRejectionReport(supabase, biographyId);
+    const isRescreen = previousRejection !== null;
+
+    const targetSectionKeys = isRescreen
+      ? previousRejection.rejectedPassages.map((p) => p.section_key)
+      : undefined;
+
+    const { text, authorId, contentLanguage } = await fetchBiographyContent(
+      supabase,
+      biographyId,
+      targetSectionKeys
+    );
 
     if (!authorId) {
       return NextResponse.json({ error: 'Biography not found' }, { status: 404 });
@@ -234,17 +295,29 @@ export async function POST(req: NextRequest) {
         })
         .eq('id', biographyId);
 
+      if (isRescreen && previousRejection.id) {
+        await supabase
+          .from('moderation_reports')
+          .update({
+            status: 'decided',
+            decision: 'publish',
+            decided_at: new Date().toISOString(),
+          })
+          .eq('id', previousRejection.id);
+      }
+
       const autoMsg =
         AUTO_PUBLISHED_MESSAGES[contentLanguage] ?? AUTO_PUBLISHED_MESSAGES['en'];
       await supabase
         .from('user_notifications')
         .insert({ user_id: authorId, message: autoMsg });
 
-      return NextResponse.json({ result: 'published', screeningStatus });
+      return NextResponse.json({ result: 'published', screeningStatus, isRescreen });
     }
 
     const flaggedPassages = screening.passages.map((p) => ({
       text: p.text,
+      section_key: p.section_key,
       reason: p.reason,
       level: p.severity,
     }));
@@ -254,13 +327,26 @@ export async function POST(req: NextRequest) {
       .update({ ai_screening_status: 'flagged' })
       .eq('id', biographyId);
 
+    if (isRescreen && previousRejection.id) {
+      await supabase
+        .from('moderation_reports')
+        .update({
+          status: 'decided',
+          decision: 'no_action',
+          decided_at: new Date().toISOString(),
+        })
+        .eq('id', previousRejection.id);
+    }
+
     const { data: newReport } = await supabase
       .from('moderation_reports')
       .insert({
         biography_id: biographyId,
         reporter_id: null,
         report_type: 'level2_content',
-        description: 'Automated AI content screening',
+        description: isRescreen
+          ? 'Automated AI re-screening of revised sections'
+          : 'Automated AI content screening',
         status: 'unassigned',
         ai_analysis: {
           summary: `${flaggedPassages.length} passage(s) flagged by AI screening`,
@@ -290,7 +376,7 @@ export async function POST(req: NextRequest) {
         .insert({ user_id: reviewerId, message: assignMsg });
     }
 
-    return NextResponse.json({ result: 'under_review', flagCount: flaggedPassages.length });
+    return NextResponse.json({ result: 'under_review', flagCount: flaggedPassages.length, isRescreen });
   } catch (err) {
     console.error('[review/submit] Unhandled error:', err);
     return NextResponse.json({ error: 'Internal error' }, { status: 500 });
