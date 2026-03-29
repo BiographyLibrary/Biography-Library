@@ -24,6 +24,7 @@ export interface Biography {
   biography_mode?: 'sections' | 'freeflow';
   biography_type: 'autobiography' | 'memorial';
   slug: string | null;
+  ai_screening_status?: 'pending' | 'passed' | 'flagged' | 'parse_error';
 }
 
 export interface PublishedBiography {

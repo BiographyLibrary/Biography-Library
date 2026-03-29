@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { BookOpen, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/i18n-context';
 import { supabase } from '@/lib/supabase';
@@ -22,7 +23,7 @@ import {
 
 const PAGE_SIZE = 20;
 
-type StatusFilter = 'all' | 'draft' | 'published' | 'under_review' | 'removed';
+type StatusFilter = 'all' | 'draft' | 'published' | 'under_review' | 'removed' | 'parse_error';
 type TypeFilter = 'all' | 'autobiography' | 'deceased';
 type SortFilter = 'newest' | 'oldest' | 'recently_published';
 
@@ -54,11 +55,16 @@ function fmtDate(iso: string | null) {
 
 function AdminBiographiesContent() {
   const { t } = useTranslation();
+  const searchParams = useSearchParams();
   const [biographies, setBiographies] = useState<AdminBiographyRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>(() => {
+    const param = searchParams.get('screening');
+    if (param === 'parse_error') return 'parse_error';
+    return 'all';
+  });
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   const [sortFilter, setSortFilter] = useState<SortFilter>('newest');
   const [page, setPage] = useState(1);
@@ -83,6 +89,7 @@ function AdminBiographiesContent() {
           published_at,
           content_language,
           is_frozen,
+          ai_screening_status,
           profiles!biographies_user_id_fkey (
             id,
             name,
@@ -112,6 +119,7 @@ function AdminBiographiesContent() {
           updated_at: b.updated_at,
           published_at: b.published_at ?? null,
           is_frozen: b.is_frozen ?? false,
+          ai_screening_status: b.ai_screening_status ?? null,
         };
       });
 
@@ -130,7 +138,9 @@ function AdminBiographiesContent() {
   const filtered = useMemo(() => {
     let result = biographies;
 
-    if (statusFilter !== 'all') {
+    if (statusFilter === 'parse_error') {
+      result = result.filter((b) => b.ai_screening_status === 'parse_error');
+    } else if (statusFilter !== 'all') {
       result = result.filter((b) => b.status === statusFilter);
     }
 
@@ -213,6 +223,7 @@ function AdminBiographiesContent() {
               <SelectItem value="published">{t.admin.bioStatusPublished}</SelectItem>
               <SelectItem value="under_review">{t.admin.bioStatusUnderReview}</SelectItem>
               <SelectItem value="removed">{t.admin.bioStatusRemoved}</SelectItem>
+              <SelectItem value="parse_error">AI parse error</SelectItem>
             </SelectContent>
           </Select>
 

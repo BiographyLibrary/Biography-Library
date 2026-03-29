@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Users, BookOpen, Shield, UserPlus, Activity, CircleCheck as CheckCircle, CircleAlert as AlertCircle, Clock, Circle as XCircle, ArrowRight, LayoutDashboard } from 'lucide-react';
+import { Users, BookOpen, Shield, UserPlus, Activity, CircleCheck as CheckCircle, CircleAlert as AlertCircle, Clock, Circle as XCircle, ArrowRight, LayoutDashboard, TriangleAlert } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/i18n-context';
 import { supabase } from '@/lib/supabase';
 import { AdminGuard } from '@/components/admin/AdminGuard';
@@ -21,6 +21,7 @@ interface OverviewStats {
   openReports: number | null;
   inReviewReports: number | null;
   resolvedThisWeek: number | null;
+  parseErrorCount: number | null;
 }
 
 async function safeCount(query: any): Promise<number | null> {
@@ -48,6 +49,7 @@ async function fetchStats(): Promise<OverviewStats> {
     openReports,
     inReviewReports,
     resolvedThisWeek,
+    parseErrorCount,
   ] = await Promise.all([
     safeCount(supabase.from('profiles').select('id', { count: 'exact', head: true })),
     safeCount(supabase.from('profiles').select('id', { count: 'exact', head: true }).gte('created_at', sevenDaysAgo)),
@@ -65,6 +67,14 @@ async function fetchStats(): Promise<OverviewStats> {
         .eq('status', 'decided')
         .gte('updated_at', sevenDaysAgo)
     ),
+    safeCount(
+      supabase
+        .from('biographies')
+        .select('id', { count: 'exact', head: true })
+        .eq('ai_screening_status', 'parse_error')
+        .eq('status', 'published')
+        .gte('created_at', sevenDaysAgo)
+    ),
   ]);
 
   return {
@@ -78,6 +88,7 @@ async function fetchStats(): Promise<OverviewStats> {
     openReports,
     inReviewReports,
     resolvedThisWeek,
+    parseErrorCount,
   };
 }
 
@@ -94,6 +105,7 @@ function OverviewContent() {
     openReports: null,
     inReviewReports: null,
     resolvedThisWeek: null,
+    parseErrorCount: null,
   });
 
   useEffect(() => {
@@ -116,6 +128,24 @@ function OverviewContent() {
             <p className="text-sm text-muted-foreground mt-0.5">{t.admin.overviewSubtitle}</p>
           </div>
         </div>
+
+        {stats.parseErrorCount !== null && stats.parseErrorCount > 0 && (
+          <div className="mb-8 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30 px-4 py-3.5">
+            <TriangleAlert className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+                {stats.parseErrorCount} {stats.parseErrorCount === 1 ? 'biography' : 'biographies'} published in the last 7 days bypassed AI screening due to a parse error. These may require manual review.
+              </p>
+            </div>
+            <Link
+              href="/admin/biographies?screening=parse_error"
+              className="shrink-0 inline-flex items-center gap-1 text-xs font-medium text-amber-700 dark:text-amber-400 hover:text-amber-900 dark:hover:text-amber-200 transition-colors whitespace-nowrap"
+            >
+              View affected biographies
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+        )}
 
         <div className="space-y-10">
           <section>

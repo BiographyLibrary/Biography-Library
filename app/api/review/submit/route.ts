@@ -74,6 +74,7 @@ async function fetchBiographyContent(
 interface ScreeningResult {
   passages: Array<{ text: string; section_key: string; reason: string; severity: number }>;
   overall_severity: number;
+  parseError?: boolean;
 }
 
 async function runAiScreening(biographyText: string): Promise<ScreeningResult> {
@@ -140,15 +141,20 @@ async function runAiScreening(biographyText: string): Promise<ScreeningResult> {
 
     const match = rawText.match(/\{[\s\S]*\}/);
     if (!match) {
-      console.error('[review/submit] Could not extract JSON from AI response');
-      return fallback;
+      console.error('[review/submit] Could not extract JSON from AI response. Raw text:', rawText);
+      return { ...fallback, parseError: true };
     }
 
-    const parsed = JSON.parse(match[0]);
-    return {
-      passages: Array.isArray(parsed.passages) ? parsed.passages : [],
-      overall_severity: typeof parsed.overall_severity === 'number' ? parsed.overall_severity : 0,
-    };
+    try {
+      const parsed = JSON.parse(match[0]);
+      return {
+        passages: Array.isArray(parsed.passages) ? parsed.passages : [],
+        overall_severity: typeof parsed.overall_severity === 'number' ? parsed.overall_severity : 0,
+      };
+    } catch (parseErr) {
+      console.error('[review/submit] JSON.parse failed. Raw AI text:', rawText, 'Error:', parseErr);
+      return { ...fallback, parseError: true };
+    }
   } catch (err) {
     console.error('[review/submit] AI screening error:', err);
     return fallback;
@@ -217,9 +223,15 @@ export async function POST(req: NextRequest) {
     const screening = await runAiScreening(text);
 
     if (screening.passages.length === 0) {
+      const screeningStatus = screening.parseError ? 'parse_error' : 'passed';
+
       await supabase
         .from('biographies')
-        .update({ status: 'published', published_at: new Date().toISOString() })
+        .update({
+          status: 'published',
+          published_at: new Date().toISOString(),
+          ai_screening_status: screeningStatus,
+        })
         .eq('id', biographyId);
 
       const autoMsg =
@@ -228,7 +240,7 @@ export async function POST(req: NextRequest) {
         .from('user_notifications')
         .insert({ user_id: authorId, message: autoMsg });
 
-      return NextResponse.json({ result: 'published' });
+      return NextResponse.json({ result: 'published', screeningStatus });
     }
 
     const flaggedPassages = screening.passages.map((p) => ({
@@ -236,6 +248,11 @@ export async function POST(req: NextRequest) {
       reason: p.reason,
       level: p.severity,
     }));
+
+    await supabase
+      .from('biographies')
+      .update({ ai_screening_status: 'flagged' })
+      .eq('id', biographyId);
 
     const { data: newReport } = await supabase
       .from('moderation_reports')
