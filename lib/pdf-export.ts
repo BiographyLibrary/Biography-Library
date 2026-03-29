@@ -1,13 +1,31 @@
 import jsPDF from 'jspdf';
 import { BIOGRAPHY_SECTIONS } from './editor-constants';
+import { supabase } from './supabase';
 
 interface BiographyData {
+  id?: string;
   title: string;
   author_name: string;
   content: Record<string, { text: string }>;
   content_freeflow?: string;
   biography_mode?: 'sections' | 'freeflow';
   created_at: string;
+}
+
+interface BookStructure {
+  dedication_content: string | null;
+  dedication_enabled: boolean;
+  epigraph_content: string | null;
+  epigraph_source: string | null;
+  epigraph_enabled: boolean;
+  preface_content: string | null;
+  preface_enabled: boolean;
+  epilogue_content: string | null;
+  epilogue_enabled: boolean;
+  acknowledgements_content: string | null;
+  acknowledgements_enabled: boolean;
+  specific_credits_content: string | null;
+  specific_credits_enabled: boolean;
 }
 
 const BRAND_COLOR: [number, number, number] = [20, 184, 166];
@@ -210,15 +228,197 @@ function drawPageNumber(state: PdfState): void {
   doc.text(String(contentPageNum), centerX, numY, { align: 'center' });
 }
 
+function ensureOddPage(state: PdfState): void {
+  if (!isOddPage(state.absolutePage)) {
+    addNewPage(state, false);
+  }
+}
+
+function renderTextBlock(
+  state: PdfState,
+  text: string,
+  fontSize: number,
+  lineHeightMultiplier: number,
+  startY: number,
+  textAreaBottom: number,
+  fontStyle: 'normal' | 'italic',
+  sectionTitle?: string,
+  drawHeaderAndNum?: (s: PdfState) => void
+): void {
+  const { doc, fontsAvailable } = state;
+  const lineH = ptToMm(fontSize * lineHeightMultiplier);
+
+  applyFont(doc, fontsAvailable, fontStyle);
+  doc.setFontSize(fontSize);
+  doc.setTextColor(0, 0, 0);
+
+  let y = startY;
+  const paragraphs = text.split(/\n\n+/);
+
+  for (const para of paragraphs) {
+    if (!para.trim()) continue;
+
+    const tw = textAvailableWidth(state.absolutePage);
+    const lines = doc.splitTextToSize(para.trim(), tw);
+
+    for (const line of lines) {
+      if (y + lineH > textAreaBottom) {
+        addNewPage(state, true);
+        if (drawHeaderAndNum) {
+          drawHeaderAndNum(state);
+        } else if (sectionTitle) {
+          drawRunningHeader(state, sectionTitle);
+          drawPageNumber(state);
+        }
+        applyFont(doc, fontsAvailable, fontStyle);
+        doc.setFontSize(fontSize);
+        doc.setTextColor(0, 0, 0);
+        y = MARGIN_TOP;
+      }
+      doc.text(line, textStartX(state.absolutePage), y);
+      y += lineH;
+    }
+    y += lineH * 0.4;
+  }
+}
+
+function addDedicationPage(state: PdfState, content: string): void {
+  ensureOddPage(state);
+
+  const { doc, fontsAvailable } = state;
+  applyFont(doc, fontsAvailable, 'italic');
+  doc.setFontSize(PT_BODY);
+  doc.setTextColor(0, 0, 0);
+
+  const tw = textAvailableWidth(state.absolutePage);
+  const lines = doc.splitTextToSize(content.trim(), tw);
+  const centerX = B5_W / 2;
+  const startY = 70;
+  const lineH = ptToMm(PT_BODY * LINE_HEIGHT_BODY);
+
+  lines.forEach((line: string, i: number) => {
+    doc.text(line, centerX, startY + i * lineH, { align: 'center' });
+  });
+}
+
+function addEpigraphPage(state: PdfState, content: string, source: string | null): void {
+  ensureOddPage(state);
+
+  const { doc, fontsAvailable } = state;
+  applyFont(doc, fontsAvailable, 'italic');
+  doc.setFontSize(PT_BODY);
+  doc.setTextColor(0, 0, 0);
+
+  const tw = textAvailableWidth(state.absolutePage);
+  const lines = doc.splitTextToSize(content.trim(), tw);
+  const centerX = B5_W / 2;
+  const startY = 70;
+  const lineH = ptToMm(PT_BODY * LINE_HEIGHT_BODY);
+
+  lines.forEach((line: string, i: number) => {
+    doc.text(line, centerX, startY + i * lineH, { align: 'center' });
+  });
+
+  if (source && source.trim()) {
+    const sourceY = startY + lines.length * lineH + lineH * 0.8;
+    applyFont(doc, fontsAvailable, 'normal');
+    doc.setFontSize(PT_BODY - 1);
+    doc.setTextColor(100, 100, 100);
+    doc.text(`— ${source.trim()}`, centerX, sourceY, { align: 'center' });
+  }
+}
+
+function addSectionWithTitle(
+  state: PdfState,
+  sectionTitle: string,
+  content: string,
+  fontSize: number,
+  lineHeightMultiplier: number,
+  drawRunningHeaderFn: boolean
+): void {
+  const textAreaTop = MARGIN_TOP;
+  const textAreaBottom = B5_H - MARGIN_BOTTOM;
+
+  ensureOddPage(state);
+
+  const { doc, fontsAvailable } = state;
+  const tx = textStartX(state.absolutePage);
+  const chapterTitleY = textAreaTop + 10;
+
+  applyFont(doc, fontsAvailable, 'normal');
+  doc.setFontSize(PT_CHAPTER);
+  doc.setTextColor(0, 0, 0);
+  doc.text(sectionTitle, tx, chapterTitleY, { align: 'left' });
+
+  state.contentPageNum++;
+
+  if (drawRunningHeaderFn) {
+    drawRunningHeader(state, sectionTitle);
+  }
+  drawPageNumber(state);
+
+  const bodyStartY = chapterTitleY + ptToMm(PT_CHAPTER * LINE_HEIGHT_BODY) + 4;
+
+  const drawHeader = drawRunningHeaderFn
+    ? (s: PdfState) => {
+        drawRunningHeader(s, sectionTitle);
+        drawPageNumber(s);
+      }
+    : (s: PdfState) => {
+        drawPageNumber(s);
+      };
+
+  renderTextBlock(
+    state,
+    content,
+    fontSize,
+    lineHeightMultiplier,
+    bodyStartY,
+    textAreaBottom,
+    'normal',
+    sectionTitle,
+    drawHeader
+  );
+}
+
+async function fetchBookStructure(biographyId: string): Promise<BookStructure | null> {
+  try {
+    const { data, error } = await supabase
+      .from('biography_book_structure')
+      .select(
+        'dedication_content, dedication_enabled, epigraph_content, epigraph_source, epigraph_enabled, preface_content, preface_enabled, epilogue_content, epilogue_enabled, acknowledgements_content, acknowledgements_enabled, specific_credits_content, specific_credits_enabled'
+      )
+      .eq('biography_id', biographyId)
+      .maybeSingle();
+
+    if (error || !data) return null;
+    return data as BookStructure;
+  } catch {
+    return null;
+  }
+}
+
+function hasContent(value: string | null | undefined): boolean {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
 export async function generateBiographyPDF(
   biography: BiographyData,
   _variant?: string,
   translations?: {
     createdWith: string;
     allRightsReserved: string;
+    preface?: string;
+    epilogue?: string;
+    acknowledgements?: string;
+    specificCredits?: string;
   }
 ): Promise<void> {
   await loadNotoSerifFonts();
+
+  const bookStructure = biography.id
+    ? await fetchBookStructure(biography.id)
+    : null;
 
   const centerX = B5_W / 2;
 
@@ -242,7 +442,6 @@ export async function generateBiographyPDF(
 
   // ────────────────────────────────────────
   // PAGE 1 — COVER
-  // Brand color rectangle with 5mm safe margin on all sides
   // ────────────────────────────────────────
   doc.setFillColor(BRAND_COLOR[0], BRAND_COLOR[1], BRAND_COLOR[2]);
   doc.rect(SAFE_MARGIN, SAFE_MARGIN, B5_W - SAFE_MARGIN * 2, B5_H - SAFE_MARGIN * 2, 'F');
@@ -336,8 +535,39 @@ export async function generateBiographyPDF(
   addNewPage(state, false);
 
   // ────────────────────────────────────────
-  // PAGES 7+ — BIOGRAPHY CHAPTERS
-  // Page 6 is even; next page (7) will be odd — correct.
+  // FRONT MATTER — Dedication, Epigraph, Preface
+  // Inserted after page 6, before first chapter
+  // ────────────────────────────────────────
+
+  if (bookStructure) {
+    const bs = bookStructure;
+
+    if (bs.dedication_enabled && hasContent(bs.dedication_content)) {
+      addNewPage(state, false);
+      addDedicationPage(state, bs.dedication_content!);
+    }
+
+    if (bs.epigraph_enabled && hasContent(bs.epigraph_content)) {
+      addNewPage(state, false);
+      addEpigraphPage(state, bs.epigraph_content!, bs.epigraph_source);
+    }
+
+    if (bs.preface_enabled && hasContent(bs.preface_content)) {
+      addNewPage(state, false);
+      addSectionWithTitle(
+        state,
+        translations?.preface ?? 'Preface',
+        bs.preface_content!,
+        PT_BODY,
+        LINE_HEIGHT_BODY,
+        true
+      );
+    }
+  }
+
+  // ────────────────────────────────────────
+  // CHAPTERS
+  // First chapter must start on odd/right-hand page
   // ────────────────────────────────────────
 
   const getSections = () => {
@@ -421,8 +651,52 @@ export async function generateBiographyPDF(
   }
 
   // ────────────────────────────────────────
+  // BACK MATTER — Epilogue, Acknowledgements, Specific Credits
+  // Inserted after last chapter, before back cover
+  // ────────────────────────────────────────
+
+  if (bookStructure) {
+    const bs = bookStructure;
+
+    if (bs.epilogue_enabled && hasContent(bs.epilogue_content)) {
+      addNewPage(state, false);
+      addSectionWithTitle(
+        state,
+        translations?.epilogue ?? 'Epilogue',
+        bs.epilogue_content!,
+        PT_BODY,
+        LINE_HEIGHT_BODY,
+        true
+      );
+    }
+
+    if (bs.acknowledgements_enabled && hasContent(bs.acknowledgements_content)) {
+      addNewPage(state, false);
+      addSectionWithTitle(
+        state,
+        translations?.acknowledgements ?? 'Acknowledgements',
+        bs.acknowledgements_content!,
+        PT_BODY,
+        LINE_HEIGHT_BODY,
+        true
+      );
+    }
+
+    if (bs.specific_credits_enabled && hasContent(bs.specific_credits_content)) {
+      addNewPage(state, false);
+      addSectionWithTitle(
+        state,
+        translations?.specificCredits ?? 'Credits',
+        bs.specific_credits_content!,
+        PT_CREDITS,
+        1.5,
+        false
+      );
+    }
+  }
+
+  // ────────────────────────────────────────
   // BACK COVER (must be even page)
-  // Brand color rectangle with 5mm safe margin on all sides
   // ────────────────────────────────────────
   if (isOddPage(state.absolutePage)) {
     addNewPage(state, false);

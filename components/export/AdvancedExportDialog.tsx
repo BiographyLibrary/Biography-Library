@@ -146,6 +146,10 @@ export function AdvancedExportDialog({
           await generateBiographyPDF(biography, 'b5-standard', {
             createdWith: t.exportDialog.createdWith,
             allRightsReserved: t.exportDialog.allRightsReserved,
+            preface: t.exportDialog.preface,
+            epilogue: t.exportDialog.epilogue,
+            acknowledgements: t.exportDialog.acknowledgements,
+            specificCredits: t.exportDialog.specificCredits,
           });
         } else if (format === 'txt') {
           await exportAsPlainText(biography, [], false);
@@ -195,6 +199,10 @@ export function AdvancedExportDialog({
         await generateBiographyPDF(filteredBiography, 'b5-standard', {
           createdWith: t.exportDialog.createdWith,
           allRightsReserved: t.exportDialog.allRightsReserved,
+          preface: t.exportDialog.preface,
+          epilogue: t.exportDialog.epilogue,
+          acknowledgements: t.exportDialog.acknowledgements,
+          specificCredits: t.exportDialog.specificCredits,
         });
       } else if (format === 'txt') {
         await exportAsPlainText(biography, sections, separateFiles);

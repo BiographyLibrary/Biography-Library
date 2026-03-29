@@ -194,6 +194,10 @@ export interface Translations {
     emptySection: string;
     createdWith: string;
     allRightsReserved: string;
+    preface: string;
+    epilogue: string;
+    acknowledgements: string;
+    specificCredits: string;
   };
   sectionTitles: {
     childhood: string;
@@ -1227,6 +1231,10 @@ export const translations: Record<Language, Translations> = {
       emptySection: '(empty)',
       createdWith: 'Created with Biography Library',
       allRightsReserved: '© {year} all rights reserved',
+      preface: 'Preface',
+      epilogue: 'Epilogue',
+      acknowledgements: 'Acknowledgements',
+      specificCredits: 'Credits',
     },
     sectionTitles: {
       childhood: 'Childhood & Early Years',
@@ -2258,6 +2266,10 @@ export const translations: Record<Language, Translations> = {
       emptySection: '(vuota)',
       createdWith: 'Creato con Biography Library',
       allRightsReserved: '© {year} tutti i diritti riservati',
+      preface: 'Prefazione',
+      epilogue: 'Epilogo',
+      acknowledgements: 'Ringraziamenti',
+      specificCredits: 'Crediti',
     },
     sectionTitles: {
       childhood: 'Infanzia e Primi Anni',
@@ -3289,6 +3301,10 @@ export const translations: Record<Language, Translations> = {
       emptySection: '(vide)',
       createdWith: 'Créé avec Biography Library',
       allRightsReserved: '© {year} tous droits réservés',
+      preface: 'Préface',
+      epilogue: 'Épilogue',
+      acknowledgements: 'Remerciements',
+      specificCredits: 'Crédits',
     },
     sectionTitles: {
       childhood: 'Enfance et Premières Années',
@@ -4320,6 +4336,10 @@ export const translations: Record<Language, Translations> = {
       emptySection: '(leer)',
       createdWith: 'Erstellt mit Biography Library',
       allRightsReserved: '© {year} alle Rechte vorbehalten',
+      preface: 'Vorwort',
+      epilogue: 'Nachwort',
+      acknowledgements: 'Danksagung',
+      specificCredits: 'Quellenangaben',
     },
     sectionTitles: {
       childhood: 'Kindheit und Frühe Jahre',
