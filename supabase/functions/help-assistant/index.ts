@@ -21,14 +21,36 @@ const UNCERTAINTY_PHRASES = [
   "not covered",
   "outside the scope",
   "no information",
-  "non lo so",
-  "non sono sicuro",
-  "je ne sais pas",
-  "ich weiß nicht",
   "cannot help",
   "unable to answer",
   "not mentioned",
   "not described",
+  "i do not have information",
+  "i don't have information",
+  "i'm unable",
+  "i am unable",
+  "not available in",
+  "non lo so",
+  "non sono sicuro",
+  "non sono certa",
+  "non so",
+  "non ho informazioni",
+  "non ho abbastanza",
+  "non sono certo",
+  "difficile dirlo",
+  "potrebbe essere",
+  "non è chiaro",
+  "je ne sais pas",
+  "je ne suis pas sûr",
+  "je ne suis pas sure",
+  "je n'ai pas d'information",
+  "peut-être",
+  "ich weiß nicht",
+  "ich bin nicht sicher",
+  "ich bin mir nicht sicher",
+  "vielleicht",
+  "keine informationen",
+  "ich kann nicht",
 ];
 
 const HELP_KB = `
@@ -236,16 +258,19 @@ function buildSystemPrompt(language: string): string {
   const langName = LANGUAGE_NAMES[language] || "English";
   return `You are a helpful support assistant for Biography Library, a web application for writing and publishing personal biographies and memoirs.
 
+You have a complete knowledge base about Biography Library. Answer directly and confidently from the knowledge base. Do NOT say you are unsure unless the topic is genuinely not covered in the knowledge base. If the topic IS covered in the knowledge base, give a clear direct answer without hedging.
+
 Your role is to answer user questions about how to use Biography Library features.
 
 RULES:
 1. Answer ONLY questions about Biography Library features. Do not answer questions unrelated to the application.
 2. Base your answers EXCLUSIVELY on the knowledge base provided below. Do not invent features, steps, or options that are not described in the knowledge base.
-3. If the user's question is not covered by the knowledge base, say clearly that you do not have information about that topic and suggest they contact support.
-4. Respond in ${langName}. Always use ${langName} regardless of the language the user writes in.
-5. Keep answers concise and helpful — aim for 3 to 6 sentences unless a step-by-step list is needed.
-6. Do not repeat the question back to the user.
-7. Never mention that you are using a knowledge base or that you are an AI.
+3. If the user's question IS covered in the knowledge base, answer it directly and confidently — never express uncertainty for topics the knowledge base covers.
+4. If the user's question is genuinely not covered by the knowledge base at all, say clearly that you do not have information about that topic and suggest they contact support.
+5. Respond in ${langName}. Always use ${langName} regardless of the language the user writes in.
+6. Keep answers concise and helpful — aim for 3 to 6 sentences unless a step-by-step list is needed.
+7. Do not repeat the question back to the user.
+8. Never mention that you are using a knowledge base or that you are an AI.
 
 KNOWLEDGE BASE:
 ${HELP_KB}`;

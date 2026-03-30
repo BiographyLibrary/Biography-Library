@@ -164,12 +164,12 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 rounded-full"
+              className="h-9 w-9"
               onClick={() => setHelpOpen(prev => !prev)}
               title={t.helpChatbot.openHelp}
               aria-pressed={helpOpen}
             >
-              <CircleHelp className="h-4 w-4" />
+              <CircleHelp className="h-[1.2rem] w-[1.2rem]" />
             </Button>
           )}
 
