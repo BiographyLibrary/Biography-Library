@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { X, Send, Trash2, MessageCircleQuestion, Loader as Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/i18n-context';
+import { useAuth } from '@/lib/auth-context';
 import { askHelpBot } from '@/lib/help/help-service';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -23,6 +24,7 @@ interface HelpChatbotProps {
 
 export function HelpChatbot({ isOpen, onClose }: HelpChatbotProps) {
   const { t, language } = useTranslation();
+  const { session } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -63,8 +65,15 @@ export function HelpChatbot({ isOpen, onClose }: HelpChatbotProps) {
     setError(null);
     setLoading(true);
 
+    const accessToken = session?.access_token ?? null;
+    if (!accessToken) {
+      setError('Sessione non disponibile. Ricarica la pagina e riprova.');
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await askHelpBot(trimmed, language as 'en' | 'it' | 'fr' | 'de');
+      const response = await askHelpBot(trimmed, language as 'en' | 'it' | 'fr' | 'de', accessToken);
       const botMsg: Message = {
         id: crypto.randomUUID(),
         role: 'bot',
