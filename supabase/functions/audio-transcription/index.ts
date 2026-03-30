@@ -131,6 +131,12 @@ Deno.serve(async (req: Request) => {
         .replace(/\/openai\/chat\/completions\/?$/, "/openai/audio/transcriptions");
     }
 
+    console.log("Whisper URL:", whisperEndpoint);
+    console.log("File name:", namedFile.name);
+    console.log("File type:", namedFile.type);
+    console.log("File size:", namedFile.size);
+    console.log("Model field:", "openai/whisper-large-v3");
+
     let whisperRes: Response;
     try {
       whisperRes = await fetch(whisperEndpoint, {
