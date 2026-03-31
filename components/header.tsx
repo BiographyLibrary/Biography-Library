@@ -76,6 +76,7 @@ export function Header() {
   const isDashboardPage = pathname === '/dashboard';
   const isDark = mounted && resolvedTheme === 'dark';
   const showAdminLink = user && role && ADMIN_ROLES.includes(role);
+  const adminLinkLabel = role === 'reviewer' ? t.nav.reviewer : t.nav.admin;
 
   const showHelpButton = true;
 
@@ -104,7 +105,7 @@ export function Header() {
               )}
             >
               <Shield className="h-4 w-4" />
-              {t.nav.admin}
+              {adminLinkLabel}
             </Link>
           )}
         </div>
@@ -127,7 +128,7 @@ export function Header() {
               )}
             >
               <Shield className="h-3.5 w-3.5" />
-              {t.nav.admin}
+              {adminLinkLabel}
             </Link>
           )}
 

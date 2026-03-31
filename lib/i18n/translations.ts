@@ -22,6 +22,7 @@ export interface Translations {
     settings: string;
     logout: string;
     admin: string;
+    reviewer: string;
     notifications: string;
     darkMode: string;
     decreaseFontSize: string;
@@ -1135,6 +1136,7 @@ export const translations: Record<Language, Translations> = {
       settings: 'Settings',
       logout: 'Logout',
       admin: 'Admin',
+      reviewer: 'Reviewer',
       notifications: 'Notifications',
       darkMode: 'Dark mode',
       decreaseFontSize: 'Decrease font size',
@@ -2246,6 +2248,7 @@ export const translations: Record<Language, Translations> = {
       settings: 'Impostazioni',
       logout: 'Esci',
       admin: 'Admin',
+      reviewer: 'Revisore',
       notifications: 'Notifiche',
       darkMode: 'Modalità scura',
       decreaseFontSize: 'Riduci dimensione testo',
@@ -3357,6 +3360,7 @@ export const translations: Record<Language, Translations> = {
       settings: 'Param\u00e8tres',
       logout: 'D\u00e9connexion',
       admin: 'Admin',
+      reviewer: 'Réviseur',
       notifications: 'Notifications',
       darkMode: 'Mode sombre',
       decreaseFontSize: 'R\u00e9duire la taille du texte',
@@ -4468,6 +4472,7 @@ export const translations: Record<Language, Translations> = {
       settings: 'Einstellungen',
       logout: 'Abmelden',
       admin: 'Admin',
+      reviewer: 'Prüfer',
       notifications: 'Benachrichtigungen',
       darkMode: 'Dunkelmodus',
       decreaseFontSize: 'Schriftgr\u00f6\u00dfe verringern',
