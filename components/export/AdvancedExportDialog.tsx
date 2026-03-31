@@ -52,7 +52,7 @@ export function AdvancedExportDialog({
   isPublished = false,
 }: AdvancedExportDialogProps) {
   const { t } = useTranslation();
-  const [format, setFormat] = useState<ExportFormat>(isPublished ? 'pdf-b5-standard' : 'txt');
+  const [format, setFormat] = useState<ExportFormat>('pdf-b5-standard');
   const [contentSelection, setContentSelection] = useState<ContentSelection>('all');
   const [selectedSections, setSelectedSections] = useState<string[]>([]);
   const [includeMetadata, setIncludeMetadata] = useState(false);
@@ -254,7 +254,7 @@ export function AdvancedExportDialog({
     { value: 'docx', label: t.exportDialog.docxFormat },
   ];
 
-  const visibleFormats = allFormats.filter((f) => isPublished || !f.pdfOnly);
+  const visibleFormats = allFormats;
 
   const pdfNotReady = isPdfFormat && readinessStatus === 'not-ready';
   const downloadDisabled =
@@ -337,11 +337,11 @@ export function AdvancedExportDialog({
 
         <ScrollArea className="flex-1 pr-4">
           <div className="space-y-6 py-4">
-            {!isPublished && (
-              <div className="flex items-start gap-3 rounded-lg bg-[#C8DFBE] dark:bg-[#C8DFBE]/20 border border-[#a8c99a] dark:border-[#C8DFBE]/30 px-4 py-3">
-                <Info className="h-4 w-4 mt-0.5 shrink-0 text-[#3a6b30] dark:text-[#C8DFBE]" />
-                <p className="text-sm text-[#2a4f27] dark:text-[#C8DFBE] leading-relaxed">
-                  {t.exportDialog.pdfNotice}
+            {!isPublished && isPdfFormat && (
+              <div className="flex items-start gap-3 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 px-4 py-3">
+                <Info className="h-4 w-4 mt-0.5 shrink-0 text-amber-700 dark:text-amber-400" />
+                <p className="text-sm text-amber-800 dark:text-amber-200 leading-relaxed">
+                  {t.exportDialog.pdfDraftNotice}
                 </p>
               </div>
             )}

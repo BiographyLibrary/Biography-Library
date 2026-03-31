@@ -201,6 +201,7 @@ export interface Translations {
     acknowledgements: string;
     specificCredits: string;
     noCoverPhotoWarning: string;
+    pdfDraftNotice: string;
   };
   sectionTitles: {
     childhood: string;
@@ -1315,6 +1316,7 @@ export const translations: Record<Language, Translations> = {
       acknowledgements: 'Acknowledgements',
       specificCredits: 'Credits',
       noCoverPhotoWarning: 'A cover photo is required to generate the PDF. Upload a photo and tag it as cover in the Photos section.',
+      pdfDraftNotice: 'This is a draft proof PDF. It reflects the current state of your biography and lets you verify layout and content before submitting for review.',
     },
     sectionTitles: {
       childhood: 'Childhood & Early Years',
@@ -2427,6 +2429,7 @@ export const translations: Record<Language, Translations> = {
       acknowledgements: 'Ringraziamenti',
       specificCredits: 'Crediti',
       noCoverPhotoWarning: 'È necessaria una foto di copertina per generare il PDF. Carica una foto e contrassegnala come copertina nella sezione Foto.',
+      pdfDraftNotice: 'Questo è un PDF di bozza. Riflette lo stato attuale della biografia e ti permette di verificare il layout e il contenuto prima di inviarlo alla revisione.',
     },
     sectionTitles: {
       childhood: 'Infanzia e Primi Anni',
@@ -3539,6 +3542,7 @@ export const translations: Record<Language, Translations> = {
       acknowledgements: 'Remerciements',
       specificCredits: 'Crédits',
       noCoverPhotoWarning: 'Une photo de couverture est requise pour générer le PDF. Importez une photo et marquez-la comme couverture dans la section Photos.',
+      pdfDraftNotice: 'Il s\'agit d\'un PDF de brouillon. Il reflète l\'état actuel de votre biographie et vous permet de vérifier la mise en page et le contenu avant de soumettre pour révision.',
     },
     sectionTitles: {
       childhood: 'Enfance et Premières Années',
@@ -4651,6 +4655,7 @@ export const translations: Record<Language, Translations> = {
       acknowledgements: 'Danksagung',
       specificCredits: 'Quellenangaben',
       noCoverPhotoWarning: 'Ein Titelfoto ist erforderlich, um das PDF zu erstellen. Lade ein Foto hoch und markiere es als Titelbild im Fotos-Bereich.',
+      pdfDraftNotice: 'Dies ist ein Entwurfs-PDF. Es spiegelt den aktuellen Stand der Biografie wider und ermöglicht es dir, Layout und Inhalt vor der Einreichung zur Überprüfung zu verifizieren.',
     },
     sectionTitles: {
       childhood: 'Kindheit und Frühe Jahre',
