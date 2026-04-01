@@ -100,7 +100,6 @@ export default function BiographyEditorPage() {
   const [finalVersion, setFinalVersion] = useState<string>('');
   const [narrativeOrder, setNarrativeOrder] = useState<string[]>([]);
   const [biographyStatus, setBiographyStatus] = useState<'draft' | 'sections_complete' | 'final_version' | 'published' | 'under_review'>('draft');
-  const [isLocked, setIsLocked] = useState(false);
   const [showPublishDialog, setShowPublishDialog] = useState(false);
   const [showSubmitForReviewDialog, setShowSubmitForReviewDialog] = useState(false);
   const [isSubmittingForReview, setIsSubmittingForReview] = useState(false);
@@ -186,7 +185,6 @@ const [isPublishing, setIsPublishing] = useState(false);
         setPrivacy((data.visibility as 'private' | 'link-only' | 'public') ?? 'private');
         setStatus(data.status || 'draft');
         setBiographyStatus(data.status || 'draft');
-        setIsLocked(data.is_locked || false);
         setIsFrozen(data.is_frozen || false);
         setShareToken(data.share_token || null);
         setEditorFontSize(data.editor_font_size || 16);
@@ -987,7 +985,6 @@ const [isPublishing, setIsPublishing] = useState(false);
         .from('biographies')
         .update({
           status: 'published',
-          is_locked: true,
           published_at: new Date().toISOString(),
         })
         .eq('id', id);
@@ -995,7 +992,6 @@ const [isPublishing, setIsPublishing] = useState(false);
       if (!error) {
         await supabase.rpc('increment_biography_chapters', { biography_id: id });
         setBiographyStatus('published');
-        setIsLocked(true);
         setShowPublishDialog(false);
       }
     } catch (err) {
@@ -1055,7 +1051,7 @@ const [isPublishing, setIsPublishing] = useState(false);
     }
   }, [id, user]);
 
-  const effectivelyLocked = isLocked || isFrozen;
+  const effectivelyLocked = isFrozen;
 
   const isRevisionMode = revisionPassages.length > 0 && !revisionBannerDismissed && biographyStatus === 'draft';
   const editableSectionKeys = new Set(revisionPassages.map((p) => p.section_key));
