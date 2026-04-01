@@ -130,7 +130,7 @@ export default function SettingsPage() {
   if (!user) return null;
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-full bg-background">
       <div className="max-w-lg mx-auto px-4 py-10 space-y-8">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-foreground">
