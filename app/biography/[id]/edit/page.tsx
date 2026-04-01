@@ -104,6 +104,8 @@ export default function BiographyEditorPage() {
   const [showSubmitForReviewDialog, setShowSubmitForReviewDialog] = useState(false);
   const [isSubmittingForReview, setIsSubmittingForReview] = useState(false);
   const [submitReadinessError, setSubmitReadinessError] = useState<string | null>(null);
+  const [submitPreflightError, setSubmitPreflightError] = useState<string | null>(null);
+  const [isPreflightChecking, setIsPreflightChecking] = useState(false);
   const [aiLimitError, setAiLimitError] = useState<AiLimitError | null>(null);
   const [aiUsageRefresh, setAiUsageRefresh] = useState(0);
   const [isFrozen, setIsFrozen] = useState(false);
@@ -1051,6 +1053,24 @@ const [isPublishing, setIsPublishing] = useState(false);
     }
   }, [id, user]);
 
+  const handleOpenSubmitDialog = useCallback(async () => {
+    setSubmitPreflightError(null);
+    setIsPreflightChecking(true);
+    try {
+      const preflight = await checkPdfPreflight(id);
+      if (!preflight.ready) {
+        setSubmitPreflightError(
+          t.exportDialog.noCoverPhotoWarning ?? 'A cover photo is required before submission.'
+        );
+        return;
+      }
+      setSubmitReadinessError(null);
+      setShowSubmitForReviewDialog(true);
+    } finally {
+      setIsPreflightChecking(false);
+    }
+  }, [id, t]);
+
   const effectivelyLocked = isFrozen;
 
   const isRevisionMode = revisionPassages.length > 0 && !revisionBannerDismissed && biographyStatus === 'draft';
@@ -1199,18 +1219,29 @@ const [isPublishing, setIsPublishing] = useState(false);
                 {biographyStatus !== 'final_version' && (
                   <>
                     {biographyMode === 'freeflow' ? (
-                      <Button
-                        size="sm"
-                        onClick={() => setShowSubmitForReviewDialog(true)}
-                        disabled={!contentFreeflow.trim() || biographyStatus === 'under_review'}
-                        className="h-8 text-xs text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-                        style={{ backgroundColor: '#944454', borderColor: '#944454' }}
-                      >
-                        {language === 'it' ? 'Invia per la Revisione' :
-                         language === 'fr' ? 'Soumettre pour Révision' :
-                         language === 'de' ? 'Zur Überprüfung Einreichen' :
-                         'Submit for Review'}
-                      </Button>
+                      <div className="flex flex-col gap-1">
+                        <Button
+                          size="sm"
+                          onClick={handleOpenSubmitDialog}
+                          disabled={!contentFreeflow.trim() || biographyStatus === 'under_review' || isPreflightChecking}
+                          className="h-8 text-xs text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed gap-1.5"
+                          style={{ backgroundColor: '#944454', borderColor: '#944454' }}
+                        >
+                          {isPreflightChecking ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : null}
+                          {language === 'it' ? 'Invia per la Revisione' :
+                           language === 'fr' ? 'Soumettre pour Révision' :
+                           language === 'de' ? 'Zur Überprüfung Einreichen' :
+                           'Submit for Review'}
+                        </Button>
+                        {submitPreflightError && (
+                          <p className="text-xs text-destructive flex items-center gap-1">
+                            <TriangleAlert className="h-3 w-3 shrink-0" />
+                            {submitPreflightError}
+                          </p>
+                        )}
+                      </div>
                     ) : (
                       <>
                         <Button
@@ -1384,16 +1415,27 @@ const [isPublishing, setIsPublishing] = useState(false);
                       </Button>
                       <Button
                         size="lg"
-                        onClick={() => setShowSubmitForReviewDialog(true)}
+                        onClick={handleOpenSubmitDialog}
+                        disabled={isPreflightChecking}
                         className="gap-2"
                       >
-                        <SendIcon className="h-5 w-5" />
+                        {isPreflightChecking ? (
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                          <SendIcon className="h-5 w-5" />
+                        )}
                         {language === 'it' ? 'Invia per la Revisione' :
                          language === 'fr' ? 'Soumettre pour Révision' :
                          language === 'de' ? 'Zur Überprüfung Einreichen' :
                          'Submit for Review'}
                       </Button>
                     </div>
+                    {submitPreflightError && (
+                      <div className="flex items-center justify-center gap-1.5 text-sm text-destructive">
+                        <TriangleAlert className="h-4 w-4 shrink-0" />
+                        <span>{submitPreflightError}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -1503,19 +1545,8 @@ const [isPublishing, setIsPublishing] = useState(false);
 
       <SubmitForReviewDialog
         open={showSubmitForReviewDialog}
-        onOpenChange={async (val) => {
-          if (val) {
-            const preflight = await checkPdfPreflight(id);
-            if (!preflight.ready) {
-              setSubmitReadinessError(
-                t.exportDialog.noCoverPhotoWarning ?? 'Cover photo is required before submission.'
-              );
-            } else {
-              setSubmitReadinessError(null);
-            }
-          } else {
-            setSubmitReadinessError(null);
-          }
+        onOpenChange={(val) => {
+          if (!val) setSubmitReadinessError(null);
           setShowSubmitForReviewDialog(val);
         }}
         onConfirm={handleSubmitForReview}
