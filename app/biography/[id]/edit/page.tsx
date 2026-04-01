@@ -966,7 +966,7 @@ const [isPublishing, setIsPublishing] = useState(false);
       });
       setIsPublishing(false);
       setShowPublishDialog(false);
-      setBiographyStatus('draft');
+      setBiographyStatus('under_review');
       toast.warning(t.toast.publishUnderReview);
       return;
     }
@@ -974,6 +974,7 @@ const [isPublishing, setIsPublishing] = useState(false);
     if (checkResult.violation_level === 3) {
       await supabase.from('moderation_reports').insert({
         biography_id: id,
+        reporter_id: null,
         report_type: 'other',
         status: 'decided',
         decision: 'publish',
@@ -1496,6 +1497,9 @@ const [isPublishing, setIsPublishing] = useState(false);
             content: contentRef.current,
             content_freeflow: contentFreeflowRef.current,
             biography_mode: biographyModeRef.current,
+            narrative_order: narrativeOrder,
+            final_version: finalVersion,
+            status: biographyStatus,
             created_at: biography.created_at,
           }}
           isPublished={biographyStatus === 'published'}

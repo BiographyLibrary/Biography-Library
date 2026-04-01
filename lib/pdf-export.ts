@@ -9,6 +9,9 @@ interface BiographyData {
   content: Record<string, { text: string }>;
   content_freeflow?: string;
   biography_mode?: 'sections' | 'freeflow';
+  narrative_order?: string[] | null;
+  final_version?: string | null;
+  status?: string;
   created_at: string;
 }
 
@@ -1186,13 +1189,33 @@ export async function generateBiographyPDF(
   // ────────────────────────────────────────
 
   const getSections = () => {
+    const isFinalOrPublished =
+      biography.status === 'final_version' || biography.status === 'published';
+    if (isFinalOrPublished && biography.final_version) {
+      const text = stripHtml(biography.final_version);
+      if (text.trim()) {
+        return [{ key: 'final_version', title: biography.title, text }];
+      }
+    }
     if (biography.biography_mode === 'freeflow') {
       const rawText = biography.content_freeflow || '';
       const text = stripHtml(rawText);
       if (!text.trim()) return [];
       return [{ key: 'freeflow', title: biography.title, text }];
     }
-    return BIOGRAPHY_SECTIONS
+    const narrativeOrder = Array.isArray(biography.narrative_order) && biography.narrative_order.length > 0
+      ? biography.narrative_order
+      : null;
+    const ordered = narrativeOrder
+      ? [...BIOGRAPHY_SECTIONS].sort((a, b) => {
+          const ai = narrativeOrder.indexOf(a.key);
+          const bi = narrativeOrder.indexOf(b.key);
+          const aIdx = ai === -1 ? narrativeOrder.length : ai;
+          const bIdx = bi === -1 ? narrativeOrder.length : bi;
+          return aIdx - bIdx;
+        })
+      : BIOGRAPHY_SECTIONS;
+    return ordered
       .filter((s) => stripHtml(biography.content[s.key]?.text ?? '').trim())
       .map((s) => ({
         key: s.key,
