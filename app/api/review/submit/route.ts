@@ -349,6 +349,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
     }
 
+    const { data: coverMedia } = await serviceClient
+      .from('biography_media')
+      .select('id')
+      .eq('biography_id', biographyId)
+      .eq('layout', 'cover')
+      .limit(1)
+      .maybeSingle();
+
+    if (!coverMedia) {
+      return NextResponse.json(
+        { error: 'missing_cover', message: 'Cover photo required before submission' },
+        { status: 400 }
+      );
+    }
+
     const previousRejection = await fetchPreviousRejectionReport(serviceClient, biographyId);
     const isRescreen = previousRejection !== null;
 
