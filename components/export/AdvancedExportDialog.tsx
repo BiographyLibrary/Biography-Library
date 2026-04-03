@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { BIOGRAPHY_SECTIONS } from '@/lib/editor-constants';
 import { generateBiographyPDF, checkBiographyPdfReadiness, type PdfReadinessIssue } from '@/lib/pdf-export';
-import { exportAsPlainText, exportAsRTF, exportAsDOCX } from '@/lib/export-utils';
+import { exportAsPlainText, exportAsDOCX } from '@/lib/export-utils';
 import { useTranslation } from '@/lib/i18n/i18n-context';
 import { supabase } from '@/lib/supabase';
 import { format as formatDate } from 'date-fns';
@@ -54,7 +54,7 @@ interface AdvancedExportDialogProps {
   isPublished?: boolean;
 }
 
-type ExportFormat = 'pdf-b5-standard' | 'txt' | 'rtf' | 'docx';
+type ExportFormat = 'pdf-b5-standard' | 'txt' | 'docx';
 type ContentSelection = 'all' | 'completed' | 'custom';
 type ReadinessStatus = 'checking' | 'ready' | 'not-ready';
 
@@ -217,8 +217,6 @@ export function AdvancedExportDialog({
           );
         } else if (format === 'txt') {
           await exportAsPlainText(finalBio, [], false);
-        } else if (format === 'rtf') {
-          await exportAsRTF(finalBio, [], false);
         } else if (format === 'docx') {
           await exportAsDOCX(finalBio, [], false);
         }
@@ -244,8 +242,6 @@ export function AdvancedExportDialog({
           );
         } else if (format === 'txt') {
           await exportAsPlainText(biography, [], false);
-        } else if (format === 'rtf') {
-          await exportAsRTF(biography, [], false);
         } else if (format === 'docx') {
           await exportAsDOCX(biography, [], false);
         }
@@ -303,8 +299,6 @@ export function AdvancedExportDialog({
         );
       } else if (format === 'txt') {
         await exportAsPlainText(biography, sections, separateFiles);
-      } else if (format === 'rtf') {
-        await exportAsRTF(biography, sections, separateFiles);
       } else if (format === 'docx') {
         await exportAsDOCX(biography, sections, separateFiles);
       }
@@ -417,11 +411,10 @@ export function AdvancedExportDialog({
     }
   };
 
-  const allFormats: { value: ExportFormat; label: string; pdfOnly?: boolean }[] = [
+  const allFormats: { value: ExportFormat; label: string; description?: string; pdfOnly?: boolean }[] = [
     { value: 'pdf-b5-standard', label: t.exportDialog.pdfB5Standard, pdfOnly: true },
-    { value: 'txt', label: t.exportDialog.txtFormat },
-    { value: 'rtf', label: t.exportDialog.rtfFormat },
-    { value: 'docx', label: t.exportDialog.docxFormat },
+    { value: 'txt', label: 'Plain Text (.txt)', description: 'Plain text, no formatting preserved' },
+    { value: 'docx', label: 'Word Document (.docx)', description: 'Text with bold and italic preserved. Compatible with Word, Pages, Google Docs.' },
   ];
 
   const visibleFormats = allFormats;
@@ -541,11 +534,16 @@ export function AdvancedExportDialog({
               <Label className="text-base font-semibold">{t.exportDialog.formatLabel}</Label>
               <RadioGroup value={format} onValueChange={(v) => setFormat(v as ExportFormat)}>
                 {visibleFormats.map((fmt) => (
-                  <div key={fmt.value} className="flex items-center space-x-2">
-                    <RadioGroupItem value={fmt.value} id={`format-${fmt.value}`} />
-                    <Label htmlFor={`format-${fmt.value}`} className="font-normal cursor-pointer">
-                      {fmt.label}
-                    </Label>
+                  <div key={fmt.value} className="flex items-start space-x-2">
+                    <RadioGroupItem value={fmt.value} id={`format-${fmt.value}`} className="mt-0.5" />
+                    <div className="flex flex-col">
+                      <Label htmlFor={`format-${fmt.value}`} className="font-normal cursor-pointer">
+                        {fmt.label}
+                      </Label>
+                      {fmt.description && (
+                        <span className="text-xs text-muted-foreground">{fmt.description}</span>
+                      )}
+                    </div>
                   </div>
                 ))}
               </RadioGroup>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { buildBiographyTxtContent, buildBiographyDocxBuffer } from '@/lib/export-server';
 
 const INFOMANIAK_ENDPOINT = process.env.INFOMANIAK_AI_ENDPOINT ?? '';
 const INFOMANIAK_TOKEN = process.env.INFOMANIAK_AI_TOKEN ?? '';
@@ -279,6 +280,82 @@ async function pickReviewer(supabase: AnyClient): Promise<string | null> {
   return loads[0].id;
 }
 
+async function generateAndStoreExports(
+  supabase: AnyClient,
+  biographyId: string
+): Promise<void> {
+  try {
+    const { data: bio } = await supabase
+      .from('biographies')
+      .select('title, author_name, created_at, content_freeflow, biography_mode')
+      .eq('id', biographyId)
+      .maybeSingle();
+
+    if (!bio) return;
+
+    const { data: sectionRows } = await supabase
+      .from('biography_sections')
+      .select('section_key, content')
+      .eq('biography_id', biographyId)
+      .not('content', 'is', null)
+      .order('section_key', { ascending: true });
+
+    const isFreeFlow = (bio as any).biography_mode === 'freeflow';
+
+    const sections: Array<{ title: string; content: string }> = isFreeFlow
+      ? [{ title: (bio as any).title, content: (bio as any).content_freeflow ?? '' }]
+      : ((sectionRows as any[]) ?? [])
+          .filter((r: any) => r.content?.trim())
+          .map((r: any) => ({ title: r.section_key, content: r.content }));
+
+    const title: string = (bio as any).title ?? '';
+    const authorName: string = (bio as any).author_name ?? '';
+    const createdAt: string = (bio as any).created_at ?? new Date().toISOString();
+
+    const txtContent = buildBiographyTxtContent(title, authorName, createdAt, sections);
+    const txtBytes = Buffer.from(txtContent, 'utf-8');
+    const docxBuffer = await buildBiographyDocxBuffer(title, authorName, createdAt, sections);
+
+    const txtPath = `biography-exports/${biographyId}/biography.txt`;
+    const docxPath = `biography-exports/${biographyId}/biography.docx`;
+
+    const [txtUpload, docxUpload] = await Promise.all([
+      supabase.storage.from('biography-exports').upload(txtPath, txtBytes, {
+        contentType: 'text/plain; charset=utf-8',
+        upsert: true,
+      }),
+      supabase.storage.from('biography-exports').upload(docxPath, docxBuffer, {
+        contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        upsert: true,
+      }),
+    ]);
+
+    if (txtUpload.error) {
+      console.error('[review/submit] TXT upload error:', txtUpload.error);
+    }
+    if (docxUpload.error) {
+      console.error('[review/submit] DOCX upload error:', docxUpload.error);
+    }
+
+    const { data: txtUrlData } = supabase.storage
+      .from('biography-exports')
+      .getPublicUrl(txtPath);
+    const { data: docxUrlData } = supabase.storage
+      .from('biography-exports')
+      .getPublicUrl(docxPath);
+
+    await supabase
+      .from('biographies')
+      .update({
+        export_txt_url: txtUrlData?.publicUrl ?? null,
+        export_docx_url: docxUrlData?.publicUrl ?? null,
+      })
+      .eq('id', biographyId);
+  } catch (err) {
+    console.error('[review/submit] Auto-export failed (non-blocking):', err);
+  }
+}
+
 export async function POST(req: NextRequest) {
   const timestamp = new Date().toISOString();
 
@@ -356,6 +433,10 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    generateAndStoreExports(serviceClient, biographyId).catch((err) =>
+      console.error('[review/submit] generateAndStoreExports uncaught:', err)
+    );
 
     const previousRejection = await fetchPreviousRejectionReport(serviceClient, biographyId);
     const isRescreen = previousRejection !== null;

@@ -407,6 +407,7 @@ export interface Translations {
     downloadPdf: string;
     downloadRtf: string;
     downloadTxt: string;
+    downloadDocx: string;
     by: string;
     preservingStories: string;
     tokenMissing: string;
@@ -1530,6 +1531,7 @@ export const translations: Record<Language, Translations> = {
       downloadPdf: 'Download PDF',
       downloadRtf: 'Download RTF',
       downloadTxt: 'Download TXT',
+      downloadDocx: 'Download DOCX',
       by: 'By',
       preservingStories: 'Biography Library - Preserving Stories in Switzerland',
       tokenMissing: 'Access token is missing',
@@ -2651,6 +2653,7 @@ export const translations: Record<Language, Translations> = {
       downloadPdf: 'Scarica PDF',
       downloadRtf: 'Scarica RTF',
       downloadTxt: 'Scarica TXT',
+      downloadDocx: 'Scarica DOCX',
       by: 'Di',
       preservingStories: 'Biography Library - Preservare Storie in Svizzera',
       tokenMissing: 'Token di accesso mancante',
@@ -3772,6 +3775,7 @@ export const translations: Record<Language, Translations> = {
       downloadPdf: 'T\u00e9l\u00e9charger le PDF',
       downloadRtf: 'T\u00e9l\u00e9charger RTF',
       downloadTxt: 'T\u00e9l\u00e9charger TXT',
+      downloadDocx: 'T\u00e9l\u00e9charger DOCX',
       by: 'Par',
       preservingStories: 'Biography Library - Pr\u00e9server des Histoires en Suisse',
       tokenMissing: 'Jeton d\'acc\u00e8s manquant',
@@ -4893,6 +4897,7 @@ export const translations: Record<Language, Translations> = {
       downloadPdf: 'PDF Herunterladen',
       downloadRtf: 'RTF herunterladen',
       downloadTxt: 'TXT herunterladen',
+      downloadDocx: 'DOCX herunterladen',
       by: 'Von',
       preservingStories: 'Biography Library - Geschichten Bewahren in der Schweiz',
       tokenMissing: 'Zugriffstoken fehlt',
