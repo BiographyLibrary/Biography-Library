@@ -127,6 +127,8 @@ export interface Translations {
     progress: string;
     statusPublished: string;
     statusUnderReview: string;
+    statusPdfDraft: string;
+    statusLockedPendingScreening: string;
     underReviewMessage: string;
     untitledBiography: string;
     goToWorkspace: string;
@@ -238,6 +240,8 @@ export interface Translations {
     draftIterationNone: string;
     draftIterationCurrent: string;
     draftLimitReached: string;
+    /** Must enter pdf_draft status before watermarked draft downloads */
+    draftPhaseRequiredBeforeDraft: string;
     finalDraftConfirmTitle: string;
     finalDraftConfirmDescription: string;
   };
@@ -359,6 +363,12 @@ export interface Translations {
     revisionFlaggedPassages: string;
     revisionReviewerNote: string;
     revisionDismiss: string;
+    publicationStartPdfButton: string;
+    publicationPdfDraftHint: string;
+    publicationApproveFinalButton: string;
+    publicationExportPdf: string;
+    /** Hint when user can still use legacy “submit for review” from draft */
+    publicationLegacySubmitHint: string;
   };
   formatting: {
     bold: string;
@@ -1001,6 +1011,8 @@ export interface Translations {
     bioStatusDraft: string;
     bioStatusPublished: string;
     bioStatusUnderReview: string;
+    bioStatusPdfDraft: string;
+    bioStatusLockedPendingScreening: string;
     bioStatusRemoved: string;
     bioTypeAll: string;
     bioTypeAutobiography: string;
@@ -1286,6 +1298,8 @@ export const translations: Record<Language, Translations> = {
       progress: 'Progress',
       statusPublished: 'Published',
       statusUnderReview: 'Under review',
+      statusPdfDraft: 'PDF draft',
+      statusLockedPendingScreening: 'Pending screening',
       underReviewMessage: 'Our team is reviewing your biography. You will be notified of the outcome.',
       untitledBiography: 'Untitled Biography',
       goToWorkspace: 'Go to Workspace',
@@ -1397,6 +1411,8 @@ export const translations: Record<Language, Translations> = {
       draftIterationNone: 'No draft PDF generated yet. This will be Draft 1 of 3.',
       draftIterationCurrent: 'Draft {n} of {max} already generated. Exporting will create Draft {next}.',
       draftLimitReached: 'You have reached the maximum of 3 draft PDFs. Submit for review before generating additional drafts.',
+      draftPhaseRequiredBeforeDraft:
+        'Start the PDF review phase from the editor (Start PDF review) before downloading watermarked drafts.',
       finalDraftConfirmTitle: 'Generate Third and Final Draft',
       finalDraftConfirmDescription: 'This is your third and final draft. No further draft revisions will be allowed after this export. Make sure your biography is ready before proceeding.',
     },
@@ -1518,6 +1534,13 @@ export const translations: Record<Language, Translations> = {
       revisionFlaggedPassages: 'Flagged passages',
       revisionReviewerNote: 'Reviewer note',
       revisionDismiss: 'Dismiss',
+      publicationStartPdfButton: 'Start PDF review',
+      publicationPdfDraftHint:
+        'Download up to three watermarked PDFs from Export, then approve the final version to run automatic screening.',
+      publicationApproveFinalButton: 'Approve final PDF & run screening',
+      publicationExportPdf: 'Export PDF',
+      publicationLegacySubmitHint:
+        'For the full print-ready path (PDF drafts → automatic screening), use “Final Review with AI” first, then Start PDF review. You can still submit from here for a quicker check without the PDF phase.',
     },
     formatting: {
       bold: 'Bold',
@@ -2160,6 +2183,8 @@ export const translations: Record<Language, Translations> = {
       bioStatusDraft: 'Draft',
       bioStatusPublished: 'Published',
       bioStatusUnderReview: 'Under Review',
+      bioStatusPdfDraft: 'PDF draft',
+      bioStatusLockedPendingScreening: 'Pending screening',
       bioStatusRemoved: 'Removed',
       bioTypeAll: 'All types',
       bioTypeAutobiography: 'Autobiography',
@@ -2443,6 +2468,8 @@ export const translations: Record<Language, Translations> = {
       progress: 'Progresso',
       statusPublished: 'Pubblicata',
       statusUnderReview: 'In revisione',
+      statusPdfDraft: 'Bozza PDF',
+      statusLockedPendingScreening: 'In attesa di screening',
       underReviewMessage: 'Il nostro team sta esaminando la tua biografia. Sarai informato dell\'esito.',
       untitledBiography: 'Biografia senza titolo',
       goToWorkspace: 'Vai al Workspace',
@@ -2554,6 +2581,8 @@ export const translations: Record<Language, Translations> = {
       draftIterationNone: 'Nessun PDF di bozza generato ancora. Questo sarà la Bozza 1 di 3.',
       draftIterationCurrent: 'Bozza {n} di {max} già generata. Esportando si creerà la Bozza {next}.',
       draftLimitReached: 'Hai raggiunto il limite massimo di 3 bozze PDF. Invia per revisione prima di generare ulteriori bozze.',
+      draftPhaseRequiredBeforeDraft:
+        'Avvia la fase di revisione PDF dall\'editor (Avvia revisione PDF) prima di scaricare bozze con filigrana.',
       finalDraftConfirmTitle: 'Genera la Terza e Ultima Bozza',
       finalDraftConfirmDescription: 'Questa è la tua terza e ultima bozza. Non sarà possibile generare ulteriori bozze dopo questa esportazione. Assicurati che la tua biografia sia pronta prima di procedere.',
     },
@@ -2675,6 +2704,13 @@ export const translations: Record<Language, Translations> = {
       revisionFlaggedPassages: 'Passaggi segnalati',
       revisionReviewerNote: 'Nota del revisore',
       revisionDismiss: 'Chiudi',
+      publicationStartPdfButton: 'Avvia revisione PDF',
+      publicationPdfDraftHint:
+        'Scarica fino a tre PDF con filigrana da Esporta, poi approva la versione finale per avviare lo screening automatico.',
+      publicationApproveFinalButton: 'Approva PDF finale e avvia screening',
+      publicationExportPdf: 'Esporta PDF',
+      publicationLegacySubmitHint:
+        'Per il percorso completo pronto per la stampa (bozze PDF → screening automatico), usa prima “Revisione Finale con IA”, poi Avvia revisione PDF. Puoi ancora inviare da qui per un controllo più rapido senza fase PDF.',
     },
     formatting: {
       bold: 'Grassetto',
@@ -3317,6 +3353,8 @@ export const translations: Record<Language, Translations> = {
       bioStatusDraft: 'Bozza',
       bioStatusPublished: 'Pubblicata',
       bioStatusUnderReview: 'In revisione',
+      bioStatusPdfDraft: 'Bozza PDF',
+      bioStatusLockedPendingScreening: 'In attesa di screening',
       bioStatusRemoved: 'Rimossa',
       bioTypeAll: 'Tutti i tipi',
       bioTypeAutobiography: 'Autobiografia',
@@ -3600,6 +3638,8 @@ export const translations: Record<Language, Translations> = {
       progress: 'Progrès',
       statusPublished: 'Publié',
       statusUnderReview: 'En cours d\'examen',
+      statusPdfDraft: 'Brouillon PDF',
+      statusLockedPendingScreening: 'En attente de filtrage',
       underReviewMessage: 'Notre équipe examine votre biographie. Vous serez informé du résultat.',
       untitledBiography: 'Biographie sans titre',
       goToWorkspace: 'Aller au Workspace',
@@ -3711,6 +3751,8 @@ export const translations: Record<Language, Translations> = {
       draftIterationNone: 'Aucun PDF de brouillon généré pour l\'instant. Ce sera le Brouillon 1 sur 3.',
       draftIterationCurrent: 'Brouillon {n} sur {max} déjà généré. L\'exportation créera le Brouillon {next}.',
       draftLimitReached: 'Vous avez atteint le maximum de 3 brouillons PDF. Soumettez pour révision avant de générer d\'autres brouillons.',
+      draftPhaseRequiredBeforeDraft:
+        'Démarrez la phase de révision PDF depuis l’éditeur (Démarrer la révision PDF) avant de télécharger des brouillons filigranés.',
       finalDraftConfirmTitle: 'Générer le Troisième et Dernier Brouillon',
       finalDraftConfirmDescription: 'Il s\'agit de votre troisième et dernier brouillon. Aucune révision supplémentaire ne sera autorisée après cette exportation. Assurez-vous que votre biographie est prête avant de continuer.',
     },
@@ -3832,6 +3874,13 @@ export const translations: Record<Language, Translations> = {
       revisionFlaggedPassages: 'Passages signalés',
       revisionReviewerNote: 'Note du réviseur',
       revisionDismiss: 'Fermer',
+      publicationStartPdfButton: 'Démarrer la révision PDF',
+      publicationPdfDraftHint:
+        'Téléchargez jusqu’à trois PDF filigranés depuis Exporter, puis approuvez la version finale pour lancer le filtrage automatique.',
+      publicationApproveFinalButton: 'Approuver le PDF final et lancer le filtrage',
+      publicationExportPdf: 'Exporter PDF',
+      publicationLegacySubmitHint:
+        'Pour le parcours prêt à l’impression (brouillons PDF → filtrage automatique), utilisez d’abord « Révision finale avec IA », puis Démarrer la révision PDF. Vous pouvez encore soumettre ici pour un contrôle plus rapide sans phase PDF.',
     },
     formatting: {
       bold: 'Gras',
@@ -4474,6 +4523,8 @@ export const translations: Record<Language, Translations> = {
       bioStatusDraft: 'Brouillon',
       bioStatusPublished: 'Publiée',
       bioStatusUnderReview: 'En révision',
+      bioStatusPdfDraft: 'Brouillon PDF',
+      bioStatusLockedPendingScreening: 'Filtrage en attente',
       bioStatusRemoved: 'Supprimée',
       bioTypeAll: 'Tous les types',
       bioTypeAutobiography: 'Autobiographie',
@@ -4757,6 +4808,8 @@ export const translations: Record<Language, Translations> = {
       progress: 'Fortschritt',
       statusPublished: 'Veröffentlicht',
       statusUnderReview: 'In Prüfung',
+      statusPdfDraft: 'PDF-Entwurf',
+      statusLockedPendingScreening: 'Screening ausstehend',
       underReviewMessage: 'Unser Team prüft Ihre Biografie. Sie werden über das Ergebnis informiert.',
       untitledBiography: 'Biografie ohne Titel',
       goToWorkspace: 'Zum Workspace',
@@ -4868,6 +4921,8 @@ export const translations: Record<Language, Translations> = {
       draftIterationNone: 'Noch kein Entwurfs-PDF generiert. Dies wird Entwurf 1 von 3 sein.',
       draftIterationCurrent: 'Entwurf {n} von {max} bereits generiert. Beim Exportieren wird Entwurf {next} erstellt.',
       draftLimitReached: 'Du hast das Maximum von 3 Entwurfs-PDFs erreicht. Reiche zur Überprüfung ein, bevor du weitere Entwürfe generierst.',
+      draftPhaseRequiredBeforeDraft:
+        'Starte zuerst die PDF-Prüfphase im Editor (PDF-Prüfung starten), bevor du Entwürfe mit Wasserzeichen herunterlädst.',
       finalDraftConfirmTitle: 'Dritten und letzten Entwurf generieren',
       finalDraftConfirmDescription: 'Dies ist dein dritter und letzter Entwurf. Nach diesem Export sind keine weiteren Entwurfsrevisionen möglich. Stelle sicher, dass deine Biografie bereit ist, bevor du fortfährst.',
     },
@@ -4989,6 +5044,13 @@ export const translations: Record<Language, Translations> = {
       revisionFlaggedPassages: 'Markierte Passagen',
       revisionReviewerNote: 'Hinweis des Prüfers',
       revisionDismiss: 'Schließen',
+      publicationStartPdfButton: 'PDF-Prüfung starten',
+      publicationPdfDraftHint:
+        'Laden Sie bis zu drei PDFs mit Wasserzeichen über Export herunter, und genehmigen Sie dann die Endversion für das automatische Screening.',
+      publicationApproveFinalButton: 'End-PDF genehmigen & Screening starten',
+      publicationExportPdf: 'PDF exportieren',
+      publicationLegacySubmitHint:
+        'Für den vollen druckfertigen Ablauf (PDF-Entwürfe → automatisches Screening) nutzen Sie zuerst „Abschließende Überprüfung mit KI“, dann „PDF-Prüfung starten“. Sie können hier weiterhin zur schnelleren Prüfung ohne PDF-Phase einreichen.',
     },
     formatting: {
       bold: 'Fett',
@@ -5631,6 +5693,8 @@ export const translations: Record<Language, Translations> = {
       bioStatusDraft: 'Entwurf',
       bioStatusPublished: 'Veröffentlicht',
       bioStatusUnderReview: 'In Prüfung',
+      bioStatusPdfDraft: 'PDF-Entwurf',
+      bioStatusLockedPendingScreening: 'Screening ausstehend',
       bioStatusRemoved: 'Entfernt',
       bioTypeAll: 'Alle Typen',
       bioTypeAutobiography: 'Autobiografie',

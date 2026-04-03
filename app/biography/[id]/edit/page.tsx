@@ -41,7 +41,8 @@ import {
 import { toast } from 'sonner';
 import { AiUsageIndicator } from '@/components/editor/ai-usage-indicator';
 import { recommendNextSection, type SectionRecommendation } from '@/lib/ai/next-section-recommender';
-import type { Biography } from '@/lib/biographies';
+import type { Biography, BiographyPublicationStatus } from '@/lib/biographies';
+import { isBiographyPublicationStatus, isReviewOrScreeningLockStatus } from '@/lib/publication-state';
 import { generateBiographyPDF, checkBiographyPdfReadiness, checkPdfPreflight, getPdfReadinessMessage } from '@/lib/pdf-export';
 import { AdvancedExportDialog } from '@/components/export/AdvancedExportDialog';
 import { useTranslation } from '@/lib/i18n/i18n-context';
@@ -101,7 +102,9 @@ export default function BiographyEditorPage() {
   const [showFinalReview, setShowFinalReview] = useState(false);
   const [finalVersion, setFinalVersion] = useState<string>('');
   const [narrativeOrder, setNarrativeOrder] = useState<string[]>([]);
-  const [biographyStatus, setBiographyStatus] = useState<'draft' | 'sections_complete' | 'final_version' | 'published' | 'under_review'>('draft');
+  const [biographyStatus, setBiographyStatus] = useState<BiographyPublicationStatus>('draft');
+  const [pdfDraftIteration, setPdfDraftIteration] = useState<number | null>(null);
+  const [publicationActionLoading, setPublicationActionLoading] = useState<'start' | 'approve' | null>(null);
   const [showPublishDialog, setShowPublishDialog] = useState(false);
   const [showSubmitForReviewDialog, setShowSubmitForReviewDialog] = useState(false);
   const [isSubmittingForReview, setIsSubmittingForReview] = useState(false);
@@ -198,7 +201,12 @@ const [isPublishing, setIsPublishing] = useState(false);
         setTitle(data.title);
         setPrivacy((data.visibility as 'private' | 'link-only' | 'public') ?? 'private');
         setStatus(data.status || 'draft');
-        setBiographyStatus(data.status || 'draft');
+        setBiographyStatus(
+          isBiographyPublicationStatus(data.status) ? data.status : 'draft'
+        );
+        setPdfDraftIteration(
+          typeof data.pdf_draft_iteration === 'number' ? data.pdf_draft_iteration : null
+        );
         setIsFrozen(data.is_frozen || false);
         setShareToken(data.share_token || null);
         setEditorFontSize(data.editor_font_size || 16);
@@ -1172,7 +1180,157 @@ const [isPublishing, setIsPublishing] = useState(false);
     }
   }, [id, t]);
 
-  const effectivelyLocked = isFrozen;
+  const handleStartPdfDraft = useCallback(async () => {
+    if (!user) return;
+    setPublicationActionLoading('start');
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch('/api/publication/start-pdf-draft', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+        },
+        body: JSON.stringify({ biographyId: id }),
+      });
+      const payload = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(
+          typeof payload?.message === 'string'
+            ? payload.message
+            : payload?.error === 'missing_cover'
+              ? t.exportDialog.noCoverPhotoWarning
+              : 'Request failed'
+        );
+        return;
+      }
+      setBiographyStatus('pdf_draft');
+      setPdfDraftIteration(null);
+      setBiography((prev) =>
+        prev
+          ? {
+              ...prev,
+              status: 'pdf_draft',
+              pdf_draft_started_at: payload.pdf_draft_started_at ?? prev.pdf_draft_started_at,
+              pdf_draft_iteration: null,
+            }
+          : prev
+      );
+      toast.success(
+        language === 'it'
+          ? 'Fase bozze PDF avviata.'
+          : language === 'fr'
+            ? 'Phase de brouillons PDF démarrée.'
+            : language === 'de'
+              ? 'PDF-Entwurfsphase gestartet.'
+              : 'PDF draft phase started.'
+      );
+    } catch (e) {
+      console.error(e);
+      toast.error('Request failed');
+    } finally {
+      setPublicationActionLoading(null);
+    }
+  }, [user, id, t.exportDialog.noCoverPhotoWarning, language]);
+
+  const handleApproveFinalPdf = useCallback(async () => {
+    if (!user?.id) return;
+    setPublicationActionLoading('approve');
+    setSubmitReadinessError(null);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch('/api/publication/approve-final-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+        },
+        body: JSON.stringify({ biographyId: id }),
+      });
+      const apiResult = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(
+          typeof apiResult?.message === 'string'
+            ? apiResult.message
+            : apiResult?.error === 'drafts_required'
+              ? t.editor.publicationPdfDraftHint
+              : apiResult?.error === 'missing_cover'
+                ? t.exportDialog.noCoverPhotoWarning
+                : apiResult?.error === 'final_pdf_failed'
+                  ? (typeof apiResult?.message === 'string' ? apiResult.message : 'Request failed')
+                  : 'Request failed'
+        );
+        return;
+      }
+
+      const finalPdfUrlFromApi =
+        typeof (apiResult as { finalPdfUrl?: string }).finalPdfUrl === 'string'
+          ? (apiResult as { finalPdfUrl: string }).finalPdfUrl
+          : null;
+
+      setRevisionPassages([]);
+      setRevisionNote(null);
+      setRevisionBannerDismissed(false);
+
+      if (apiResult.result === 'published') {
+        setBiographyStatus('published');
+        setAiScreeningResult('passed');
+        setPdfDraftIteration(null);
+        setBiography((prev) =>
+          prev
+            ? {
+                ...prev,
+                status: 'published',
+                published_at: new Date().toISOString(),
+                ai_screening_status: 'passed',
+                pdf_draft_iteration: null,
+                final_pdf_url: finalPdfUrlFromApi ?? prev.final_pdf_url,
+              }
+            : prev
+        );
+        toast.success(
+          language === 'it'
+            ? 'Pubblicata dopo lo screening automatico.'
+            : language === 'fr'
+              ? 'Publiée après filtrage automatique.'
+              : language === 'de'
+                ? 'Nach automatischem Screening veröffentlicht.'
+                : 'Published after automatic screening.'
+        );
+        return;
+      }
+
+      if (apiResult.result === 'under_review') {
+        const d = apiResult.screeningDetail as string | undefined;
+        setBiographyStatus('under_review');
+        setPdfDraftIteration(null);
+        setBiography((prev) =>
+          prev
+            ? {
+                ...prev,
+                status: 'under_review',
+                ai_screening_status:
+                  d === 'ai_error' || d === 'parse_error' ? d : 'flagged',
+                pdf_draft_iteration: null,
+                final_pdf_url: finalPdfUrlFromApi ?? prev.final_pdf_url,
+              }
+            : prev
+        );
+        if (d === 'ai_error' || d === 'parse_error') {
+          setAiScreeningResult(d as 'ai_error' | 'parse_error');
+        } else {
+          setAiScreeningResult('flagged');
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Request failed');
+    } finally {
+      setPublicationActionLoading(null);
+    }
+  }, [user, id, t.editor.publicationPdfDraftHint, t.exportDialog.noCoverPhotoWarning, language]);
+
+  const effectivelyLocked = isFrozen || biographyStatus === 'locked_pending_screening';
 
   const isRevisionMode = revisionPassages.length > 0 && !revisionBannerDismissed && biographyStatus === 'draft';
   const editableSectionKeys = new Set(revisionPassages.map((p) => p.section_key));
@@ -1221,7 +1379,52 @@ const [isPublishing, setIsPublishing] = useState(false);
         </div>
       )}
 
-      {aiScreeningResult === 'pending' && biographyStatus === 'under_review' && (
+      {biographyStatus === 'pdf_draft' && !isFrozen && (
+        <div className="shrink-0 bg-brand-mustardLight/40 border-b border-brand-mustardDark/35 px-4 py-3 dark:bg-brand-mustardDark/15 dark:border-brand-mustardDark/45">
+          <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <p className="text-sm font-medium text-brand-ink dark:text-brand-beigeLight">
+                {t.editor.publicationPdfDraftHint}
+              </p>
+              <p className="text-xs text-brand-ink/80 dark:text-brand-beigeLight/85 mt-1">
+                {language === 'it'
+                  ? `Bozze generate: ${pdfDraftIteration ?? 0} / 3`
+                  : language === 'fr'
+                    ? `Brouillons générés : ${pdfDraftIteration ?? 0} / 3`
+                    : language === 'de'
+                      ? `Entwürfe erstellt: ${pdfDraftIteration ?? 0} / 3`
+                      : `Drafts completed: ${pdfDraftIteration ?? 0} / 3`}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 shrink-0">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+                onClick={() => setShowExportDialog(true)}
+              >
+                {t.editor.publicationExportPdf}
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                className="gap-1.5 bg-brand-wine hover:bg-brand-wine/90 text-white"
+                disabled={publicationActionLoading !== null}
+                onClick={() => void handleApproveFinalPdf()}
+              >
+                {publicationActionLoading === 'approve' ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : null}
+                {t.editor.publicationApproveFinalButton}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {aiScreeningResult === 'pending' &&
+        (biographyStatus === 'under_review' || biographyStatus === 'locked_pending_screening') && (
         <div className="shrink-0 bg-brand-blue/25 border-b border-brand-blue/50 px-4 py-3 dark:bg-brand-blue/15 dark:border-brand-blue/40">
           <div className="max-w-5xl mx-auto flex items-center gap-3">
             <Loader2 className="h-4 w-4 text-brand-ink dark:text-brand-beigeLight animate-spin shrink-0" />
@@ -1268,7 +1471,8 @@ const [isPublishing, setIsPublishing] = useState(false);
         </div>
       )}
 
-      {aiScreeningResult === 'flagged' && biographyStatus === 'under_review' && (
+      {aiScreeningResult === 'flagged' &&
+        (biographyStatus === 'under_review' || biographyStatus === 'locked_pending_screening') && (
         <div className="shrink-0 bg-brand-mustardLight/45 border-b border-brand-mustardDark/40 px-4 py-3 dark:bg-brand-mustardDark/20 dark:border-brand-mustardDark/50">
           <div className="max-w-5xl mx-auto flex items-start gap-3">
             <TriangleAlert className="h-4 w-4 text-brand-mustardDark dark:text-brand-mustardLight shrink-0 mt-0.5" />
@@ -1291,7 +1495,7 @@ const [isPublishing, setIsPublishing] = useState(false);
       )}
 
       {(aiScreeningResult === 'ai_error' || aiScreeningResult === 'parse_error') &&
-        biographyStatus === 'under_review' && (
+        (biographyStatus === 'under_review' || biographyStatus === 'locked_pending_screening') && (
           <div className="shrink-0 bg-brand-wine/10 border-b border-brand-wine/35 px-4 py-3 dark:bg-brand-wine/20 dark:border-brand-wine/45">
             <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
               <div className="flex items-start gap-3">
@@ -1450,10 +1654,10 @@ const [isPublishing, setIsPublishing] = useState(false);
             onTogglePhotosPanel={() => setShowPhotosPanel(!showPhotosPanel)}
             onToggleImportText={() => setShowSidebarImport(true)}
             onToggleExportText={() => {
-              if (biographyStatus === 'under_review') return;
+              if (isReviewOrScreeningLockStatus(biographyStatus)) return;
               setShowExportDialog(true);
             }}
-            exportDisabled={biographyStatus === 'under_review'}
+            exportDisabled={isReviewOrScreeningLockStatus(biographyStatus)}
             showNotesPanel={showGlobalNotesPanel}
             showPhotosPanel={showPhotosPanel}
             completedSections={completedSections}
@@ -1472,14 +1676,20 @@ const [isPublishing, setIsPublishing] = useState(false);
           <div className="flex-1 flex flex-col min-w-0">
             {biographyStatus !== 'published' && !isFrozen && (
               <div className="border-b border-border/50 px-4 py-2 bg-card/30 flex flex-wrap items-center gap-2 shrink-0">
-                {biographyStatus !== 'final_version' && (
+                {biographyStatus !== 'final_version' &&
+                  biographyStatus !== 'pdf_draft' &&
+                  biographyStatus !== 'locked_pending_screening' && (
                   <>
                     {biographyMode === 'freeflow' ? (
                       <div className="flex flex-col gap-1">
                         <Button
                           size="sm"
                           onClick={handleOpenSubmitDialog}
-                          disabled={!contentFreeflow.trim() || biographyStatus === 'under_review' || isPreflightChecking}
+                          disabled={
+                            !contentFreeflow.trim() ||
+                            isReviewOrScreeningLockStatus(biographyStatus) ||
+                            isPreflightChecking
+                          }
                           className="h-8 text-xs text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed gap-1.5"
                           style={{ backgroundColor: '#944454', borderColor: '#944454' }}
                         >
@@ -1495,6 +1705,11 @@ const [isPublishing, setIsPublishing] = useState(false);
                           <p className="text-xs text-destructive flex items-center gap-1">
                             <TriangleAlert className="h-3 w-3 shrink-0" />
                             {submitPreflightError}
+                          </p>
+                        )}
+                        {(biographyStatus === 'draft' || biographyStatus === 'sections_complete') && (
+                          <p className="text-[10px] text-muted-foreground max-w-[min(100%,20rem)] leading-snug">
+                            {t.editor.publicationLegacySubmitHint}
                           </p>
                         )}
                       </div>
@@ -1521,7 +1736,15 @@ const [isPublishing, setIsPublishing] = useState(false);
                   </>
                 )}
                 {aiEnabled && biographyMode !== 'freeflow' && (
-                  <div className={biographyStatus !== 'final_version' ? 'sm:ml-auto' : ''}>
+                  <div
+                    className={
+                      biographyStatus !== 'final_version' &&
+                      biographyStatus !== 'pdf_draft' &&
+                      biographyStatus !== 'locked_pending_screening'
+                        ? 'sm:ml-auto'
+                        : ''
+                    }
+                  >
                     <AiUsageIndicator refreshTrigger={aiUsageRefresh} />
                   </div>
                 )}
@@ -1529,13 +1752,27 @@ const [isPublishing, setIsPublishing] = useState(false);
             )}
 
             <div ref={editorContainerRef} className="flex-1 min-h-0 flex flex-col overflow-y-auto">
-              {biographyStatus === 'final_version' || biographyStatus === 'published' ? (
+              {biographyStatus === 'final_version' ||
+              biographyStatus === 'published' ||
+              biographyStatus === 'pdf_draft' ||
+              biographyStatus === 'locked_pending_screening' ? (
                 <FinalVersionEditor
                   content={finalVersion}
                   onContentChange={handleFinalVersionChange}
                   biographyId={id}
                   isLocked={effectivelyLocked}
-                  onPublish={() => setShowPublishDialog(true)}
+                  onPublish={
+                    biographyStatus === 'final_version'
+                      ? handleStartPdfDraft
+                      : () => setShowPublishDialog(true)
+                  }
+                  primaryButtonLabel={
+                    biographyStatus === 'final_version' ? t.editor.publicationStartPdfButton : undefined
+                  }
+                  primaryActionPending={publicationActionLoading === 'start'}
+                  hidePrimaryActions={
+                    biographyStatus === 'pdf_draft' || biographyStatus === 'locked_pending_screening'
+                  }
                   editorFontSize={editorFontSize}
                   onRevertToDraft={!effectivelyLocked ? handleRevertToDraft : undefined}
                 />
@@ -1571,7 +1808,7 @@ const [isPublishing, setIsPublishing] = useState(false);
                   isPublished={
                     (biographyStatus as string) === 'published' ||
                     isFrozen ||
-                    (biographyStatus as string) === 'under_review'
+                    isReviewOrScreeningLockStatus(biographyStatus)
                   }
                   contentFreeflow={contentFreeflow}
                   biographyMode="freeflow"
@@ -1607,7 +1844,7 @@ const [isPublishing, setIsPublishing] = useState(false);
                     (biographyStatus as string) === 'published' ||
                     isFrozen ||
                     isActiveSectionRevisionLocked ||
-                    (biographyStatus as string) === 'under_review'
+                    isReviewOrScreeningLockStatus(biographyStatus)
                   }
                   contentFreeflow={contentFreeflow}
                   biographyMode="sections"
@@ -1648,7 +1885,9 @@ const [isPublishing, setIsPublishing] = useState(false);
                 </div>
               )}
 
-              {editorMode === 'editor' && allSectionsComplete && biographyStatus === 'draft' && (
+              {editorMode === 'editor' &&
+                allSectionsComplete &&
+                (biographyStatus === 'draft' || biographyStatus === 'sections_complete') && (
                 <div className="p-6 border-t border-border/50 bg-gradient-to-br from-primary/5 to-primary/10 shrink-0">
                   <div className="max-w-3xl mx-auto text-center space-y-4">
                     <div className="space-y-2">
@@ -1695,6 +1934,9 @@ const [isPublishing, setIsPublishing] = useState(false);
                          'Submit for Review'}
                       </Button>
                     </div>
+                    <p className="text-xs text-muted-foreground max-w-xl mx-auto leading-relaxed">
+                      {t.editor.publicationLegacySubmitHint}
+                    </p>
                     {submitPreflightError && (
                       <div className="flex items-center justify-center gap-1.5 text-sm text-destructive">
                         <TriangleAlert className="h-4 w-4 shrink-0" />
@@ -1753,7 +1995,25 @@ const [isPublishing, setIsPublishing] = useState(false);
       {biography && (
         <AdvancedExportDialog
           open={showExportDialog}
-          onOpenChange={setShowExportDialog}
+          onOpenChange={(open) => {
+            setShowExportDialog(open);
+            if (!open && biographyStatus === 'pdf_draft' && id) {
+              void (async () => {
+                const { data } = await supabase
+                  .from('biographies')
+                  .select('pdf_draft_iteration')
+                  .eq('id', id)
+                  .maybeSingle();
+                if (data && 'pdf_draft_iteration' in data) {
+                  setPdfDraftIteration(
+                    typeof data.pdf_draft_iteration === 'number'
+                      ? data.pdf_draft_iteration
+                      : null
+                  );
+                }
+              })();
+            }
+          }}
           biography={{
             id,
             title: titleRef.current,
